@@ -1,7 +1,7 @@
-package com.disp.learnspringsecurity;
+package com.disp.learnspringsecurity.controller;
 
 import com.disp.learnspringsecurity.model.MyUser;
-import com.disp.learnspringsecurity.model.MyUserRepository;
+import com.disp.learnspringsecurity.repo.MyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;

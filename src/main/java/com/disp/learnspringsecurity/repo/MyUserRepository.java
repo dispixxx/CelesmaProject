@@ -1,5 +1,6 @@
-package com.disp.learnspringsecurity.model;
+package com.disp.learnspringsecurity.repo;
 
+import com.disp.learnspringsecurity.model.MyUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,5 +1,6 @@
 package com.disp.learnspringsecurity.model;
 
+import com.disp.learnspringsecurity.repo.MyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
