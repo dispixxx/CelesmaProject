@@ -2,6 +2,7 @@ package com.disp.learnspringsecurity.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -12,14 +13,19 @@ public class ContentController {
         return "index";
     }
 
+    @GetMapping("/") //Страница для Авторизованных пользователей
+    public String handleWelcome2() {
+        return "index";
+    }
+
     @GetMapping("/home") //Страница для Авторизованных пользователей
     public String handleWelcome4AuthUsers() {
         return "dashboard";
     }
 
-    @GetMapping("/") //Страница для Авторизованных пользователей
-    public String handleWelcome2() {
-        return "index";
+    @GetMapping("/dashboard") //Страница для Авторизованных пользователей
+    public String handleWelcome4AuthUsers2() {
+        return "dashboard";
     }
 
     @GetMapping("/admin/home") //Страница для Авторизованных(ADMIN) пользователей

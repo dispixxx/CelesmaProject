@@ -1,4 +1,3 @@
-<!-- register -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -26,10 +25,6 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 90%;
-        }
-        .logo {
-            width: 150px;
-            margin-bottom: 20px;
         }
         h1 {
             color: #3366ff;
@@ -90,21 +85,21 @@
     </style>
 </head>
 <body>
-    <div class="container">
-<!--        <img src="Dropbox_Icon.svg.png" alt="celesma logo" class="logo">-->
-        <h1>Регистрация</h1>
-        <form action="#" method="post">
-            <input type="text" id="username" name="username" placeholder="Никнейм" required>
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <input type="password" id="password" name="password" placeholder="Пароль" required>
-            <button type="submit" class="button">Зарегистрироваться</button>
-        </form>
-        <div class="link">
-            Уже есть аккаунт? <a href="/login">Войти</a>
-        </div>
+<div class="container">
+    <h1>Регистрация</h1>
+    <form action="/register/user" method="post">
+        <input type="text" id="username" name="username" placeholder="Никнейм" required>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <input type="password" id="password" name="password" placeholder="Пароль" required>
+
+        <button type="submit" class="button">Зарегистрироваться</button>
+    </form>
+    <div class="link">
+        Уже есть аккаунт? <a href="/login">Войти</a>
     </div>
-    <footer>
-        &copy; 2025 celesma. Все права защищены.
-    </footer>
+</div>
+<footer>
+    &copy; 2025 celesma. Все права защищены.
+</footer>
 </body>
 </html>

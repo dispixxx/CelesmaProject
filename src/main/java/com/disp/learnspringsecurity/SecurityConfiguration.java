@@ -41,21 +41,21 @@ public class SecurityConfiguration {
                 .build();
     }
 
-////    InMemoryUserAuth
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        UserDetails normalUser = User.builder()
-//                .username("disp_user")
-//                .password("$2a$12$Bng6wA8tWEtOApi5sM5hHe8S6djyToC29oLFiNLFPneXbJyoTIvrS")//user
-//                .roles("USER")
-//                .build();
-//        UserDetails adminUser = User.builder()
-//                .username("disp_admin")
-//                .password("$2a$12$zG5AgbGNh2WO9bGEf0QqrO5PXub9WQSN009aoUL26VdhJtKMximqS")//admin
-//                .roles("ADMIN")
-//                .build();
-//        return new InMemoryUserDetailsManager(normalUser, adminUser);
-//    }
+/*//    InMemoryUserAuth
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails normalUser = User.builder()
+                .username("disp_user")
+                .password("$2a$12$Bng6wA8tWEtOApi5sM5hHe8S6djyToC29oLFiNLFPneXbJyoTIvrS")//user
+                .roles("USER")
+                .build();
+        UserDetails adminUser = User.builder()
+                .username("disp_admin")
+                .password("$2a$12$zG5AgbGNh2WO9bGEf0QqrO5PXub9WQSN009aoUL26VdhJtKMximqS")//admin
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(normalUser, adminUser);
+    }*/
 
     @Bean
     public UserDetailsService userDetailsService() {

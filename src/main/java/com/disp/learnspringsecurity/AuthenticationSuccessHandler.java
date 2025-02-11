@@ -12,7 +12,7 @@ import java.io.IOException;
 public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
         if(isAdmin){
             setDefaultTargetUrl("/home"); //na future.../admin/home
         }else{

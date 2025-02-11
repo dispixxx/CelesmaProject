@@ -36,4 +36,5 @@ public class MyUserDetailsService implements UserDetailsService {
         }
         return user.getRole().split(",");
     }
+
 }

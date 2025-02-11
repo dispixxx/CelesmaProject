@@ -13,6 +13,7 @@ public class MyUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String username;
+    private String email;
     private String password;
     private String role; //ADMIN,USER
 
@@ -30,6 +31,14 @@ public class MyUser {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+       this.email = email;
     }
 
     public String getPassword() {
