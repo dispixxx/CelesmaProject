@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница пользователя</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to bottom, #ffffff, #cce0ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2C2F33;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            transition: width 0.3s;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed h2 {
+            opacity: 0;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar .icon {
+            font-size: 20px;
+        }
+
+        .sidebar span {
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed span {
+            display: none;
+        }
+
+        .user-container {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            transition: left 0.3s;
+        }
+
+        .sidebar.collapsed .user-container {
+            left: 5px;
+        }
+
+        .user-name {
+            padding-left: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .sidebar.collapsed .user-name {
+            display: none;
+        }
+
+        .user-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #8A8D91;
+            color: white;
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed .user-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+
+        .user-icon:hover {
+            background-color: #2C2F33;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -10px; /* Увеличиваем отступ от сайдбара */
+            width: 40px; /* Делаем кнопку более вытянутой */
+            height: 20vh; /* Увеличиваем высоту для овальной формы */
+            background: #2C2F33;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: right 0.3s, background 0.3s;
+            transform: translateY(-50%);
+            padding: 10px;
+            border-radius: 30px; /* Делаем кнопку овальной */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -10px; /* Двигаем кнопку дальше при свернутом сайдбаре */
+        }
+
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 30px 20px 40px;
+            /*background: linear-gradient(to bottom, #ffffff, #cce0ff);*/
+            transition: margin-left 0.3s;
+        }
+
+        /*.sidebar.collapsed ~ .main-content {*/
+        /*    margin-left: -190px;*/
+        /*}*/
+
+        .project {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .project h3 {
+            margin-top: 0;
+        }
+
+        .create-project-btn {
+            display: block;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2851a3;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #2C2F33;
+            color: white;
+            font-size: 16px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <button class="toggle-btn">☰</button>
+    <h2>celesma</h2>
+    <ul>
+        <li><a href="#"><span class="icon">📁</span> <span>Проекты</span></a></li>
+        <li><a href="#"><span class="icon">✅</span> <span>Задачи</span></a></li>
+        <li><a href="#"><span class="icon">⚙️</span> <span>Настройки</span></a></li>
+        <li><a href="#"><span class="icon">🚪</span> <span>Выйти</span></a></li>
+    </ul>
+    <div class="user-container">
+        <span class="user-name" sec:authentication="name"></span>
+        <a href="/user/home" class="user-icon">
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>
+    <section>
+        <h2>Мои проекты</h2>
+        <div class="project">
+            <h3>Название проекта 1</h3>
+            <p>Описание проекта 1</p>
+            <p>Статус: В процессе</p>
+            <button>Редактировать</button>
+        </div>
+        <div class="project">
+            <h3>Название проекта 2</h3>
+            <p>Описание проекта 2</p>
+            <p>Статус: Завершен</p>
+            <button>Редактировать</button>
+        </div>
+        <button class="create-project-btn">Создать новый проект</button>
+    </section>
+</div>
+
+<script>
+    document.querySelector(".toggle-btn").addEventListener("click", function () {
+        let sidebar = document.querySelector(".sidebar");
+        sidebar.classList.toggle("collapsed");
+    });
+</script>
+
+</body>
+</html>

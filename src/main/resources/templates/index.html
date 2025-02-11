@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,7 +74,7 @@
 </head>
 <body>
     <div class="container">
-<!--        <img src="Dropbox_Icon.svg.png" alt="celesma logo" class="logo">-->
+        <img th:src="@{../static/image/logo.png}" alt="logo"/>
         <h1>celesma</h1>
         <p>Управляй проектами, достигай целей!</p>
         <div class="button-container">

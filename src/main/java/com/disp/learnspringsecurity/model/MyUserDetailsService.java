@@ -22,7 +22,7 @@ public class MyUserDetailsService implements UserDetailsService {
             var userObj = user.get();
             return User.builder()
                     .username(userObj.getUsername())
-                    .password(userObj.getPassword())//admin
+                    .password(userObj.getPassword())
                     .roles(getRoles(userObj))
                     .build();
         }else{

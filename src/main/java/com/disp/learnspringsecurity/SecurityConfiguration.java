@@ -26,7 +26,7 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 .authorizeHttpRequests(registry->{
-                    registry.requestMatchers("/", "/hello", "register/**").permitAll();
+                    registry.requestMatchers("/", "/welcome", "register/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
@@ -34,6 +34,7 @@ public class SecurityConfiguration {
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
+                            .defaultSuccessUrl("/welcome")
                             .successHandler(new AuthenticationSuccessHandler())//Для РОЛИ USER -> user/home; Для РОЛИ ADMIN -> admin/home
                             .permitAll();
                 })

@@ -17,7 +17,7 @@ public class RegistrationController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register/user")
+    @PostMapping("/register/user") //Принимает запрос на создание пользователя
     public MyUser createUser(@RequestBody MyUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return myUserRepository.save(user);
