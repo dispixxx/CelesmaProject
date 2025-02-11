@@ -14,7 +14,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         if(isAdmin){
-            setDefaultTargetUrl("/admin/home");
+            setDefaultTargetUrl("/home"); //na future.../admin/home
         }else{
             setDefaultTargetUrl("/home");
         }
