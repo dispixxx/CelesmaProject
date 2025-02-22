@@ -54,13 +54,18 @@ public class ProjectController {
         return "project_form";
     }
 
+    @GetMapping("/user/home")
+    public String goHome(Model model) {
+        return "redirect:/user/home";
+    }
+
     @PostMapping("/save")
     public String saveProject(@ModelAttribute("project") Project project){
-//        Long ownerId = projectService.getCurrentUserId();
-//        if(ownerId != null){
-//            projectService.saveProject(project, ownerId);
-//        }
+/*        Long ownerId = projectService.getCurrentUserId();
+        if(ownerId != null){
+            projectService.saveProject(project, ownerId);
+        }*/
         projectService.saveProject(project);
-        return "redirect:/projects";
+        return "redirect:/dashboard";
     }
 }

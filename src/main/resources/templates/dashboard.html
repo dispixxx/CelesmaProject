@@ -12,7 +12,8 @@
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(to bottom, #ffffff, #cce0ff);
+            /*background: linear-gradient(to bottom, #ffffff, #cce0ff);*/
+            background: linear-gradient(to right, #eef2ff, #cfd9ff);
             margin: 0;
             padding: 0;
             display: flex;
@@ -201,12 +202,19 @@
             border-radius: 5px;
             font-size: 14px;
         }
-        .status.in-progress {
-            background: #ffcc00;
+        .user-member {
+            color: #2e7d32; /* Зеленый */
+            background-color: #e8f5e9; /* Светло-зеленый фон */
+            border: 1px solid #2e7d32;
+            padding: 2px;
+            border-radius: 5px;
         }
-        .status.completed {
-            background: #4caf50;
-            color: white;
+        .user-admin {
+            background-color: #ffebee; /* Светло-красный фон */
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+            padding: 2px;
+            border-radius: 5px;
         }
         .edit-btn {
             background: #3366ff;
@@ -281,6 +289,10 @@
             bottom: 0;
             left: 0;
         }
+
+        button:hover {
+            background-color: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -330,7 +342,7 @@
             <div class="project">
                 <div class="project-header">
                     <h3>Название проекта 1</h3>
-                    <span class="status in-progress">В процессе</span>
+                    <span class="user-member">Участник👤</span>
                 </div>
                 <p>Описание проекта 1</p>
 <!--                <div class="progress-bar">-->
@@ -344,7 +356,7 @@
             <div class="project">
                 <div class="project-header">
                     <h3>Название проекта 2</h3>
-                    <span class="status completed">Завершен</span>
+                    <span class="user-admin">Администратор👑</span>
                 </div>
                 <p>Описание проекта 2</p>
 <!--                <div class="progress-bar">-->
