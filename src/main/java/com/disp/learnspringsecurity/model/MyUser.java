@@ -1,10 +1,9 @@
 package com.disp.learnspringsecurity.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -16,6 +15,9 @@ public class MyUser {
     private String email;
     private String password;
     private String role; //ADMIN,USER
+
+    @OneToMany(mappedBy = "ownerUser")
+    private List<Project> projects;
 
     public Long getId() {
         return id;

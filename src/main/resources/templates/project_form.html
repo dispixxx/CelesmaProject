@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Create Project</title>
+</head>
+<body>
+<h1>Create Project</h1>
+<form action="#" th:action="@{/projects/save}" th:object="${project}" method="post">
+  <label for="name">Name:</label>
+  <input type="text" th:field="*{name}" id="name"/>
+  <br/>
+  <label for="description">Description:</label>
+  <input type="text" th:field="*{description}" id="description"/>
+  <br/>
+<!--  <h1>ID: <span sec:authentication="id"></span></h1>-->
+  <button type="submit">Save</button>
+</form>
+</body>
+</html>

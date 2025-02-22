@@ -82,8 +82,6 @@
             border-radius: 5px; /* Скругление при наведении */
 
         }
-
-
         .sidebar ul li a:hover {
             background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
             padding: 5px 10px;
@@ -181,6 +179,58 @@
             right: -10px; /* Двигаем кнопку дальше при свернутом сайдбаре */
         }
 
+        .projects-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .project {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 45%;
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .status.in-progress {
+            background: #ffcc00;
+        }
+        .status.completed {
+            background: #4caf50;
+            color: white;
+        }
+        .edit-btn {
+            background: #3366ff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .edit-btn:hover {
+            background: #2851a3;
+        }
+        .create-project-btn {
+            margin-top: 20px;
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .create-project-btn:hover {
+            background: #2851a3;
+        }
 
         .main-content {
             flex-grow: 1;
@@ -189,7 +239,7 @@
             transition: margin-left 0.3s;
         }
 
-        .project {
+        /*.project {
             background-color: white;
             border: 1px solid #ddd;
             padding: 15px;
@@ -217,7 +267,7 @@
 
         button:hover {
             background-color: #2851a3;
-        }
+        }*/
 
         footer {
             display: flex;
@@ -251,7 +301,7 @@
     </div>
 </div>
 
-<div class="main-content">
+<!--<div class="main-content">
     <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>
     <section>
         <h2>Мои проекты</h2>
@@ -268,6 +318,46 @@
             <button>Редактировать</button>
         </div>
         <button class="create-project-btn">Создать новый проект</button>
+    </section>
+</div>-->
+
+<div class="main-content">
+    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>
+    <section>
+        <h2>Мои проекты</h2>
+
+        <div class="projects-container">
+            <div class="project">
+                <div class="project-header">
+                    <h3>Название проекта 1</h3>
+                    <span class="status in-progress">В процессе</span>
+                </div>
+                <p>Описание проекта 1</p>
+<!--                <div class="progress-bar">-->
+<!--                    <div class="progress" style="width: 60%"></div>-->
+<!--                </div>-->
+                <div class="project-footer">
+                    <button class="edit-btn">Редактировать</button>
+                </div>
+            </div>
+
+            <div class="project">
+                <div class="project-header">
+                    <h3>Название проекта 2</h3>
+                    <span class="status completed">Завершен</span>
+                </div>
+                <p>Описание проекта 2</p>
+<!--                <div class="progress-bar">-->
+<!--                    <div class="progress" style="width: 100%"></div>-->
+<!--                </div>-->
+                <div class="project-footer">
+                    <button class="edit-btn">Редактировать</button>
+                </div>
+            </div>
+        </div>
+<!--        <button class="create-project-btn">Создать новый проект</button>-->
+        <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
+
     </section>
 </div>
 
