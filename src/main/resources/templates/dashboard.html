@@ -272,10 +272,23 @@
 </div>
 
 <script>
-    document.querySelector(".toggle-btn").addEventListener("click", function () {
+    document.addEventListener("DOMContentLoaded", function () {
         let sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("collapsed");
+        let toggleBtn = document.querySelector(".toggle-btn");
+
+        // Проверяем состояние из localStorage
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
+
+        toggleBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+
+            // Запоминаем состояние сайдбара
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
     });
+
 </script>
 
 </body>

@@ -12,7 +12,9 @@
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(to bottom, #ffffff, #cce0ff);
+            /*background: linear-gradient(135deg, #1a1a1a, #3a3a3a, #cce0ff);*/
+            background: radial-gradient(circle, #cce0ff, #a0b8e6, #6c7a89);
+            background-blend-mode: overlay;
             margin: 0;
             padding: 0;
             display: flex;
@@ -266,10 +268,23 @@
 
 
 <script>
-    document.querySelector(".toggle-btn").addEventListener("click", function () {
+    document.addEventListener("DOMContentLoaded", function () {
         let sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("collapsed");
+        let toggleBtn = document.querySelector(".toggle-btn");
+
+        // Проверяем состояние из localStorage
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
+
+        toggleBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+
+            // Запоминаем состояние сайдбара
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
     });
+
 </script>
 
 </body>
