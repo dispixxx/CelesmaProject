@@ -338,16 +338,15 @@
     <section>
         <h2>Мои проекты</h2>
 
-        <div class="projects-container">
+
+        <!--static projects-->
+<!--        <div class="projects-container">
             <div class="project">
                 <div class="project-header">
                     <h3>Название проекта 1</h3>
                     <span class="user-member">Участник👤</span>
                 </div>
                 <p>Описание проекта 1</p>
-<!--                <div class="progress-bar">-->
-<!--                    <div class="progress" style="width: 60%"></div>-->
-<!--                </div>-->
                 <div class="project-footer">
                     <button class="edit-btn">Редактировать</button>
                 </div>
@@ -359,15 +358,32 @@
                     <span class="user-admin">Администратор👑</span>
                 </div>
                 <p>Описание проекта 2</p>
-<!--                <div class="progress-bar">-->
-<!--                    <div class="progress" style="width: 100%"></div>-->
-<!--                </div>-->
                 <div class="project-footer">
                     <button class="edit-btn">Редактировать</button>
                 </div>
             </div>
-        </div>
-<!--        <button class="create-project-btn">Создать новый проект</button>-->
+        </div>-->
+
+
+        <!--projects from db-->
+<!--        <div class="projects-container">
+            <th:block th:each="project : ${projects}">
+                <div class="project">
+                    <div class="project-header">
+                        <h3 th:text="${project.name}">Название проекта</h3>
+                        <span th:classappend="${project.ownerUser.username == #authentication.name} ? 'user-admin' : 'user-member'">
+                        <th:block th:text="${project.ownerUser.username == #authentication.name ? 'Администратор👑' : 'Участник👤'}"></th:block>
+                        </span>
+                    </div>
+                    <p th:text="${project.description}">Описание проекта</p>
+                    <div class="project-footer">
+                        <button class="edit-btn" th:if="${project.ownerUser.username == #authentication.name}">Редактировать</button>
+                    </div>
+                </div>
+            </th:block>
+        </div>-->
+
+
         <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
 
     </section>

@@ -1,95 +1,129 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>celesma</title>
+    <title>celesma - Управление проектами</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            text-align: center;
-            /*background: linear-gradient(to bottom, #ffffff, #cce0ff);*/
-            background: linear-gradient(to right, #eef2ff, #cfd9ff);
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            background: linear-gradient(to right, #eef2ff, #cfd9ff);
+            color: #333;
         }
-        .container {
-            padding: 50px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 90%;
+        .header {
+            text-align: center;
+            padding: 50px 20px;
         }
-        .logo {
-            width: 200px;
-            margin-bottom: 30px;
-        }
-        h1 {
+        .header h1 {
+            font-size: 50px;
             color: #3366ff;
-            font-size: 60px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            font-family: "Orbitron", serif;
-            font-optical-sizing: auto;
-            font-style: normal;
+            font-family: "Orbitron", sans-serif;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
-        p {
-            font-size: 24px;
+        .header p {
+            font-size: 22px;
+            max-width: 600px;
+            margin: 0 auto;
             color: #555;
-            margin-bottom: 40px;
         }
         .button-container {
+            margin-top: 20px;
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 20px;
         }
         .button {
-            font-size: 20px;
-            padding: 15px 30px;
+            font-size: 18px;
+            padding: 12px 25px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             background-color: #3366ff;
             color: white;
             text-decoration: none;
-            transition: background-color 0.3s ease;
+            transition: 0.3s ease;
         }
         .button:hover {
             background-color: #254eda;
         }
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 60px auto;
+            max-width: 1000px;
+            text-align: center;
+        }
+        .feature-box {
+            width: 280px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-box:hover {
+            transform: translateY(-5px);
+        }
+        .feature-box img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+        .feature-box h3 {
+            color: #3366ff;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .feature-box p {
+            font-size: 16px;
+            color: #555;
+        }
         footer {
+            text-align: center;
             padding: 20px;
             background-color: #3366ff;
             color: white;
             font-size: 16px;
-            width: 100%;
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>celesma</h1>
-        <p>Управляй проектами, достигай целей!</p>
-        <div class="button-container">
-            <a href="/register" class="button">Регистрация</a>
-            <a href="/login" class="button">Авторизация</a>
-        </div>
+
+<!-- Заголовок -->
+<div class="header">
+    <h1>Celesma</h1>
+    <p>Современный инструмент для управления проектами и задачами. Работайте эффективнее вместе!</p>
+    <div class="button-container">
+        <a href="/register" class="button">Регистрация</a>
+        <a href="/login" class="button">Авторизация</a>
     </div>
-    <footer>
-        &copy; 2025 celesma. Все права защищены.
-    </footer>
+</div>
+
+<!-- Преимущества -->
+<div class="features">
+    <div class="feature-box">
+        <img src="/image/tasks.png" alt="Задачи">
+        <h3>Гибкое управление задачами</h3>
+        <p>Создавайте, назначайте и контролируйте задачи легко и удобно.</p>
+    </div>
+    <div class="feature-box">
+        <img src="/image/team.png" alt="Команда">
+        <h3>Совместная работа</h3>
+        <p>Работайте с командой в реальном времени, оставляйте комментарии и следите за прогрессом.</p>
+    </div>
+</div>
+
+<!-- Подвал -->
+<footer>
+    &copy; 2025 Celesma. Все права защищены.
+</footer>
+
 </body>
 </html>
