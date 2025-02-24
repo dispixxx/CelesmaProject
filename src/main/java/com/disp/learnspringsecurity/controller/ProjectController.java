@@ -14,12 +14,6 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-//    @GetMapping
-//    public String listProjects(Model model) {
-//        model.addAttribute("projects", projectService.getAllProjects());
-//        return "projects";
-//    }
-
     @GetMapping("/new")
     public String showProjectForm(Model model) {
         model.addAttribute("project", new Project());
