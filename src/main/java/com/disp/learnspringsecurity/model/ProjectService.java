@@ -3,10 +3,13 @@ package com.disp.learnspringsecurity.model;
 import com.disp.learnspringsecurity.AuthenticationFacade;
 import com.disp.learnspringsecurity.repo.MyUserRepository;
 import com.disp.learnspringsecurity.repo.ProjectRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -21,14 +24,30 @@ public class ProjectService {
     @Autowired
     private MyUserRepository repository;
 
-    public Project saveProject(Project project) {
+    public void saveProject(Project project) {
         String username = authenticationFacade.getAuthenticatedUsername();
         MyUser user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         project.setOwnerUser(user); // Устанавливаем пользователя
-        return projectRepository.save(project);
+        if(project.getParticipants() == null){
+            project.setParticipants(new HashSet<>());
+        }
+        project.getParticipants().add(user);
+        projectRepository.save(project);
     }
+
+    public List<Project> getProjectsByParticipant(String username) {
+        MyUser user = repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return projectRepository.findByParticipantsContaining(user);
+    }
+
+    public Project getProjectById(Long id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+    }
+
 
     public List<Project> getAllProjects() {
         return projectRepository.findAll();

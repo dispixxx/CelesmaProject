@@ -338,7 +338,27 @@
     <section>
         <h2>Мои проекты</h2>
 
+        <div class="projects-container">
+            <div th:each="project : ${projects}" class="project">
+                <div class="project-header">
+                    <h3 th:text="${project.name}">Название проекта</h3>
+<!--                    <span th:if="${project.isAdmin}" class="user-admin">Администратор🔧</span>-->
+<!--                    <span th:unless="${project.isAdmin}" class="user-member">Участник👤</span>-->
+                </div>
+<!--                <p th:text="${project.description}">Описание проекта</p>-->
+                <div class="project-footer">
+                    <a th:href="@{/projects/view/{id}(id=${project.id})}">
+                        <button class="edit-btn">Открыть</button>
+                    </a>
+                </div>
+            </div>
+        </div>
 
+<!--
+        <li th:each="project : ${projects}">
+            <a th:href="@{/projects/view/{id}(id=${project.id})}" th:text="${project.name}"></a>
+        </li>
+-->
         <!--static projects-->
 <!--        <div class="projects-container">
             <div class="project">
@@ -382,8 +402,6 @@
                 </div>
             </th:block>
         </div>-->
-
-
         <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
 
     </section>

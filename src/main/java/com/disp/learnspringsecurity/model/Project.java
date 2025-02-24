@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 
 @Entity
 @Data
@@ -17,10 +19,20 @@ public class Project {
     private String name;
     private String description;
 //    private Long ownerId;
+    @ManyToOne
+    @JoinColumn(name = "ownerUser")
+    private MyUser ownerUser; // Связь с пользователем
 
-        @ManyToOne
-        @JoinColumn(name = "ownerUser")
-        private MyUser ownerUser; // Связь с пользователем
+    @ManyToMany
+    Set<MyUser> participants; //Участник проекта
+
+    public Set<MyUser> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<MyUser> participants) {
+        this.participants = participants;
+    }
 
     public Long getId() {
         return id;

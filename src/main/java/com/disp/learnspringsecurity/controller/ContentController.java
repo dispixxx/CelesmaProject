@@ -1,11 +1,27 @@
 package com.disp.learnspringsecurity.controller;
 
+import com.disp.learnspringsecurity.AuthenticationFacade;
+import com.disp.learnspringsecurity.model.Project;
+import com.disp.learnspringsecurity.model.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+
+
 
 @Controller
 public class ContentController {
+
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private ProjectService projectService;
 
     @RequestMapping("/welcome") //Страница для НЕавторизованных пользователей
     public String handleWelcome() {
@@ -17,15 +33,15 @@ public class ContentController {
         return "index";
     }
 
-    @GetMapping("/home") //Страница для Авторизованных пользователей
+    /*@GetMapping("/home") //Страница для Авторизованных пользователей
     public String handleWelcome4AuthUsers() {
         return "dashboard";
-    }
+    }*/
 
-    @GetMapping("/dashboard") //Страница для Авторизованных пользователей
+    /*@GetMapping("/dashboard") //Страница для Авторизованных пользователей
     public String handleWelcome4AuthUsers2() {
         return "dashboard";
-    }
+    }*/
 
     @GetMapping("/admin/home") //Страница для Авторизованных(ADMIN) пользователей
     public String handleAdminHome() {
@@ -45,6 +61,21 @@ public class ContentController {
     @GetMapping("/register") //Страница для регистрации
     public String handleRegister() {
         return "register";
+    }
+
+    @GetMapping("/dashboard")
+    public String getUserProjects(Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        List<Project> userProjects = projectService.getProjectsByParticipant(username);
+        model.addAttribute("projects", userProjects);
+        return "dashboard"; // Убедись, что название шаблона совпадает
+    }
+
+    @GetMapping("/projects/view/{id}")
+    public String viewProject(@PathVariable Long id, Model model) {
+        Project project = projectService.getProjectById(id);
+        model.addAttribute("project", project);
+        return "project_view";
     }
 
 }
