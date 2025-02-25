@@ -63,18 +63,34 @@ public class ContentController {
         return "register";
     }
 
-    @GetMapping("/dashboard")
+    /*@GetMapping("/dashboard")
     public String getUserProjects(Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         List<Project> userProjects = projectService.getProjectsByParticipant(username);
         model.addAttribute("projects", userProjects);
+        return "dashboard";
+    }*/
+
+    @GetMapping("/dashboard")
+    public String getUserProjects(Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        List<Project> userProjects = projectService.getProjectsByMember(username);
+        model.addAttribute("projects", userProjects);
         return "dashboard"; // Убедись, что название шаблона совпадает
     }
+
+    /*@GetMapping("/projects/view/{id}")
+    public String viewProject(@PathVariable Long id, Model model) {
+        Project project = projectService.getProjectById(id);
+        model.addAttribute("project", project);
+        return "project_view";
+    }*/
 
     @GetMapping("/projects/view/{id}")
     public String viewProject(@PathVariable Long id, Model model) {
         Project project = projectService.getProjectById(id);
         model.addAttribute("project", project);
+        model.addAttribute("members", project.getMembers());
         return "project_view";
     }
 

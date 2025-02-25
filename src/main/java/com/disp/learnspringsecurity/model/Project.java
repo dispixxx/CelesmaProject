@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -20,18 +21,23 @@ public class Project {
     private String description;
 //    private Long ownerId;
     @ManyToOne
-    @JoinColumn(name = "ownerUser")
+    @JoinColumn(name = "owner_user")
     private MyUser ownerUser; // Связь с пользователем
 
     @ManyToMany
-    Set<MyUser> participants; //Участник проекта
+    @JoinTable(
+            name = "project_members",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<MyUser> members = new HashSet<>();
 
-    public Set<MyUser> getParticipants() {
-        return participants;
+    public Set<MyUser> getMembers() {
+        return members;
     }
 
-    public void setParticipants(Set<MyUser> participants) {
-        this.participants = participants;
+    public void setMembers(Set<MyUser> participants) {
+        this.members = participants;
     }
 
     public Long getId() {
@@ -57,14 +63,6 @@ public class Project {
     public void setDescription(String description) {
         this.description = description;
     }
-
-//    public Long getOwnerId() {
-//        return ownerId;
-//    }
-//
-//    public void setOwnerId(Long ownerId) {
-//        this.ownerId = ownerId;
-//    }
 
     public MyUser getOwnerUser() {
         return ownerUser;

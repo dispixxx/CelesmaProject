@@ -125,10 +125,15 @@
     }
 
     .user-name {
-      padding-left: 5px;
-      margin-right: 10px;
-      font-size: 16px;
-      font-weight: bold;
+        max-width: 130px; /* Ограничивает ширину */
+        white-space: nowrap; /* Запрещает перенос текста */
+        overflow: hidden; /* Обрезает текст */
+        text-overflow: ellipsis; /* Добавляет "..." */
+        display: inline-block;
+        padding-left: 5px;
+        margin-right: 10px;
+        font-size: 16px;
+        font-weight: bold;
     }
 
     .sidebar.collapsed .user-name {
@@ -336,7 +341,7 @@
   </ul>
   <div class="user-container">
     <span class="user-name" sec:authentication="name"></span>
-    <a href="user/home" class="user-icon">
+    <a href="/user/home" class="user-icon">
       <i class="fas fa-user"></i>
     </a>
   </div>

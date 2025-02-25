@@ -130,14 +130,15 @@
         }
 
         .user-name {
+            max-width: 130px; /* Ограничивает ширину */
+            white-space: nowrap; /* Запрещает перенос текста */
+            overflow: hidden; /* Обрезает текст */
+            text-overflow: ellipsis; /* Добавляет "..." */
+            display: inline-block;
             padding-left: 5px;
             margin-right: 10px;
             font-size: 16px;
             font-weight: bold;
-        }
-
-        .sidebar.collapsed .user-name {
-            cursor: none;
         }
 
         .user-icon {
@@ -317,34 +318,14 @@
     </ul>
     <div class="user-container">
         <span class="user-name" sec:authentication="name"></span>
-        <a href="user/home" class="user-icon">
+        <a href="/user/home" class="user-icon">
             <i class="fas fa-user"></i>
         </a>
     </div>
 </div>
 
-<!--<div class="main-content">
-    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>
-    <section>
-        <h2>Мои проекты</h2>
-        <div class="project">
-            <h3>Название проекта 1</h3>
-            <p>Описание проекта 1</p>
-            <p>Статус: В процессе</p>
-            <button>Редактировать</button>
-        </div>
-        <div class="project">
-            <h3>Название проекта 2</h3>
-            <p>Описание проекта 2</p>
-            <p>Статус: Завершен</p>
-            <button>Редактировать</button>
-        </div>
-        <button class="create-project-btn">Создать новый проект</button>
-    </section>
-</div>-->
-
 <div class="main-content">
-    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>
+<!--    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>-->
     <section>
         <h2>Мои проекты</h2>
 
@@ -355,7 +336,8 @@
                 <div class="project-header">
                     <h3 th:text="${project.name}">Название проекта</h3>
 <!--                    <span th:if="${project.isAdmin}" class="user-admin">Администратор🔧</span>-->
-<!--                    <span th:unless="${project.isAdmin}" class="user-member">Участник👤</span>-->
+<!--                    <span th:if="${project.isModeraror}" class="user-admin">Модератор🔧</span>-->
+<!--                    <span th:if="${!(project.isAdmin || project.isModeraror)}" class="user-member">Участник👤</span>-->
                 </div>
 <!--                <p th:text="${project.description}">Описание проекта</p>-->
                 <div class="project-footer">
@@ -365,55 +347,6 @@
                 </div>
             </div>
         </div>
-
-<!--
-        <li th:each="project : ${projects}">
-            <a th:href="@{/projects/view/{id}(id=${project.id})}" th:text="${project.name}"></a>
-        </li>
--->
-        <!--static projects-->
-<!--        <div class="projects-container">
-            <div class="project">
-                <div class="project-header">
-                    <h3>Название проекта 1</h3>
-                    <span class="user-member">Участник👤</span>
-                </div>
-                <p>Описание проекта 1</p>
-                <div class="project-footer">
-                    <button class="edit-btn">Редактировать</button>
-                </div>
-            </div>
-
-            <div class="project">
-                <div class="project-header">
-                    <h3>Название проекта 2</h3>
-                    <span class="user-admin">Администратор👑</span>
-                </div>
-                <p>Описание проекта 2</p>
-                <div class="project-footer">
-                    <button class="edit-btn">Редактировать</button>
-                </div>
-            </div>
-        </div>-->
-
-
-        <!--projects from db-->
-<!--        <div class="projects-container">
-            <th:block th:each="project : ${projects}">
-                <div class="project">
-                    <div class="project-header">
-                        <h3 th:text="${project.name}">Название проекта</h3>
-                        <span th:classappend="${project.ownerUser.username == #authentication.name} ? 'user-admin' : 'user-member'">
-                        <th:block th:text="${project.ownerUser.username == #authentication.name ? 'Администратор👑' : 'Участник👤'}"></th:block>
-                        </span>
-                    </div>
-                    <p th:text="${project.description}">Описание проекта</p>
-                    <div class="project-footer">
-                        <button class="edit-btn" th:if="${project.ownerUser.username == #authentication.name}">Редактировать</button>
-                    </div>
-                </div>
-            </th:block>
-        </div>-->
     </section>
 </div>
 

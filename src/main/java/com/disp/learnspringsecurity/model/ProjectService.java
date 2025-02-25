@@ -24,7 +24,7 @@ public class ProjectService {
     @Autowired
     private MyUserRepository repository;
 
-    public void saveProject(Project project) {
+/*    public void saveProject(Project project) {
         String username = authenticationFacade.getAuthenticatedUsername();
         MyUser user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -34,17 +34,34 @@ public class ProjectService {
         }
         project.getParticipants().add(user);
         projectRepository.save(project);
+    }*/
+
+    public void saveProject(Project project) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        MyUser user = repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        project.setOwnerUser(user); // Устанавливаем пользователя
+        if(project.getMembers() == null){
+            project.setMembers(new HashSet<>());
+        }
+        project.getMembers().add(user);
+        projectRepository.save(project);
     }
 
-    public List<Project> getProjectsByParticipant(String username) {
+    public List<Project> getProjectsByMember(String username) {
         MyUser user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return projectRepository.findByParticipantsContaining(user);
+        return projectRepository.findByMembersContaining(user);
     }
 
-    public Project getProjectById(Long id) {
+/*    public Project getProjectById(Long id) {
         return projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+    }*/
+
+    public Project getProjectById(Long id) {
+        return projectRepository.findByIdWithMembers(id)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
     }
 
