@@ -17,9 +17,6 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @Autowired
-    private AuthenticationFacade authenticationFacade;
-
     @GetMapping("/new")
     public String showProjectForm(Model model) {
         model.addAttribute("project", new Project());
