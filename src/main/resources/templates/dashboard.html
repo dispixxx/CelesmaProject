@@ -19,6 +19,7 @@
             display: flex;
         }
 
+        /*SIDEBAR*/
         .sidebar {
             width: 250px;
             background-color: #2C2F33;
@@ -69,6 +70,7 @@
             margin: 30px 0;
             display: flex;
             align-items: center;
+            min-height:30px; /*Чтобы иконки не прыгали при сворачивании*/
         }
 
         .sidebar ul li a {
@@ -78,11 +80,13 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            width: auto; /* Убираем растяжение */
+            /*width: auto; !* Убираем растяжение *!*/
             padding: 5px 10px; /* Добавляем немного отступов для удобного клика */
             border-radius: 5px; /* Скругление при наведении */
+            width: 100%; /*Заполнить всю область сайдбара*/
 
         }
+
         .sidebar ul li a:hover {
             background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
             padding: 5px 10px;
@@ -93,16 +97,21 @@
         }
 
         .sidebar span {
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
             display: inline-block;
             min-height: 20px; /* Устанавливаем высоту, чтобы текст не исчезал полностью */
             white-space: nowrap;
+            visibility: visible;
         }
-
         .sidebar.collapsed span {
-            left: 5px;
+            /*left: 5px;*/
             opacity: 0;
             width: 0;
+            visibility: hidden;
+         }
+        .sidebar.collapsed span::after {
+            content: "";
+            display: none;
         }
 
         .user-container {
@@ -179,6 +188,7 @@
         .sidebar.collapsed .toggle-btn {
             right: -10px; /* Двигаем кнопку дальше при свернутом сайдбаре */
         }
+        /*SIDEBAR*/
 
         .projects-container {
             display: flex;
@@ -228,7 +238,7 @@
             background: #2851a3;
         }
         .create-project-btn {
-            margin-top: 20px;
+            margin-bottom: 20px;
             background: #3366ff;
             color: white;
             padding: 10px 20px;
@@ -338,6 +348,8 @@
     <section>
         <h2>Мои проекты</h2>
 
+        <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
+
         <div class="projects-container">
             <div th:each="project : ${projects}" class="project">
                 <div class="project-header">
@@ -402,8 +414,6 @@
                 </div>
             </th:block>
         </div>-->
-        <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
-
     </section>
 </div>
 
@@ -424,7 +434,6 @@
             localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
         });
     });
-
 </script>
 
 </body>
