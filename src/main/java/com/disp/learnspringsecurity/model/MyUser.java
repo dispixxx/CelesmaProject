@@ -14,7 +14,7 @@ public class MyUser {
     private String username;
     private String email;
     private String password;
-    private String role; //ADMIN,USER
+    private String role; //ADMIN,USER GLOBAL ROL ON WEB SITE NOT ON PROJECT
 
     @OneToMany(mappedBy = "ownerUser")
     private List<Project> projects;

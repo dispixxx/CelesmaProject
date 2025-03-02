@@ -282,6 +282,11 @@
       background-color: #2563eb;
     }
 
+    .project-name-and-id{
+      display: flex;
+      justify-content: space-around;
+    }
+
   </style>
 </head>
 <body>
@@ -305,7 +310,10 @@
 
 <div class="main-content">
   <div class="container">
-    <h1 th:text="${project.name}">Название проекта</h1>
+    <div class="project-name-and-id">
+    <h1 th:text=" ${project.name}">Название проекта</h1>
+    <h1 th:text="|ID: ${project.id}|">ID проекта</h1>
+  </div>
 
     <div class="project-info">
       <p><strong>Описание:</strong> <span th:text="${project.description}"></span></p>

@@ -28,15 +28,16 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 .authorizeHttpRequests(auth->{
-                    auth.requestMatchers("/", "/welcome", "register/**").permitAll();
+                    auth.requestMatchers("/", "/welcome", "/register/**").permitAll();
                     auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/user/**").hasRole("USER");
+                    auth.requestMatchers("/user/**").hasRole("USER"); //ROLE_USER
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
-                            .defaultSuccessUrl("/welcome")
+                            .defaultSuccessUrl("/dashboard")
+                            .failureUrl("/login?error") // Перенаправление при ошибке аутентификации
                             .successHandler(new AuthenticationSuccessHandler())//Для РОЛИ USER -> user/home; Для РОЛИ ADMIN -> admin/home
                             .permitAll();
                 })

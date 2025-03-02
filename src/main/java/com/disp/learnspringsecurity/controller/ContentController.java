@@ -1,17 +1,23 @@
 package com.disp.learnspringsecurity.controller;
 
 import com.disp.learnspringsecurity.AuthenticationFacade;
-import com.disp.learnspringsecurity.model.Project;
-import com.disp.learnspringsecurity.model.ProjectService;
+import com.disp.learnspringsecurity.model.*;
+import com.disp.learnspringsecurity.repo.MyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
-
+import java.util.Optional;
 
 
 @Controller
@@ -23,6 +29,9 @@ public class ContentController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MyUserRepository myUserRepository;
+
     @RequestMapping("/welcome") //Страница для НЕавторизованных пользователей
     public String handleWelcome() {
         return "index";
@@ -33,23 +42,17 @@ public class ContentController {
         return "index";
     }
 
-    /*@GetMapping("/home") //Страница для Авторизованных пользователей
-    public String handleWelcome4AuthUsers() {
-        return "dashboard";
-    }*/
-
-    /*@GetMapping("/dashboard") //Страница для Авторизованных пользователей
-    public String handleWelcome4AuthUsers2() {
-        return "dashboard";
-    }*/
-
     @GetMapping("/admin/home") //Страница для Авторизованных(ADMIN) пользователей
     public String handleAdminHome() {
         return "home_admin";
     }
 
     @GetMapping("/user/home") //Страница для Авторизованных(USER) пользователей
-    public String handleUserHome() {
+    public String handleUserHome(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        String username = userDetails.getUsername();
+        String userEmail = userDetails.getEmail();
+        model.addAttribute("username", username);
+        model.addAttribute("userEmail", userEmail);
         return "home_user";
     }
 
@@ -63,20 +66,12 @@ public class ContentController {
         return "register";
     }
 
-    /*@GetMapping("/dashboard")
-    public String getUserProjects(Model model) {
-        String username = authenticationFacade.getAuthenticatedUsername();
-        List<Project> userProjects = projectService.getProjectsByParticipant(username);
-        model.addAttribute("projects", userProjects);
-        return "dashboard";
-    }*/
-
     @GetMapping("/dashboard")
     public String getUserProjects(Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         List<Project> userProjects = projectService.getProjectsByMember(username);
         model.addAttribute("projects", userProjects);
-        return "dashboard"; // Убедись, что название шаблона совпадает
+        return "dashboard";
     }
 
     /*@GetMapping("/projects/view/{id}")
@@ -93,5 +88,4 @@ public class ContentController {
         model.addAttribute("members", project.getMembers());
         return "project_view";
     }
-
 }

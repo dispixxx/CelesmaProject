@@ -185,6 +185,9 @@
             justify-content: center;
             transition: 0.3s ease-in-out;
         }
+        .toggle-btn:hover{
+            background-color: #2563eb;
+        }
 
         .sidebar.collapsed .toggle-btn {
             right: -10px; /* Двигаем кнопку дальше при свернутом сайдбаре */
@@ -304,6 +307,20 @@
         button:hover {
             background-color: #2563eb;
         }
+
+        .search-project-btn {
+            margin-bottom: 20px;
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .search-project-btn:hover {
+            background: #2851a3;
+        }
     </style>
 </head>
 <body>
@@ -328,6 +345,8 @@
 <!--    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>-->
     <section>
         <h2>Мои проекты</h2>
+
+        <a href="/projects/search"><button class="search-project-btn">Найти подходящий проект</button></a>
 
         <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
 

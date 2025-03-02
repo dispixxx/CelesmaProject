@@ -98,10 +98,18 @@
 <body>
 <div class="container">
 <!--  <img src="Dropbox_Icon.svg.png" alt="celesmaLogo" class="logo">-->
+<!--  <img src=/image/logo.png alt=изображение>-->
   <h1>Авторизация</h1>
+
+  <!-- Блок для отображения ошибки -->
+  <div th:if="${param.error}" style="color: red; margin-bottom: 15px;">
+    Invalid username or password. <br>
+    Please try again.
+  </div>
+
   <form action="/login" method="post">
 <!--    <label for="username">Username:</label>-->
-    <input type="text" id="username" name="username" placeholder="Никнейм" required>
+    <input type="text" id="username" name="username" placeholder="Логин" required>
 <!--    <label for="password">Password:</label>-->
     <input type="password" id="password" name="password" placeholder="Пароль" required>
 

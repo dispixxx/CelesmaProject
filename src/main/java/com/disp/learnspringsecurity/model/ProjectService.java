@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -22,11 +23,11 @@ public class ProjectService {
     private AuthenticationFacade authenticationFacade;
 
     @Autowired
-    private MyUserRepository repository;
+    private MyUserRepository userRepository;
 
 /*    public void saveProject(Project project) {
         String username = authenticationFacade.getAuthenticatedUsername();
-        MyUser user = repository.findByUsername(username)
+        MyUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         project.setOwnerUser(user); // Устанавливаем пользователя
         if(project.getParticipants() == null){
@@ -38,7 +39,7 @@ public class ProjectService {
 
     public void saveProject(Project project) {
         String username = authenticationFacade.getAuthenticatedUsername();
-        MyUser user = repository.findByUsername(username)
+        MyUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         project.setOwnerUser(user); // Устанавливаем пользователя
         if(project.getMembers() == null){
@@ -49,7 +50,7 @@ public class ProjectService {
     }
 
     public List<Project> getProjectsByMember(String username) {
-        MyUser user = repository.findByUsername(username)
+        MyUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return projectRepository.findByMembersContaining(user);
@@ -70,5 +71,25 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    public List<Project> searchProjects(String query) {
+        // Проверяем, является ли запрос числом
+        if (isNumeric(query)) {
+            Long id = Long.parseLong(query);
+            Optional<Project> project = projectRepository.findById(id);
+            return project.map(List::of).orElse(List.of()); // Возвращаем список с одним проектом или пустой список
+        } else {
+            // Ищем по названию
+            return projectRepository.findByNameContaining(query);
+        }
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }
 

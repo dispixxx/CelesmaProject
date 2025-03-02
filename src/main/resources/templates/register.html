@@ -89,6 +89,17 @@
 <body>
 <div class="container">
     <h1>Регистрация</h1>
+
+    <!-- Отображение сообщения об ошибке -->
+    <div th:if="${error}" style="color: red; margin-bottom: 15px;">
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Отображение сообщения об успехе -->
+    <div th:if="${success}" style="color: green; margin-bottom: 15px;">
+        <span th:text="${success}"></span>
+    </div>
+
     <form action="/register/user" method="post">
         <input type="text" id="username" name="username" placeholder="Никнейм" required>
         <input type="email" id="email" name="email" placeholder="Email" required>
