@@ -12,6 +12,8 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String firstName;
+    private String lastName;
     private String role; //ADMIN,USER GLOBAL ROL ON WEB SITE NOT ON PROJECT
 
     @OneToMany(mappedBy = "ownerUser")
@@ -47,6 +49,30 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     public String getRole() {

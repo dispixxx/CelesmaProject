@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Controller
@@ -81,5 +83,22 @@ public class ContentController {
         model.addAttribute("project", project);
         model.addAttribute("members", project.getMembers());
         return "project_view";
+    }
+
+    @GetMapping("/user/profile")
+    public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        //String username = userDetails.getUsername();
+        String userEmail = userDetails.getEmail();
+        String userFirstName = userOptional.get().getFirstName();
+        String userLastName = userOptional.get().getLastName();
+        model.addAttribute("userFirstName", Objects.requireNonNullElse(userFirstName, "[FIRSTNAME]"));
+        model.addAttribute("userLastName", Objects.requireNonNullElse(userLastName, "[LASTNAME]"));
+        model.addAttribute("username", username);
+        model.addAttribute("userEmail", userEmail);
+        /*model.addAttribute("userFirstName", userFirstName);
+        model.addAttribute("userLastName", userLastName);*/
+        return "user_profile";
     }
 }

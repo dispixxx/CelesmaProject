@@ -210,7 +210,7 @@
     }
 
     .project {
-      background-color: white;
+      background: rgba(255, 255, 255, 0.8);
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
@@ -244,6 +244,7 @@
     }
 
     .search-input {
+      background: rgba(255, 255, 255, 0.8);
       padding: 10px;
       width: 100%;
       max-width: 300px;
@@ -281,7 +282,7 @@
   </ul>
   <div class="user-container">
     <span class="user-name" sec:authentication="name"></span>
-    <a href="/user/home" class="user-icon">
+    <a href="/user/profile" class="user-icon">
       <i class="fas fa-user"></i>
     </a>
   </div>
@@ -359,7 +360,7 @@
       projectsContainer.innerHTML = '';
 
       // Отправляем запрос на сервер
-      fetch(`/api/projects/search?query=${encodeURIComponent(searchTerm)}`)
+      fetch(`/projects/search?query=${encodeURIComponent(searchTerm)}`)
               .then(response => response.json())
               .then(data => {
                 if (data.length > 0) {
