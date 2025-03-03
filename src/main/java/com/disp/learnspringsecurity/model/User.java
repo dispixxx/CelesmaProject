@@ -1,13 +1,11 @@
 package com.disp.learnspringsecurity.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.List;
 
 @Entity
-@Data
-public class MyUser {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

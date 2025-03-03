@@ -1,7 +1,7 @@
 package com.disp.learnspringsecurity.controller;
 
-import com.disp.learnspringsecurity.model.MyUser;
-import com.disp.learnspringsecurity.repo.MyUserRepository;
+import com.disp.learnspringsecurity.model.User;
+import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RegistrationController {
 
     @Autowired
-    private MyUserRepository myUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,17 +28,17 @@ public class RegistrationController {
                              @RequestParam String password,
                              RedirectAttributes redirectAttributes) {
         // Check if username already exists
-        if (myUserRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
             redirectAttributes.addFlashAttribute("error", "Username already taken!");
             return "redirect:/register";
         }
 
-        MyUser user = new MyUser();
+        User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
-        myUserRepository.save(user);
+        userRepository.save(user);
 
         redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
         return "redirect:/login";

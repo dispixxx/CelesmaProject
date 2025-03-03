@@ -1,7 +1,6 @@
 package com.disp.learnspringsecurity.model;
 
-import com.disp.learnspringsecurity.model.MyUser;
-import com.disp.learnspringsecurity.repo.MyUserRepository;
+import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,14 +15,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private MyUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<MyUser> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             var userObj = user.get();
             return new CustomUserDetails(
@@ -37,7 +36,7 @@ public class MyUserDetailsService implements UserDetailsService {
         }
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(MyUser user) {
+    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         // Преобразуем роли в GrantedAuthority
         return Arrays.stream(user.getRole().split(","))
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
@@ -45,7 +44,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
 /*
-    private String[] getRoles(MyUser user) {
+    private String[] getRoles(User user) {
         if (user.getRole() == null) {
             return new String[]{"USER"};
         }

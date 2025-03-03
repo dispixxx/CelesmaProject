@@ -132,7 +132,7 @@
         .user-name {
             max-width: 130px; /* Ограничивает ширину */
             white-space: nowrap; /* Запрещает перенос текста */
-            overflow: hidden; /* Обрезает текст */
+            overflow: hidden; /* Обрезает текст.Убирает анимацию на свертывании((ПЕЧАЛЬ БЕДА(( */
             text-overflow: ellipsis; /* Добавляет "..." */
             display: inline-block;
             padding-left: 5px;
@@ -346,9 +346,9 @@
     <section>
         <h2>Мои проекты</h2>
 
-        <a href="/projects/search"><button class="search-project-btn">Найти подходящий проект</button></a>
-
         <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
+
+        <a href="/projects/search"><button class="search-project-btn">Найти подходящий проект</button></a>
 
         <div class="projects-container">
             <div th:each="project : ${projects}" class="project">

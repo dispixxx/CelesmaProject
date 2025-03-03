@@ -278,7 +278,7 @@
         <p><strong>Email:</strong> <span th:text="${userEmail}"></span></p>
 <!--        <p><strong>Роль:</strong> <span sec:authentication="principal.role"></span></p>-->
 <!--        <p><strong>Дата регистрации:</strong> <span th:text="${user.registrationDate}"></span></p>-->
-<!--        <div sec:authorize="hasRole('ADMIN')">Text visible to admin.</div>-->
+        <div sec:authorize="hasRole('ADMIN')">Text visible to admin.</div>
     </section>
 </div>
 

@@ -22,7 +22,7 @@ public class Project {
 //    private Long ownerId;
     @ManyToOne
     @JoinColumn(name = "owner_user")
-    private MyUser ownerUser; // Связь с пользователем
+    private User ownerUser; // Связь с пользователем
 
     @ManyToMany
     @JoinTable(
@@ -30,13 +30,13 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<MyUser> members = new HashSet<>();
+    private Set<User> members = new HashSet<>();
 
-    public Set<MyUser> getMembers() {
+    public Set<User> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<MyUser> participants) {
+    public void setMembers(Set<User> participants) {
         this.members = participants;
     }
 
@@ -64,11 +64,11 @@ public class Project {
         this.description = description;
     }
 
-    public MyUser getOwnerUser() {
+    public User getOwnerUser() {
         return ownerUser;
     }
 
-    public void setOwnerUser(MyUser ownerUser) {
+    public void setOwnerUser(User ownerUser) {
         this.ownerUser = ownerUser;
     }
 
