@@ -10,8 +10,6 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final String email;
-//    private  String firstName;
-//    private  String lastName;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(String username, String password, String email, Collection<? extends GrantedAuthority> authorities) {
@@ -19,8 +17,6 @@ public class CustomUserDetails implements UserDetails {
         this.password = password;
         this.email = email;
         this.authorities = authorities;
-//        this.firstName = "firstName";
-//        this.lastName = "lastName";
     }
 
     @Override

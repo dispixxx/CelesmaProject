@@ -195,7 +195,7 @@
     .container {
       flex: 2;
       background: rgba(255, 255, 255, 0.8);
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       text-align: center;
@@ -220,7 +220,7 @@
       background-color: #f0f4ff; /* Легкий фон */
       display: inline-block;
       text-align: justify; /* Выравнивание по ширине */
-      max-width: 90%;
+      /*max-width: 90%;*/
     }
 
     .project-info p {
@@ -233,7 +233,7 @@
     .members-container {
       flex: 1;
       background: rgba(255, 255, 255, 0.8);
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
@@ -287,6 +287,13 @@
       justify-content: space-around;
     }
 
+    .divider {
+      border: 0;
+      height: 1px;
+      background: #ccc; /* Цвет линии */
+      margin: 20px 0; /* Отступы сверху и снизу */
+    }
+
   </style>
 </head>
 <body>
@@ -317,6 +324,13 @@
 
     <div class="project-info">
       <p><strong>Описание:</strong> <span th:text="${project.description}"></span></p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Кнопка для создания задачи (видна только участникам) -->
+    <div th:if="${#lists.contains(members, user)}">
+      <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="back-btn">Создать задачу</a>
     </div>
 
     <a href="/dashboard" class="back-btn">Назад</a>

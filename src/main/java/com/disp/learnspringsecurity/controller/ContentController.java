@@ -77,11 +77,14 @@ public class ContentController {
         return "project_view";
     }*/
 
-    @GetMapping("/projects/view/{id}")
+    @GetMapping("/projects/{id}")
     public String viewProject(@PathVariable Long id, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userRepository.findByUsername(username).get();
         Project project = projectService.getProjectById(id);
         model.addAttribute("project", project);
         model.addAttribute("members", project.getMembers());
+        model.addAttribute("user", currentUser); // Передаем текущего пользователя
         return "project_view";
     }
 
@@ -97,8 +100,6 @@ public class ContentController {
         model.addAttribute("userLastName", Objects.requireNonNullElse(userLastName, "[LASTNAME]"));
         model.addAttribute("username", username);
         model.addAttribute("userEmail", userEmail);
-        /*model.addAttribute("userFirstName", userFirstName);
-        model.addAttribute("userLastName", userLastName);*/
         return "user_profile";
     }
 }

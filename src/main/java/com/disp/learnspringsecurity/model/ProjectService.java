@@ -25,18 +25,6 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
-/*    public void saveProject(Project project) {
-        String username = authenticationFacade.getAuthenticatedUsername();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        project.setOwnerUser(user); // Устанавливаем пользователя
-        if(project.getParticipants() == null){
-            project.setParticipants(new HashSet<>());
-        }
-        project.getParticipants().add(user);
-        projectRepository.save(project);
-    }*/
-
     public void saveProject(Project project) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User user = userRepository.findByUsername(username)

@@ -317,7 +317,7 @@
           <h3 th:text="${project.name}">Название проекта</h3>
         </div>
         <div class="project-footer">
-          <a th:href="@{/projects/view/{id}(id=${project.id})}">
+          <a th:href="@{/projects/{id}(id=${project.id})}">
             <button class="edit-btn">Открыть</button>
           </a>
         </div>
@@ -373,7 +373,7 @@
                   <h3>${project.name}</h3>
                 </div>
                 <div class="project-footer">
-                  <a href="/projects/view/${project.id}">
+                  <a href="/projects/${project.id}">
                     <button class="edit-btn">Открыть</button>
                   </a>
                 </div>

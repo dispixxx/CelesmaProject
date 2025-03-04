@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <style>
         /* Основные стили */
         body {
@@ -213,23 +214,28 @@
 
         .user-details {
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .user-details h1 {
             font-family: 'Orbitron', sans-serif;
             color: #3366ff;
-            margin-bottom: 5px;
+            margin: 10px 0 15px 0;
         }
 
         .user-details h2 {
+            display: flex;
             font-size: 1.2rem;
-            color: #2C2F33;
-            margin-bottom: 5px;
+            color: #666;
+            margin: 10px 0 5px 0;
         }
 
         .user-details p {
             color: #666;
             font-size: 1rem;
+            margin: 5px 0;
         }
 
         .stats {
@@ -321,7 +327,7 @@
 
         .profile-settings {
             z-index: 10;
-            transform: translateY(-73%); /* Чтобы username и шестерня были на одном уровне */
+            transform: translateY(-92%); /* Чтобы username и шестерня были на одном уровне */
 
         }
 
@@ -348,20 +354,23 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .save-btn:hover{
+            background-color: #254eda;
+        }
 
         .avatar-container {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             overflow: hidden;
-            cursor: pointer;
             border: 2px solid transparent;
             margin-right: 20px;
         }
 
         .avatar-container.editable-avatar {
             border: 2px dashed blue; /* Пунктирный синий контур при редактировании */
+            cursor: pointer;
         }
 
         #userAvatar {
@@ -394,6 +403,122 @@
             height: 24px;
             opacity: 0.9;
         }
+
+        @keyframes slideLeft {
+            0% {
+                transform: translateX(10px);
+            }
+            100% {
+                transform: translateX(0px);
+            }
+        }
+        .slide-left {
+            animation: slideLeft 0.3s ease-out forwards ;
+        }
+        @keyframes slideRight {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(10px);
+            }
+        }
+        .slide-right {
+            animation:  slideRight 0.3s ease-out forwards ; /* forwards сохраняет конечное состояние анимации */
+        }
+
+        /* Стили для круглой области обрезки */
+        .cropper-crop-box, .cropper-view-box {
+            border-radius: 50%;
+        }
+
+        .cropper-view-box {
+            box-shadow: 0 0 0 1px #fff;
+            outline: 1px solid rgba(51, 102, 255, 0.8);
+        }
+
+        /* Стили для редактора изображений */
+        #imageEditor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90%;
+            max-height: 90vh;
+        }
+
+        #editorHeader {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+
+        #backButton {
+            font-size: 24px;
+            color: #3366ff;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            padding: 10px;
+            transition: background 0.3s ease;
+        }
+
+        #backButton:hover {
+            background-color: rgba(51, 102, 255, 0.1); /* Легкий фон при наведении */
+        }
+
+        #editorContent {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #imageToCrop {
+            max-width: 100%;
+            max-height: 70vh; /* Ограничиваем высоту изображения */
+            object-fit: contain;
+        }
+
+        #editorFooter {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        #cropButton {
+            padding: 10px 20px;
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        #cropButton:hover {
+            background-color: #254eda;
+        }
+
+        .divider {
+            border: 0;
+            height: 1px;
+            background: #ccc; /* Цвет линии */
+            margin: 20px 0; /* Отступы сверху и снизу */
+        }
     </style>
 </head>
 <body>
@@ -411,6 +536,23 @@
         <a href="/user/profile" class="user-icon">
             <i class="fas fa-user"></i>
         </a>
+    </div>
+</div>
+
+<div id="imageEditor" style="display: none;">
+    <!-- Стрелочка "Назад" -->
+    <div id="editorHeader">
+        <i class="fas fa-arrow-left" id="backButton"></i>
+    </div>
+
+    <!-- Область для редактирования изображения -->
+    <div id="editorContent">
+        <img id="imageToCrop" src="" alt="Изображение для обрезки">
+    </div>
+
+    <!-- Кнопка "Обрезать" -->
+    <div id="editorFooter">
+        <button id="cropButton">Обрезать</button>
     </div>
 </div>
 
@@ -438,6 +580,8 @@
         </div>
     </div>
     <button class="save-btn" id="saveChanges" onclick="saveChanges()">Сохранить</button>
+
+    <hr class="divider">
 
     <div class="stats">
         <h2>Статистика</h2>
@@ -502,6 +646,7 @@
     function toggleEditMode() {
         let avatarContainer = document.querySelector(".avatar-container");
         let avatarEditIcon = document.getElementById("avatarEditIcon");
+        let lastNameElement = document.getElementById("edit-lastname");
 
         isEditMode = !isEditMode; // Переключаем режим редактирования
 
@@ -515,6 +660,8 @@
             avatarContainer.classList.add("editable-avatar"); // Добавляем синий пунктир
             avatarEditIcon.style.display = "flex"; // Показываем фотоаппарат
             document.getElementById("saveChanges").style.display = "block";
+            lastNameElement.classList.remove("slide-left"); // Убираем обратную анимацию
+            lastNameElement.classList.add("slide-right"); // Добавляем анимацию// Добавляем класс edit-mode
         } else {
             editables.forEach(el => {
                 el.innerText = originalValues[el.id]; // Восстанавливаем значения
@@ -525,6 +672,8 @@
             avatarEditIcon.style.display = "none"; // Скрываем фотоаппарат
             document.getElementById("saveChanges").style.display = "none";
             document.getElementById("userAvatar").src = originalAvatar; // Восстанавливаем старый аватар
+            lastNameElement.classList.remove("slide-right"); // Убираем анимацию
+            lastNameElement.classList.add("slide-left"); // Добавляем обратную анимацию
         }
     }
 
@@ -536,15 +685,71 @@
     });
 
     // Обработчик изменения файла
+    let cropper;
+
     document.getElementById("avatarInput").addEventListener("change", (event) => {
         let file = event.target.files[0];
         if (file) {
             let reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById("userAvatar").src = e.target.result;
+                let image = document.getElementById("imageToCrop");
+                image.src = e.target.result;
+
+                // Показываем редактор изображений
+                document.getElementById("imageEditor").style.display = "flex";
+
+                // Инициализируем Cropper.js
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(image, {
+                    aspectRatio: 1, // Квадратное соотношение сторон
+                    viewMode: 1, // Ограничивает область обрезки размерами изображения
+                    autoCropArea: 1, // Автоматически заполняет область обрезки
+                    guides: false, // Скрываем направляющие
+                    highlight: false, // Отключаем подсветку
+                    cropBoxMovable: true, // Позволяем перемещать область обрезки
+                    cropBoxResizable: true, // Позволяем изменять размер области обрезки
+                });
+
+                // Применяем круглую маску к области обрезки
+                const cropBox = document.querySelector(".cropper-crop-box");
+                if (cropBox) {
+                    cropBox.style.borderRadius = "50%";
+                }
             };
             reader.readAsDataURL(file);
         }
+    });
+
+    document.getElementById("cropButton").addEventListener("click", () => {
+        if (cropper) {
+            // Получаем обрезанное изображение
+            let croppedCanvas = cropper.getCroppedCanvas();
+            let croppedImage = document.getElementById("userAvatar");
+            croppedImage.src = croppedCanvas.toDataURL();
+
+            // Скрываем редактор изображений
+            document.getElementById("imageEditor").style.display = "none";
+
+            // Очищаем Cropper.js
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+    // Отмена редактирования
+    document.getElementById("backButton").addEventListener("click", () => {
+        // Скрываем редактор изображений
+        document.getElementById("imageEditor").style.display = "none";
+
+        // Очищаем Cropper.js, если он был инициализирован
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+
+        // Сбрасываем значение input для загрузки файла
+        document.getElementById("avatarInput").value = "";
     });
 
     // Функция сохранения изменений
@@ -570,7 +775,9 @@
                     });
                     document.querySelector(".avatar-container").classList.remove("editable-avatar");
                     document.getElementById("avatarEditIcon").style.display = "none";
-                    originalAvatar = document.getElementById("userAvatar").src; // Запоминаем новый аватар
+                    originalAvatar = document.getElementById("userAvatar").src;
+                    document.getElementById("edit-lastname").classList.remove("slide-right");// Запоминаем новый аватар
+                    document.getElementById("edit-lastname").classList.add("slide-left");// Запоминаем новый аватар
                     isEditMode = false; // Выходим из режима редактирования
                 } else {
                     alert('Ошибка при сохранении данных.');
@@ -579,6 +786,7 @@
             .catch(error => console.error('Ошибка:', error));
     }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
 </body>
 </html>

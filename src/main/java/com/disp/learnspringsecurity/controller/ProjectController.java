@@ -18,7 +18,7 @@ public class ProjectController {
     @GetMapping("/new")
     public String showProjectForm(Model model) {
         model.addAttribute("project", new Project());
-        return "project_form";
+        return "project_create";
     }
 
     /*@GetMapping("/search") //Поиск проектов
