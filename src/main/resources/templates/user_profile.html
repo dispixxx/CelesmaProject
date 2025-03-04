@@ -205,18 +205,6 @@
             margin-bottom: 30px;
         }
 
-        .user-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 20px;
-            overflow: hidden;
-        }
-
         .user-avatar img {
             width: 100%;
             height: 100%;
@@ -322,42 +310,93 @@
             font-size: 0.9rem;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        .editable {
+            border: 2px dashed transparent;
+            padding: 5px 5px 5px 0;
+        }
+        .editable.active {
+            border-color: #3366ff;
+            background: #eef2ff;
         }
 
-        .modal-content {
-            display: flex;
-            flex-direction: column;
+        .profile-settings {
+            z-index: 10;
+            transform: translateY(-73%); /* Чтобы username и шестерня были на одном уровне */
+
         }
 
-        .close {
+        .settings-icon {
             cursor: pointer;
-            float: right;
-            font-size: 24px;
+            font-size: 24px; /* Размер иконки */
+            color: #3366ff; /* Цвет иконки */
+            padding: 10px; /* Отступы для удобного клика */
+            border-radius: 50%; /* Круглая форма */
+            transition: background-color 0.3s ease; /* Плавное изменение фона */
+        }
+
+        .settings-icon:hover {
+            background-color: rgba(51, 102, 255, 0.1); /* Легкий фон при наведении */
+        }
+
+        .save-btn {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            margin-right: 20px;
+        }
+
+        .avatar-container.editable-avatar {
+            border: 2px dashed blue; /* Пунктирный синий контур при редактировании */
+        }
+
+        #userAvatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Фото остаётся под фотоаппаратом */
+        }
+
+        .avatar-edit-icon {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5); /* Тёмный полупрозрачный фон */
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            z-index: 2; /* Фотоаппарат выше фото */
+            display: none;
+        }
+
+        .avatar-edit-icon img {
+            width: 24px;
+            height: 24px;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <h2>Редактировать профиль</h2>
-        <label>Имя</label>
-        <input type="text" id="firstName">
-        <label>Фамилия</label>
-        <input type="text" id="lastName">
-        <button onclick="saveUserData()">Сохранить</button>
-    </div>
-</div>
 <div class="sidebar">
     <button class="toggle-btn">☰</button>
     <h2>celesma</h2>
@@ -377,16 +416,28 @@
 
 <div class="main-content">
     <div class="user-profile">
-        <div class="user-avatar">
-            <img src="https://via.placeholder.com/100" alt="Аватар">
+        <div class="avatar-container" id="avatarContainer">
+            <img id="userAvatar" src="/image/logo.png" alt="Аватар">
+            <div id="avatarEditIcon" class="avatar-edit-icon">
+                <img src="/image/camera.png" alt="Изменить">
+            </div>
+            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
         </div>
         <div class="user-details">
-            <h1><span th:text="${username}"></span></h1>
-            <h2><span th:text="|${userFirstName} ${userLastName}|"></span></h2>
-            <p><span th:text="${userEmail}"></span></p>
+<!--            <h1 class="editable" id="edit-username" contenteditable="false" th:text="${username}"></h1> //need to change reg and log-->
+            <h1 style="padding-left: 2px"><span th:text="${username}"></span></h1>
+            <h2>
+                <span class="editable" id="edit-firstname" contenteditable="false" th:text="${userFirstName}"></span>
+                <span class="editable" id="edit-lastname" contenteditable="false" th:text="${userLastName}"></span>
+            </h2>
+<!--            <p class="editable" id="edit-email" contenteditable="false" th:text="${userEmail}"></p> //need to change reg and log -->
+            <p style="padding-left: 2px"><span th:text="${userEmail}"></span></p>
         </div>
-        <i class="fas fa-cog settings-icon" onclick="openEditModal()"></i>
+        <div class="profile-settings">
+            <i class="fas fa-cog settings-icon" onclick="toggleEditMode()"></i>
+        </div>
     </div>
+    <button class="save-btn" id="saveChanges" onclick="saveChanges()">Сохранить</button>
 
     <div class="stats">
         <h2>Статистика</h2>
@@ -442,41 +493,90 @@
     });
 </script>
 <script>
-    function openEditModal() {
-        document.getElementById('editModal').style.display = 'block';
+    let originalAvatar = document.getElementById("userAvatar").src; // Сохраняем старый аватар
+    let editables = document.querySelectorAll('.editable'); // Добавляем выбор редактируемых элементов
+    let originalValues = {}; // Объект для хранения старых значений
+    let isEditMode = false; // Флаг режима редактирования
+
+    // Функция включения/выключения режима редактирования
+    function toggleEditMode() {
+        let avatarContainer = document.querySelector(".avatar-container");
+        let avatarEditIcon = document.getElementById("avatarEditIcon");
+
+        isEditMode = !isEditMode; // Переключаем режим редактирования
+
+        if (isEditMode) {
+            originalValues = {}; // Очищаем объект значений
+            editables.forEach(el => {
+                originalValues[el.id] = el.innerText; // Запоминаем старые значения
+                el.contentEditable = "true";
+                el.classList.add("active");
+            });
+            avatarContainer.classList.add("editable-avatar"); // Добавляем синий пунктир
+            avatarEditIcon.style.display = "flex"; // Показываем фотоаппарат
+            document.getElementById("saveChanges").style.display = "block";
+        } else {
+            editables.forEach(el => {
+                el.innerText = originalValues[el.id]; // Восстанавливаем значения
+                el.contentEditable = "false";
+                el.classList.remove("active");
+            });
+            avatarContainer.classList.remove("editable-avatar"); // Убираем пунктир
+            avatarEditIcon.style.display = "none"; // Скрываем фотоаппарат
+            document.getElementById("saveChanges").style.display = "none";
+            document.getElementById("userAvatar").src = originalAvatar; // Восстанавливаем старый аватар
+        }
     }
 
-    function closeEditModal() {
-        document.getElementById('editModal').style.display = 'none';
-    }
+    // Обработчик клика по аватару
+    document.getElementById("avatarContainer").addEventListener("click", () => {
+        if (isEditMode) { // Проверяем, включён ли режим редактирования
+            document.getElementById("avatarInput").click();
+        }
+    });
 
-    function saveUserData() {
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
+    // Обработчик изменения файла
+    document.getElementById("avatarInput").addEventListener("change", (event) => {
+        let file = event.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("userAvatar").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-        const userData = {
-            firstName: firstName,
-            lastName: lastName
+    // Функция сохранения изменений
+    function saveChanges() {
+        let userData = {
+            firstName: document.getElementById("edit-firstname").innerText,
+            lastName: document.getElementById("edit-lastname").innerText,
+            avatar: document.getElementById("userAvatar").src // Сохраняем новый аватар
         };
 
         fetch('/api/user/updateProfile', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         })
             .then(response => {
                 if (response.ok) {
                     alert('Данные успешно сохранены!');
-                    closeEditModal();
+                    document.getElementById("saveChanges").style.display = "none";
+                    document.querySelectorAll('.editable').forEach(el => {
+                        el.contentEditable = "false";
+                        el.classList.remove("active");
+                    });
+                    document.querySelector(".avatar-container").classList.remove("editable-avatar");
+                    document.getElementById("avatarEditIcon").style.display = "none";
+                    originalAvatar = document.getElementById("userAvatar").src; // Запоминаем новый аватар
+                    isEditMode = false; // Выходим из режима редактирования
                 } else {
                     alert('Ошибка при сохранении данных.');
                 }
             })
-            .catch(error => {
-                console.error('Ошибка:', error);
-            });
+            .catch(error => console.error('Ошибка:', error));
     }
 </script>
 
