@@ -19,14 +19,14 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
-    public Task createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate dueDate) {
+    public Task createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate) {
         Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);
         task.setCreatedAt(LocalDateTime.now());
         task.setProject(project);
         task.setCreator(creator);
-        task.setDueDate(dueDate);
+        task.setEndDate(endDate);
         if (assigneeId != null) {
             User assignee = userRepository.findById(assigneeId).orElseThrow();
             task.setAssignee(assignee);
