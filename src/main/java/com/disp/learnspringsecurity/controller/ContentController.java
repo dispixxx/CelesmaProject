@@ -77,7 +77,7 @@ public class ContentController {
         return "project_view";
     }*/
 
-    @GetMapping("/projects/{id}")
+    /*@GetMapping("/projects/{id}")
     public String viewProject(@PathVariable Long id, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userRepository.findByUsername(username).get();
@@ -86,7 +86,7 @@ public class ContentController {
         model.addAttribute("members", project.getMembers());
         model.addAttribute("user", currentUser); // Передаем текущего пользователя
         return "project_view";
-    }
+    }*/
 
     @GetMapping("/user/profile")
     public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {

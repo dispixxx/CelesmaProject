@@ -1,7 +1,10 @@
 package com.disp.learnspringsecurity.controller;
 
+import com.disp.learnspringsecurity.AuthenticationFacade;
 import com.disp.learnspringsecurity.model.Project;
 import com.disp.learnspringsecurity.model.ProjectService;
+import com.disp.learnspringsecurity.model.User;
+import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +18,28 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private UserRepository userRepository;
+
+
     @GetMapping("/new")
     public String showProjectForm(Model model) {
         model.addAttribute("project", new Project());
         return "project_create";
+    }
+
+    @GetMapping("/{id}")
+    public String viewProject(@PathVariable Long id, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userRepository.findByUsername(username).get();
+        Project project = projectService.getProjectById(id);
+        model.addAttribute("project", project);
+        model.addAttribute("members", project.getMembers());
+        model.addAttribute("user", currentUser); // Передаем текущего пользователя
+        return "project_view";
     }
 
     /*@GetMapping("/search") //Поиск проектов

@@ -208,7 +208,8 @@
             margin-bottom: 5px;
         }
 
-        input, textarea {
+        input, textarea,select {
+            font-family: 'Montserrat', sans-serif;
             width: 100%;
             box-sizing: border-box;
             padding: 10px;
@@ -245,6 +246,46 @@
             text-align: right;
             margin-right: 5px;
         }
+
+        select:required:invalid {
+            color: gray;
+        }
+
+        option[value=""][disabled] {
+            display: none;
+        }
+
+        option {
+            color: black;
+        }
+
+        .form-head{
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .btn-back {
+            background-color: transparent;
+            color: #3366ff;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            text-decoration: none;
+            border-bottom: 1px solid #3366ff;
+        }
+
+        .project-title {
+            font-size: 14px;
+            color: gray;
+            font-weight: normal;
+        }
+
     </style>
 </head>
 <body>
@@ -267,20 +308,42 @@
 </div>
 
 <div class="container">
+    <div class="form-head">
+        <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
+        <div class="project-title" th:text="${projectName}"></div>
+    </div>
     <h2 style="
         color: #3366ff;
         font-size: 40px;
         font-weight: 600;
-        margin-bottom: 20px;
+        margin: 20px 0;
     ">Создать задачу</h2>
     <form th:action="@{/projects/{projectId}/tasks/create(projectId=${projectId})}" method="post">
         <div class="form-group">
             <input type="text" name="title" placeholder="Название задачи" required>
         </div>
         <div class="form-group">
-            <textarea name="description" maxlength="499" oninput="updateCharCount()" placeholder="Описание задачи" required></textarea>
-            <p id="charCount" style="font-size: 12px; color: gray;">0 / 499</p>
+            <textarea name="description" id="description" maxlength="499" oninput="updateCharCount()" placeholder="Описание задачи" required></textarea>
+            <p id="charCount">0 / 499</p>
         </div>
+
+        <div class="form-group">
+            <label for="assignee">Исполнитель</label>
+            <select required name="assigneeId" id="assignee">
+                <option value="" disabled selected>Выберите пользователя</option>
+                <option th:each="user : ${members}" th:value="${user.id}"
+                        th:text="${user.username} + (${user.id == creatorId} ? ' (Самому себе. rly?!!)' : '')">
+
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="dueDate">Дата окончания задачи</label>
+            <input type="date" id="dueDate" name="dueDate" style="color: gray;"
+                   oninput="this.style.color = this.value ? 'black' : 'gray';">
+        </div>
+
         <button type="submit" class="btn">Создать задачу</button>
     </form>
 </div>
