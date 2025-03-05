@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/projects/{projectId}/tasks")
@@ -37,10 +38,10 @@ public class TaskController {
         model.addAttribute("projectId", projectId);
         Project project = projectService.getProjectById(projectId);
         String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userRepository.findByUsername(username).get();
+        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
         model.addAttribute("members", project.getMembers());
         model.addAttribute("projectName", project.getName());
-        model.addAttribute("creatorId", currentUser.getId());
+        model.addAttribute("creatorId", Objects.requireNonNull(currentUser).getId());
         return "task_create";
     }
 
@@ -49,12 +50,12 @@ public class TaskController {
                              @RequestParam String title,
                              @RequestParam String description,
                              @RequestParam(required = false) Long assigneeId,
-                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate,
+                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                              @AuthenticationPrincipal UserDetails userDetails) {
         if(userRepository.findByUsername(userDetails.getUsername()).isPresent()){
             User creator = userRepository.findByUsername(userDetails.getUsername()).get(); // Позже переделать что бы это выполнял сервис.(передавать projectID в createTask();
             Project project = projectService.getProjectById(projectId);
-            taskService.createTask(title, description, project, creator, assigneeId, dueDate);
+            taskService.createTask(title, description, project, creator, assigneeId, endDate);
             return "redirect:/projects/" + projectId;
         }
         else{

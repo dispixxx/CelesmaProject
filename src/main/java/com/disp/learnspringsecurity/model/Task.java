@@ -1,7 +1,5 @@
 package com.disp.learnspringsecurity.model;
 
-import com.disp.learnspringsecurity.model.Project;
-import com.disp.learnspringsecurity.model.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -21,7 +19,7 @@ public class Task {
     @JoinColumn(name = "assignee_id")
     private User assignee;  // Исполнитель
 
-    private LocalDate dueDate; //Дата окончания задачи
+    private LocalDate endDate; //Дата окончания задачи
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -72,12 +70,12 @@ public class Task {
         this.assignee = assignee;
     }
 
-    public LocalDate getDueDate() {
-        return dueDate;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public Project getProject() {
