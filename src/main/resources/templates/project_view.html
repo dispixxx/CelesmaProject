@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Просмотр проекта</title>
@@ -262,7 +262,7 @@
 
     .members-list li i {
       margin-right: 10px;
-      color: #3366ff;/*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*/
+      /*color: #3366ff;!*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*!*/
     }
 
     .back-btn {
@@ -279,7 +279,7 @@
     }
 
     button:hover {
-      background-color: #2563eb;
+      background-color: #254eda;
     }
 
     .project-name-and-id{
@@ -292,6 +292,26 @@
       height: 1px;
       background: #ccc; /* Цвет линии */
       margin: 20px 0; /* Отступы сверху и снизу */
+    }
+
+    .members-list li i {
+      margin-right: 10px;
+      font-size: 18px; /* Размер иконки */
+    }
+
+    /* Стиль для администратора проекта (красный) */
+    .admin-icon {
+      color: red;
+    }
+
+    /* Стиль для модератора проекта (зелёный) */
+    .moderator-icon {
+      color: green;
+    }
+
+     /*Стиль для обычного участника (синий) */
+    .def-user-icon {
+      color: #3366ff;
     }
 
   </style>
@@ -329,7 +349,7 @@
     <hr class="divider">
 
     <!-- Кнопка для создания задачи (видна только участникам) -->
-    <div th:if="${#lists.contains(members, user)}">
+    <div th:if="${#lists.contains(projectUsers, currentUser)}">
       <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="back-btn">Создать задачу</a>
     </div>
 
@@ -341,7 +361,11 @@
       <h2>Участники проекта</h2>
       <ul class="members-list">
         <li th:each="member : ${members}">
-          <i class="fas fa-user"></i> <span th:text="${member.username}"></span>
+          <!-- Иконка с цветом в зависимости от роли -->
+          <i th:if="${member.role eq projectRoles[0]}" class="fas fa-user admin-icon"></i>
+          <i th:if="${member.role eq projectRoles[1]}" class="fas fa-user moderator-icon"></i>
+          <i th:if="${member.role != projectRoles[0] and member.role != projectRoles[1]}" class="fas fa-user def-user-icon"></i>
+          <span th:text="${member.user.username}"></span>
         </li>
       </ul>
     </div>

@@ -24,20 +24,41 @@ public class Project {
     @JoinColumn(name = "owner_user")
     private User ownerUser; // Связь с пользователем
 
-    @ManyToMany
-    @JoinTable(
-            name = "project_members",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> members = new HashSet<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProjectMember> members = new HashSet<>();
 
-    public Set<User> getMembers() {
+    public void addMember(User user, ProjectRole role) {
+        ProjectMember member = new ProjectMember();
+        member.setProject(this);
+        member.setUser(user);
+        member.setRole(role);
+        this.members.add(member);
+    }
+
+    public void updateMemberRole(User user, ProjectRole role) {
+        for (ProjectMember member : members) {
+            if (member.getUser().equals(user)) {
+                member.setRole(role);
+                break;
+            }
+        }
+    }
+
+    public ProjectRole getMemberRole(User user) {
+        for (ProjectMember member : members) {
+            if (member.getUser().equals(user)) {
+                return member.getRole();
+            }
+        }
+        return null;
+    }
+
+    public Set<ProjectMember> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<User> participants) {
-        this.members = participants;
+    public void setMembers(Set<ProjectMember> members) {
+        this.members = members;
     }
 
     public Long getId() {

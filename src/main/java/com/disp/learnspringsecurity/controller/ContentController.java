@@ -8,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -38,11 +37,6 @@ public class ContentController {
         return "index";
     }
 
-    @GetMapping("/admin/home") //Страница для Авторизованных(ADMIN) пользователей
-    public String handleAdminHome() {
-        return "home_admin";
-    }
-
     @GetMapping("/user/home") //Страница для Авторизованных(USER) пользователей
     public String handleUserHome(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String username = userDetails.getUsername();
@@ -69,24 +63,6 @@ public class ContentController {
         model.addAttribute("projects", userProjects);
         return "dashboard";
     }
-
-    /*@GetMapping("/projects/view/{id}")
-    public String viewProject(@PathVariable Long id, Model model) {
-        Project project = projectService.getProjectById(id);
-        model.addAttribute("project", project);
-        return "project_view";
-    }*/
-
-    /*@GetMapping("/projects/{id}")
-    public String viewProject(@PathVariable Long id, Model model) {
-        String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userRepository.findByUsername(username).get();
-        Project project = projectService.getProjectById(id);
-        model.addAttribute("project", project);
-        model.addAttribute("members", project.getMembers());
-        model.addAttribute("user", currentUser); // Передаем текущего пользователя
-        return "project_view";
-    }*/
 
     @GetMapping("/user/profile")
     public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {

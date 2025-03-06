@@ -227,17 +227,18 @@
         .btn {
             width: 100%;
             padding: 12px;
-            background-color: #3b82f6;
+            background-color: #3366ff;
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s ease-in-out;
         }
 
         .btn:hover {
-            background-color: #2563eb;
+            /*background-color: #2563eb;*/
+            background-color: #254eda;
         }
 
         #charCount {
@@ -273,11 +274,23 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            position: relative;
+            padding-bottom: 1px;
         }
 
-        .btn-back:hover {
-            text-decoration: none;
-            border-bottom: 1px solid #3366ff;
+        .btn-back::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: transparent; /* Изначально подчёркивание невидимо */
+            transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+        }
+
+        .btn-back:hover::after {
+            background-color: #3366ff; /* Подчёркивание при наведении */
         }
 
         .project-title {
@@ -317,7 +330,7 @@
         font-size: 40px;
         font-weight: 600;
         margin: 20px 0;
-    ">Создать задачу</h2>
+    ">Создать новую задачу</h2>
     <form th:action="@{/projects/{projectId}/tasks/create(projectId=${projectId})}" method="post">
         <div class="form-group">
             <input type="text" name="title" placeholder="Название задачи" required>
@@ -331,8 +344,8 @@
             <label for="assignee">Исполнитель</label>
             <select required name="assigneeId" id="assignee">
                 <option value="" disabled selected>Выберите пользователя</option>
-                <option th:each="user : ${members}" th:value="${user.id}"
-                        th:text="${user.username} + (${user.id == creatorId} ? ' (Самому себе. rly?!!)' : '')">
+                <option th:each="member : ${members}" th:value="${member.user.id}"
+                        th:text="${member.user.username} + (${member.user.id == creatorId} ? ' (Самому себе. rly?!!)' : '')">
 
                 </option>
             </select>

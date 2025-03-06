@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
 
@@ -276,8 +277,8 @@
         <h2>Информация о пользователе</h2>
         <p><strong>Name:</strong> <span th:text="${username}"></span></p>
         <p><strong>Email:</strong> <span th:text="${userEmail}"></span></p>
-<!--        <p><strong>Роль:</strong> <span sec:authentication="principal.role"></span></p>-->
-<!--        <p><strong>Дата регистрации:</strong> <span th:text="${user.registrationDate}"></span></p>-->
+&lt;!&ndash;        <p><strong>Роль:</strong> <span sec:authentication="principal.role"></span></p>&ndash;&gt;
+&lt;!&ndash;        <p><strong>Дата регистрации:</strong> <span th:text="${user.registrationDate}"></span></p>&ndash;&gt;
         <div sec:authorize="hasRole('ADMIN')">Text visible to admin.</div>
     </section>
 </div>
@@ -304,3 +305,4 @@
 </script>
 </body>
 </html>
+-->

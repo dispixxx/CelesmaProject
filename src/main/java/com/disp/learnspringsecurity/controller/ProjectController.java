@@ -1,9 +1,8 @@
 package com.disp.learnspringsecurity.controller;
 
 import com.disp.learnspringsecurity.AuthenticationFacade;
-import com.disp.learnspringsecurity.model.Project;
-import com.disp.learnspringsecurity.model.ProjectService;
-import com.disp.learnspringsecurity.model.User;
+import com.disp.learnspringsecurity.model.*;
+import com.disp.learnspringsecurity.repo.ProjectMemberRepository;
 import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @Controller
 @RequestMapping("/projects")
 public class ProjectController {
@@ -24,6 +24,9 @@ public class ProjectController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
 
     @GetMapping("/new")
     public String showProjectForm(Model model) {
@@ -36,18 +39,17 @@ public class ProjectController {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userRepository.findByUsername(username).get();
         Project project = projectService.getProjectById(id);
+        List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = project.getMembers().stream()
+                .map(ProjectMember::getUser)
+                .toList();
         model.addAttribute("project", project);
-        model.addAttribute("members", project.getMembers());
-        model.addAttribute("user", currentUser); // Передаем текущего пользователя
+        model.addAttribute("members", members);
+        model.addAttribute("projectUsers", projectUsers);
+        model.addAttribute("currentUser", currentUser); // Передаем текущего пользователя
+        model.addAttribute("projectRoles", ProjectRole.values());
         return "project_view";
     }
-
-    /*@GetMapping("/search") //Поиск проектов
-    public String projectSearch(Model model) {
-        List<Project> projects = projectService.getAllProjects(); // Получаем список проектов
-        model.addAttribute("projects", projects); // Передаем список проектов на страницу
-        return "search";
-    }*/
 
     @GetMapping("/search") // Поиск проектов
     public String projectSearch(@RequestParam(name = "query", required = false) String query, Model model) {
