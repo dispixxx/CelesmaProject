@@ -1,4 +1,4 @@
-package com.disp.learnspringsecurity;
+package com.disp.learnspringsecurity.util;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

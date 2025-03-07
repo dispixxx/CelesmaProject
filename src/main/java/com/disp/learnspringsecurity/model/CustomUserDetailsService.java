@@ -1,6 +1,6 @@
 package com.disp.learnspringsecurity.model;
 
-import com.disp.learnspringsecurity.AuthenticationFacade;
+import com.disp.learnspringsecurity.util.AuthenticationFacade;
 import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

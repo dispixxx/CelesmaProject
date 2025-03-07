@@ -243,10 +243,10 @@
     }
 
     .members-section h2 {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 600;
-      margin-top: 20px;
-      margin-bottom: 20px;
+      margin-top: 23px;
+      margin-bottom: 23px;
     }
 
     .members-list {
@@ -265,7 +265,7 @@
       /*color: #3366ff;!*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*!*/
     }
 
-    .back-btn {
+    .back-btn{
       display: block;
       margin: 20px auto;
       background: #3366ff;
@@ -276,6 +276,28 @@
       text-decoration: none;
       text-align: center;
       width: 150px;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .create-btn{
+      display: block;
+      margin: 20px auto;
+      background: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      width: 150px;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .back-btn:hover{
+      background-color: #254eda;
+    }
+    .create-btn:hover{
+      background-color: #254eda;
     }
 
     button:hover {
@@ -350,10 +372,11 @@
 
     <!-- Кнопка для создания задачи (видна только участникам) -->
     <div th:if="${#lists.contains(projectUsers, currentUser)}">
-      <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="back-btn">Создать задачу</a>
+      <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="create-btn">Создать задачу</a>
     </div>
 
-    <a href="/dashboard" class="back-btn">Назад</a>
+    <a class="back-btn" onclick="history.back()">Назад</a>
+<!--    <button type="button" class="btn-back" onclick="history.back()">← Назад</button>-->
   </div>
 
   <div class="members-container">

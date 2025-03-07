@@ -1,4 +1,4 @@
-package com.disp.learnspringsecurity;
+package com.disp.learnspringsecurity.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
