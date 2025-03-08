@@ -34,6 +34,10 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public List<Task> getTasksByAssigneeId(Long assigneeId) {
+        return taskRepository.findByAssigneeId(assigneeId);
+    }
+
     public List<Task> getTasksByProject(Project project) {
         return taskRepository.findByProjectId(project.getId());
     }

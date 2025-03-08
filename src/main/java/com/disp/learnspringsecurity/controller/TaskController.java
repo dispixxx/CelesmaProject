@@ -1,5 +1,6 @@
 package com.disp.learnspringsecurity.controller;
 
+import com.disp.learnspringsecurity.repo.TaskRepository;
 import com.disp.learnspringsecurity.util.AuthenticationFacade;
 import com.disp.learnspringsecurity.model.*;
 import com.disp.learnspringsecurity.repo.UserRepository;
@@ -12,7 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -31,9 +36,37 @@ public class TaskController {
     @Autowired
     private AuthenticationFacade authenticationFacade;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @GetMapping
+    public String getProjectsTasks(@PathVariable Long projectId, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
+
+        List<Task> userTasks = taskService.getTasksByAssigneeId(currentUser.getId());
+
+
+        List<Task> allTasks = taskRepository.getTasksByProjectId(projectId);
+
+
+        /*DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        userTasks.forEach(task -> {
+            task.setFormattedEndDate(task.getEndDate().format(formatter));
+        });
+
+        allTasks.forEach(task -> {
+            task.setFormattedEndDate(task.getEndDate().format(formatter));
+        });*/
+
+        model.addAttribute("userTasks", userTasks);
+        model.addAttribute("allTasks", allTasks);
+
+        return "project_tasks";
+    }
+
     @GetMapping("/create")
     public String showCreateTaskForm(@PathVariable Long projectId, Model model) {
-//        model.addAttribute("task", new Task());
         model.addAttribute("projectId", projectId);
         Project project = projectService.getProjectById(projectId);
         String username = authenticationFacade.getAuthenticatedUsername();

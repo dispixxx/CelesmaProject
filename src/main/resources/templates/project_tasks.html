@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр проекта</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <style>
+        /* Стили аналогичные странице просмотра проекта */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, #eef2ff, #cfd9ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2C2F33;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            transition: width 0.3s;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 20px 20px 20px;
+        }
+
+        .sidebar h2 {
+            padding-left: 9px;
+            transition: opacity 0.3s;
+            font-family: "Orbitron", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+
+        .sidebar.collapsed h2 {
+            opacity: 0;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed ul {
+            transform: translateX(-9px);
+        }
+
+        .sidebar ul li {
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            min-height: 30px;
+        }
+
+        .sidebar ul li a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+        }
+
+        .sidebar.collapsed ul li a:hover {
+            padding: 5px 5px 5px 10px;
+        }
+
+        .sidebar span {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            display: inline-block;
+            min-height: 20px;
+            white-space: nowrap;
+            visibility: visible;
+        }
+
+        .sidebar.collapsed span {
+            opacity: 0;
+            width: 0;
+            visibility: hidden;
+        }
+
+        .user-container {
+            padding-left: 9px;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            transition: left 0.3s;
+        }
+
+        .sidebar.collapsed .user-container {
+            left: -2px;
+        }
+
+        .user-name {
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            padding-left: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .sidebar.collapsed .user-name {
+            cursor: none;
+        }
+
+        .user-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #8A8D91;
+            color: white;
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed .user-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+
+        .user-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            width: 40px;
+            height: 20vh;
+            background: #2C2F33;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transform: translateY(-50%);
+            padding: 10px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            right: -10px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .container {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "Orbitron", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            background: #f0f4ff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3366ff;
+            text-align: left;
+        }
+
+        .task-list li h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #3366ff;
+        }
+
+        .task-list li p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            width: 150px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .back-btn:hover {
+            background-color: #254eda;
+        }
+        .sort-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .sort-section label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .sort-section select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .project-section h2 {
+            font-size: 20px;
+            color: #3366ff;
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-group button {
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .button-group button.active {
+            background: #254eda;
+        }
+
+        .button-group button:hover {
+            background: #254eda;
+        }
+
+        .project-section {
+            margin-bottom: 30px;
+        }
+
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            background: #f0f4ff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3366ff;
+            text-align: left;
+        }
+
+        .task-list li h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #3366ff;
+        }
+
+        .task-list li p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .task-list li {
+            background: #f0f4ff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3366ff;
+            text-align: left;
+        }
+
+        .task-list li h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #3366ff;
+        }
+
+        .task-details {
+            margin-top: 10px;
+        }
+
+        .task-details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .toggle-description {
+            background: #3366ff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .toggle-description:hover {
+            background: #254eda;
+        }
+
+        .description {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e0e7ff;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <button class="toggle-btn">☰</button>
+    <h2>celesma</h2>
+    <ul>
+        <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
+        <li><a href="#"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
+    </ul>
+    <div class="user-container">
+        <span class="user-name" sec:authentication="name"></span>
+        <a href="/user/profile" class="user-icon">
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container">
+        <h1 style="font-family: 'Montserrat', sans-serif;">
+            Задачи проекта
+        </h1>
+
+        <div class="button-group">
+            <button id="myProjectsBtn" class="active" onclick="showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn')">Мои Задачи</button>
+            <button id="allProjectsBtn" onclick="showSection('allProjectsSection', 'allProjectsBtn', 'myProjectsBtn')">Все Задачи</button>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="sort-section">
+            <label for="sort">Сортировать по:</label>
+            <select id="sort" onchange="sortProjects()">
+                <option value="name">Названию</option>
+                <option value="date">Дате создания</option>
+                <option value="status">Статусу</option>
+            </select>
+        </div>
+
+        <div id="myProjectsSection" class="project-section">
+            <h2>Мои задачи</h2>
+            <ul class="task-list">
+                <li th:each="myTask : ${userTasks}">
+                    <h3 th:text="${myTask.title}">Название задачи</h3>
+                    <div class="task-details">
+                        <p><strong>Создатель:</strong> <span th:text="${myTask.creator.username}">Создатель</span></p>
+                        <p><strong>Исполнитель:</strong> <span th:text="${myTask.assignee.username}">Исполнитель</span></p>
+                        <p><strong>Дата создания:</strong>
+                            <span class="created-date" th:text="${#temporals.format(myTask.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+                        </p>
+                        <p><strong>Дата окончания:</strong>
+                            <span class="end-date" th:text="${#temporals.format(myTask.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+                            <span class="end-date-display" th:text="${#temporals.format(myTask.endDate, 'dd.MM.yyyy')}">Срок</span>
+                        </p>
+                        <p><strong>До конца:</strong>
+                            <span class="days-until-end"></span>
+                        </p>
+                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>
+                        <p class="description" style="display: none;" th:text="${myTask.description}">Описание задачи</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div id="allProjectsSection" class="project-section" style="display: none;">
+            <h2>Все задачи</h2>
+            <ul class="task-list">
+                <li th:each="task : ${allTasks}">
+                    <h3 th:text="${task.title}">Название задачи</h3>
+                    <div class="task-details">
+                        <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
+                        <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
+                        <p><strong>Дата создания:</strong>
+                            <span class="created-date" th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+                        </p>
+                        <p><strong>Дата окончания:</strong>
+                            <span class="end-date" th:text="${#temporals.format(task.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+                            <span class="end-date-display" th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}">Срок</span>
+                        </p>
+                        <p><strong>До конца:</strong>
+                            <span class="days-until-end"></span>
+                        </p>
+                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>
+                        <p class="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <a class="back-btn" onclick="history.back()">Назад</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let sidebar = document.querySelector(".sidebar");
+        let toggleBtn = document.querySelector(".toggle-btn");
+
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
+
+        toggleBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
+    });
+</script>
+
+<script>
+    function sortProjects() {
+        const sortBy = document.getElementById("sort").value;
+
+        // Сортировка проектов, назначенных пользователю
+        const assignedProjects = Array.from(document.querySelectorAll(".project-section:first-child .task-list li"));
+        assignedProjects.sort((a, b) => {
+            const aValue = a.querySelector("h3").textContent.toLowerCase();
+            const bValue = b.querySelector("h3").textContent.toLowerCase();
+            return sortBy === "name" ? aValue.localeCompare(bValue) : 0;
+        });
+
+        const assignedList = document.querySelector(".project-section:first-child .task-list");
+        assignedList.innerHTML = "";
+        assignedProjects.forEach(project => assignedList.appendChild(project));
+
+        // Сортировка всех проектов
+        const allProjects = Array.from(document.querySelectorAll(".project-section:last-child .task-list li"));
+        allProjects.sort((a, b) => {
+            const aValue = a.querySelector("h3").textContent.toLowerCase();
+            const bValue = b.querySelector("h3").textContent.toLowerCase();
+            return sortBy === "name" ? aValue.localeCompare(bValue) : 0;
+        });
+
+        const allList = document.querySelector(".project-section:last-child .task-list");
+        allList.innerHTML = "";
+        allProjects.forEach(project => allList.appendChild(project));
+    }
+</script>
+
+<script>
+    // Функция для переключения разделов
+    function showSection(sectionId, activeBtnId, inactiveBtnId) {
+        // Скрыть все разделы
+        document.getElementById('myProjectsSection').style.display = 'none';
+        document.getElementById('allProjectsSection').style.display = 'none';
+
+        // Показать выбранный раздел
+        document.getElementById(sectionId).style.display = 'block';
+
+        // Установить активную кнопку
+        document.getElementById(activeBtnId).classList.add('active');
+        document.getElementById(inactiveBtnId).classList.remove('active');
+    }
+
+    // По умолчанию показываем "Мои проекты"
+    document.addEventListener("DOMContentLoaded", function () {
+        showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn');
+    });
+</script>
+
+<script>
+    // Функция для сворачивания/разворачивания описания
+    function toggleDescription(button) {
+        const description = button.nextElementSibling; // Находим описание
+        if (description.style.display === "none") {
+            description.style.display = "block";
+            button.textContent = "Скрыть описание";
+        } else {
+            description.style.display = "none";
+            button.textContent = "Показать описание";
+        }
+    }
+</script>
+
+<script>
+    function calculateDaysUntilEnd() {
+        const endDateElements = document.querySelectorAll('.end-date');
+        endDateElements.forEach(endDateElement => {
+            const endDateStr = endDateElement.textContent;
+            const endDate = new Date(endDateStr).setHours(0,0,0,0);
+            // console.log("endDate: " + endDate)
+            const now = new Date();
+            const timeDifference = endDate - now;
+
+            // Вычисляем разницу в днях и часах
+            const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            // console.log("дни: " + daysDifference)
+            const hoursDifference = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); //floor(5.95) -> 5
+            // console.log("часы: " + hoursDifference)
+            const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Находим элемент для отображения результата
+            const daysUntilEndElement = endDateElement.closest('.task-details').querySelector('.days-until-end');
+
+            // Логика отображения
+            if (daysDifference > 1) {
+                daysUntilEndElement.textContent = `${daysDifference} дней`;
+            } else if (daysDifference === 1) {
+                daysUntilEndElement.textContent = `${hoursDifference} часов`;
+            } else if (hoursDifference > 0) {
+                daysUntilEndElement.textContent = `${hoursDifference} часов ${minutesDifference} минут`;
+            } else if (minutesDifference > 0) {
+                daysUntilEndElement.textContent = `${minutesDifference} минут`;
+            } else {
+                daysUntilEndElement.textContent = 'Срок истек()';
+            }
+        });
+    }
+
+    // Вызываем функцию после загрузки страницы
+    document.addEventListener('DOMContentLoaded', calculateDaysUntilEnd);
+</script>
+
+</body>
+</html>

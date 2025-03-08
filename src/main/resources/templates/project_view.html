@@ -265,7 +265,7 @@
       /*color: #3366ff;!*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*!*/
     }
 
-    .back-btn{
+    .back-btn, .create-btn, .view-task-btn {
       display: block;
       margin: 20px auto;
       background: #3366ff;
@@ -279,24 +279,7 @@
       transition: background 0.3s ease-in-out;
     }
 
-    .create-btn{
-      display: block;
-      margin: 20px auto;
-      background: #3366ff;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      width: 150px;
-      transition: background 0.3s ease-in-out;
-    }
-
-    .back-btn:hover{
-      background-color: #254eda;
-    }
-    .create-btn:hover{
+    .back-btn:hover, .create-btn:hover, .view-task-btn:hover {
       background-color: #254eda;
     }
 
@@ -373,6 +356,10 @@
     <!-- Кнопка для создания задачи (видна только участникам) -->
     <div th:if="${#lists.contains(projectUsers, currentUser)}">
       <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="create-btn">Создать задачу</a>
+    </div>
+
+    <div th:if="${#lists.contains(projectUsers, currentUser)}">
+      <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="view-task-btn">Просмотреть задачи</a>
     </div>
 
     <a class="back-btn" onclick="history.back()">Назад</a>
