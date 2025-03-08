@@ -37,15 +37,6 @@ public class ContentController {
         return "index";
     }
 
-    @GetMapping("/user/home") //Страница для Авторизованных(USER) пользователей
-    public String handleUserHome(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String username = userDetails.getUsername();
-        String userEmail = userDetails.getEmail();
-        model.addAttribute("username", username);
-        model.addAttribute("userEmail", userEmail);
-        return "home_user";
-    }
-
     @GetMapping("/login") //Страница для ввода логина
     public String handleLogin() {
         return "custom_login";

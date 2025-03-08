@@ -28,7 +28,9 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      position: relative;
+      position: sticky;
+      top: 0; /* Прилипает к верхнему краю */
+      left: 0; /* Прилипает к левому краю */
       transition: width 0.3s;
       border-top-right-radius: 15px;
       border-bottom-right-radius: 15px;
@@ -180,6 +182,10 @@
       transition: 0.3s ease-in-out;
     }
 
+    .toggle-btn:hover {
+      background-color: #254eda;
+    }
+
     .sidebar.collapsed .toggle-btn {
       right: -10px;
     }
@@ -284,7 +290,7 @@
     }
 
     button:hover {
-      background-color: #254eda;
+      /*background-color: #254eda;*/
     }
 
     .project-name-and-id{
@@ -319,6 +325,36 @@
       color: #3366ff;
     }
 
+    .btn-back {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: center;
+      background-color: transparent;
+      color: #3366ff;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      padding-bottom: 1px;
+    }
+
+    .btn-back::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: transparent; /* Изначально подчёркивание невидимо */
+      transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+    }
+
+    .btn-back:hover::after {
+      background-color: #3366ff; /* Подчёркивание при наведении */
+    }
+
   </style>
 </head>
 <body>
@@ -342,10 +378,11 @@
 
 <div class="main-content">
   <div class="container">
+    <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
     <div class="project-name-and-id">
-    <h1 th:text=" ${project.name}">Название проекта</h1>
-    <h1 th:text="|ID: ${project.id}|">ID проекта</h1>
-  </div>
+      <h1 th:text=" ${project.name}">Название проекта</h1>
+      <h1 th:text="|ID: ${project.id}|">ID проекта</h1>
+    </div>
 
     <div class="project-info">
       <p><strong>Описание:</strong> <span th:text="${project.description}"></span></p>
@@ -362,7 +399,7 @@
       <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="view-task-btn">Просмотреть задачи</a>
     </div>
 
-    <a class="back-btn" onclick="history.back()">Назад</a>
+<!--    <a class="back-btn" onclick="history.back()">Назад</a>-->
 <!--    <button type="button" class="btn-back" onclick="history.back()">← Назад</button>-->
   </div>
 
@@ -383,7 +420,6 @@
 </div>
 
 <!--  <a href="/dashboard" class="back-btn">Назад</a>-->
-</div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

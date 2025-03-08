@@ -31,7 +31,9 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            position: relative;
+            position: sticky;
+            top: 0; /* Прилипает к верхнему краю */
+            left: 0; /* Прилипает к левому краю */
             transition: width 0.3s;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
@@ -577,7 +579,7 @@
             <p style="padding-left: 2px"><span th:text="${userEmail}"></span></p>
         </div>
         <div class="profile-settings">
-            <i class="fas fa-cog settings-icon" onclick="toggleEditMode()"></i>
+            <i class="fas fa-cog settings-icon" onclick="toggleEditMode(); rotateGear()" ></i>
         </div>
     </div>
     <button class="save-btn" id="saveChanges" onclick="saveChanges()">Сохранить</button>
@@ -637,6 +639,7 @@
         });
     });
 </script>
+
 <script>
     let originalAvatar = document.getElementById("userAvatar").src; // Сохраняем старый аватар
     let editables = document.querySelectorAll('.editable'); // Добавляем выбор редактируемых элементов
@@ -768,7 +771,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    alert('Данные успешно сохранены!');
+                    // alert('Данные успешно сохранены!');
                     document.getElementById("saveChanges").style.display = "none";
                     document.querySelectorAll('.editable').forEach(el => {
                         el.contentEditable = "false";
@@ -780,11 +783,23 @@
                     document.getElementById("edit-lastname").classList.remove("slide-right");// Запоминаем новый аватар
                     document.getElementById("edit-lastname").classList.add("slide-left");// Запоминаем новый аватар
                     isEditMode = false; // Выходим из режима редактирования
+                    rotateGear();
                 } else {
                     alert('Ошибка при сохранении данных.');
                 }
             })
             .catch(error => console.error('Ошибка:', error));
+    }
+</script>
+
+<script>
+    let rotation = 0; // Переменная для хранения текущего угла поворота
+
+    function rotateGear() {
+        const settingsIcon = document.querySelector(".settings-icon");
+        isEditMode ? rotation += 90: rotation -= 90;
+        settingsIcon.style.transform = `rotate(${rotation}deg)`;
+        settingsIcon.style.transition = "transform 0.3s "; // Плавное вращение
     }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>

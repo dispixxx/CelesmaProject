@@ -44,23 +44,14 @@ public class TaskController {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
 
-        List<Task> userTasks = taskService.getTasksByAssigneeId(currentUser.getId());
-
-
-        List<Task> allTasks = taskRepository.getTasksByProjectId(projectId);
-
-
-        /*DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        userTasks.forEach(task -> {
-            task.setFormattedEndDate(task.getEndDate().format(formatter));
-        });
-
-        allTasks.forEach(task -> {
-            task.setFormattedEndDate(task.getEndDate().format(formatter));
-        });*/
+        List<Task> userTasks = taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(),projectId);
+        List<Task> allTasks = taskService.getTasksByProjectId(projectId);
+        Project project = projectService.getProjectById(projectId);
 
         model.addAttribute("userTasks", userTasks);
         model.addAttribute("allTasks", allTasks);
+        model.addAttribute("projectName", project.getName());
+        model.addAttribute("projectId", project.getId());
 
         return "project_tasks";
     }

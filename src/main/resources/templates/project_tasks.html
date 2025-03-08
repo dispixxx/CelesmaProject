@@ -29,7 +29,9 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            position: relative;
+            position: sticky;
+            top: 0; /* Прилипает к верхнему краю */
+            left: 0; /* Прилипает к левому краю */
             transition: width 0.3s;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
@@ -186,6 +188,8 @@
         }
 
         .main-content {
+            scrollbar-gutter: stable; /* Резервирует место для скроллбара */
+            overflow-y: auto; /* Включаем вертикальную прокрутку */
             display: flex;
             gap: 20px;
             width: 100%;
@@ -283,6 +287,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            justify-content: space-between;
         }
 
         .button-group button {
@@ -297,7 +302,8 @@
         }
 
         .button-group button.active {
-            background: #254eda;
+            transform: scale(1.05);
+            background: #1a3bb0;
         }
 
         .button-group button:hover {
@@ -383,6 +389,154 @@
             color: #333;
         }
 
+        .form-head{
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+            .project-title{
+                font-size: 14px;
+                color: gray;
+                font-weight: normal;
+            }
+        }
+
+        .btn-back {
+            background-color: transparent;
+            color: #3366ff;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 1px;
+        }
+
+        .btn-back::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: transparent; /* Изначально подчёркивание невидимо */
+            transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+        }
+
+        .btn-back:hover::after {
+            background-color: #3366ff; /* Подчёркивание при наведении */
+        }
+
+        .layout-btn {
+            background: #3366ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease-in-out;
+            margin-left: 10px; /* Отступ между кнопками */
+            i{
+                font-size: 14px;
+            }
+        }
+
+        .layout-btn.active {
+            background: #1a3bb0; /* Активная кнопка */
+        }
+
+        .layout-btn:hover {
+            background: #254eda;
+        }
+
+        /* Стили для списка задач */
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr; /* По умолчанию один столбец */
+            gap: 20px; /* Отступ между элементами */
+        }
+
+        .task-list.grid-2x2 {
+            grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
+        }
+
+        .task-list.grid-3x3 {
+            grid-template-columns: repeat(3, 1fr); /* Сетка 3x3 */
+        }
+
+        .task-list li {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3366ff;
+            text-align: left;
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none; /* Скрыто по умолчанию */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            color: #3366ff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #254eda;
+        }
+
+        .details-btn {
+            background-color: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Montserrat', sans-serif;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .details-btn:hover {
+            background-color: #254eda;
+            transform: scale(1.05);
+        }
+
+        .details-btn:active {
+            background-color: #1a3bb0;
+            transform: scale(0.95);
+        }
+
+        .details-btn i {
+            margin-right: 8px;
+        }
+
     </style>
 </head>
 <body>
@@ -406,13 +560,37 @@
 
 <div class="main-content">
     <div class="container">
-        <h1 style="font-family: 'Montserrat', sans-serif;">
+        <div class="form-head">
+            <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
+            <!--<a th:href="@{/projects/{projectId}(projectId=${projectId})}" class="btn-back">к проекту</a>-->
+            <div class="project-title" th:text="${projectName}"></div>
+        </div>
+        <h1 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 0;">
             Задачи проекта
         </h1>
 
         <div class="button-group">
-            <button id="myProjectsBtn" class="active" onclick="showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn')">Мои Задачи</button>
-            <button id="allProjectsBtn" onclick="showSection('allProjectsSection', 'allProjectsBtn', 'myProjectsBtn')">Все Задачи</button>
+
+            <div>
+                <button id="myProjectsBtn" class="active" onclick="showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn')">Мои Задачи</button>
+                <button id="allProjectsBtn"
+                        onclick="showSection('allProjectsSection', 'allProjectsBtn', 'myProjectsBtn')"
+                        style="margin-left: 10px;"
+                >Все Задачи</button>
+            </div>
+
+            <div>
+                <!-- Кнопки для выбора режима отображения -->
+                <button id="singleColumnBtn" class="layout-btn active" onclick="setLayout('single-column')">
+                    <i class="fas fa-grip-lines"></i> <!-- Иконка двух полосок -->
+                </button>
+                <button id="grid2x2Btn" class="layout-btn" onclick="setLayout('grid-2x2')">
+                    <i class="fas fa-grip-vertical"></i> <!-- Иконка в 2 столбца -->
+                </button>
+                <button id="grid3x3Btn" class="layout-btn" onclick="setLayout('grid-3x3')">
+                    <i class="fas fa-grip-horizontal"></i> <!-- Иконка Иконка в 3 столбца  -->
+                </button>
+            </div>
         </div>
 
         <!-- Сортировка -->
@@ -443,7 +621,8 @@
                         <p><strong>До конца:</strong>
                             <span class="days-until-end"></span>
                         </p>
-                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>
+<!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+                        <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
                         <p class="description" style="display: none;" th:text="${myTask.description}">Описание задачи</p>
                     </div>
                 </li>
@@ -468,14 +647,24 @@
                         <p><strong>До конца:</strong>
                             <span class="days-until-end"></span>
                         </p>
-                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>
-                        <p class="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
+<!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+                        <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+                        <p class="description" id="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
                     </div>
                 </li>
             </ul>
         </div>
 
-        <a class="back-btn" onclick="history.back()">Назад</a>
+        <!-- Модальное окно -->
+        <div id="taskModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modalTaskTitle"></h2>
+                <div id="modalTaskDetails"></div>
+            </div>
+        </div>
+
+<!--        <a class="back-btn" onclick="history.back()">Назад</a>-->
     </div>
 </div>
 
@@ -549,7 +738,8 @@
 <script>
     // Функция для сворачивания/разворачивания описания
     function toggleDescription(button) {
-        const description = button.nextElementSibling; // Находим описание
+        const taskItem = button.closest("li"); // Находим родительский элемент задачи
+        const description = taskItem.querySelector(".description"); // Находим описание
         if (description.style.display === "none") {
             description.style.display = "block";
             button.textContent = "Скрыть описание";
@@ -598,6 +788,89 @@
     // Вызываем функцию после загрузки страницы
     document.addEventListener('DOMContentLoaded', calculateDaysUntilEnd);
 </script>
+
+<script>
+    function setLayout(layout) {
+        const taskLists = document.querySelectorAll(".task-list");
+        const singleColumnBtn = document.getElementById("singleColumnBtn");
+        const grid2x2Btn = document.getElementById("grid2x2Btn");
+        const grid3x3Btn = document.getElementById("grid3x3Btn");
+
+        // Убираем активный класс со всех кнопок
+        singleColumnBtn.classList.remove("active");
+        grid2x2Btn.classList.remove("active");
+        grid3x3Btn.classList.remove("active");
+
+        // Добавляем активный класс к выбранной кнопке
+        if (layout === "single-column") {
+            singleColumnBtn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-2x2", "grid-3x3"); // Убираем сетку 2x2 и 3x3
+            });
+        } else if (layout === "grid-2x2") {
+            grid2x2Btn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-3x3"); // Убираем сетку 3x3
+                taskList.classList.add("grid-2x2"); // Добавляем сетку 2x2
+            });
+        } else if (layout === "grid-3x3") {
+            grid3x3Btn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-2x2"); // Убираем сетку 2x2
+                taskList.classList.add("grid-3x3"); // Добавляем сетку 3x3
+            });
+        }
+    }
+</script>
+
+<script>
+    function openTaskModal(button) {
+        const taskItem = button.closest("li"); // Находим родительский элемент задачи
+
+        // Получаем данные задачи
+        const taskTitle = taskItem.querySelector("h3").textContent;
+        const creator = taskItem.querySelector("p:nth-child(1) span").textContent;
+        const assignee = taskItem.querySelector("p:nth-child(2) span").textContent;
+        const createdAt = taskItem.querySelector(".created-date").textContent;
+        const endDate = taskItem.querySelector(".end-date-display").textContent;
+        const daysUntilEnd = taskItem.querySelector(".days-until-end").textContent;
+        const description = taskItem.querySelector(".description").textContent;
+
+        // Формируем HTML для модального окна
+        const modalContent = `
+        <p><strong>Создатель:</strong> ${creator}</p>
+        <p><strong>Исполнитель:</strong> ${assignee}</p>
+        <p><strong>Дата создания:</strong> ${createdAt}</p>
+        <p><strong>Дата окончания:</strong> ${endDate}</p>
+        <p><strong>До конца:</strong> ${daysUntilEnd}</p>
+        <p><strong>Описание:</strong> ${description}</p>
+    `;
+
+        // Заполняем модальное окно данными
+        document.getElementById("modalTaskTitle").textContent = taskTitle;
+        document.getElementById("modalTaskDetails").innerHTML = modalContent;
+
+        // Показываем модальное окно
+        document.getElementById("taskModal").style.display = "block";
+    }
+
+    // Функция для закрытия модального окна
+    function closeTaskModal() {
+        document.getElementById("taskModal").style.display = "none";
+    }
+
+    // Закрытие модального окна при клике на крестик
+    document.querySelector(".close").addEventListener("click", closeTaskModal);
+
+    // Закрытие модального окна при клике вне его области
+    window.addEventListener("click", function (event) {
+        const modal = document.getElementById("taskModal");
+        if (event.target === modal) {
+            closeTaskModal();
+        }
+    });
+</script>
+
 
 </body>
 </html>

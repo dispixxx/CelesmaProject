@@ -34,11 +34,11 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public List<Task> getTasksByAssigneeId(Long assigneeId) {
-        return taskRepository.findByAssigneeId(assigneeId);
+    public List<Task> getTasksByAssigneeIdAndProjectId(Long assigneeId, Long projectId) {
+        return taskRepository.findByAssigneeIdAndProjectId(assigneeId, projectId);
     }
 
-    public List<Task> getTasksByProject(Project project) {
-        return taskRepository.findByProjectId(project.getId());
+    public List<Task> getTasksByProjectId(Long projectId) {
+        return taskRepository.findByProjectId(projectId);
     }
 }
