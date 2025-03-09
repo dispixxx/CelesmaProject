@@ -39,14 +39,23 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
     @GetMapping
     public String getProjectsTasks(@PathVariable Long projectId, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
+        User currentUser = userDetailsService.getUserByUsername(username);
+//        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
 
         List<Task> userTasks = taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(),projectId);
         List<Task> allTasks = taskService.getTasksByProjectId(projectId);
         Project project = projectService.getProjectById(projectId);
+        List<Task> createdTasks = taskService.getTasksByCreatorId(currentUser.getId()); // Задачи, где пользователь создатель
+        List<Task> assignedTasks = taskService.getTasksByAssigneeId(currentUser.getId()); // Задачи, где пользователь исполнитель
+
+        model.addAttribute("createdTasks", createdTasks);
+        model.addAttribute("assignedTasks", assignedTasks);
 
         model.addAttribute("userTasks", userTasks);
         model.addAttribute("allTasks", allTasks);
@@ -61,7 +70,8 @@ public class TaskController {
         model.addAttribute("projectId", projectId);
         Project project = projectService.getProjectById(projectId);
         String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
+        User currentUser = userDetailsService.getUserByUsername(username);
+//        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
         model.addAttribute("members", project.getMembers());
         model.addAttribute("projectName", project.getName());
         model.addAttribute("creatorId", Objects.requireNonNull(currentUser).getId());
@@ -75,8 +85,8 @@ public class TaskController {
                              @RequestParam(required = false) Long assigneeId,
                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                              @AuthenticationPrincipal UserDetails userDetails) {
-        if(userRepository.findByUsername(userDetails.getUsername()).isPresent()){
-            User creator = userRepository.findByUsername(userDetails.getUsername()).get(); // Позже переделать что бы это выполнял сервис.(передавать projectID в createTask();
+        if(userDetailsService.getUserByUsername(userDetails.getUsername())!=null) {
+            User creator = userDetailsService.getUserByUsername(userDetails.getUsername());
             Project project = projectService.getProjectById(projectId);
             taskService.createTask(title, description, project, creator, assigneeId, endDate);
             return "redirect:/projects/" + projectId;

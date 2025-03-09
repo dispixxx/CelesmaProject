@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мои Задачи</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <style>
+    /* Стили аналогичные странице просмотра проекта */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to right, #eef2ff, #cfd9ff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #2C2F33;
+      color: white;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: sticky;
+      top: 0; /* Прилипает к верхнему краю */
+      left: 0; /* Прилипает к левому краю */
+      transition: width 0.3s;
+      border-top-right-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+      padding: 20px 20px 20px 20px;
+    }
+
+    .sidebar h2 {
+      padding-left: 9px;
+      transition: opacity 0.3s;
+      font-family: "Orbitron", serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+    }
+
+    .sidebar.collapsed h2 {
+      opacity: 0;
+    }
+
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+    }
+
+    .sidebar.collapsed ul {
+      transform: translateX(-9px);
+    }
+
+    .sidebar ul li {
+      position: relative;
+      margin: 30px 0;
+      display: flex;
+      align-items: center;
+      min-height: 30px;
+    }
+
+    .sidebar ul li a {
+      position: relative;
+      color: white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .sidebar ul li a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+    }
+
+    .sidebar.collapsed ul li a:hover {
+      padding: 5px 5px 5px 10px;
+    }
+
+    .sidebar span {
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: inline-block;
+      min-height: 20px;
+      white-space: nowrap;
+      visibility: visible;
+    }
+
+    .sidebar.collapsed span {
+      opacity: 0;
+      width: 0;
+      visibility: hidden;
+    }
+
+    .user-container {
+      padding-left: 9px;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      position: absolute;
+      bottom: 60px;
+      left: 20px;
+      transition: left 0.3s;
+    }
+
+    .sidebar.collapsed .user-container {
+      left: -2px;
+    }
+
+    .user-name {
+      max-width: 130px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      padding-left: 5px;
+      margin-right: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sidebar.collapsed .user-name {
+      cursor: none;
+    }
+
+    .user-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #8A8D91;
+      color: white;
+      padding: 5px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      width: 50px;
+      height: 50px;
+      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+    }
+
+    .sidebar.collapsed .user-icon {
+      width: 35px;
+      height: 35px;
+      font-size: 18px;
+    }
+
+    .user-icon:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 40px;
+      height: 20vh;
+      background: #2C2F33;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+      transform: translateY(-50%);
+      padding: 10px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s ease-in-out;
+    }
+
+    .sidebar.collapsed .toggle-btn {
+      right: -10px;
+    }
+
+    .main-content {
+      scrollbar-gutter: stable; /* Резервирует место для скроллбара */
+      overflow-y: auto; /* Включаем вертикальную прокрутку */
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 50px auto;
+    }
+
+    .container {
+      flex: 2;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-family: "Orbitron", serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .task-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .task-list li {
+      background: #f0f4ff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #3366ff;
+      text-align: left;
+    }
+
+    .task-list li h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #3366ff;
+    }
+
+    .task-list li p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .back-btn {
+      display: block;
+      margin: 20px auto;
+      background: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      width: 150px;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .back-btn:hover {
+      background-color: #254eda;
+    }
+    .sort-section {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .sort-section label {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .sort-section select {
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .project-section h2 {
+      font-size: 20px;
+      color: #3366ff;
+      margin-bottom: 15px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: space-between;
+    }
+
+    .button-group button {
+      background: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease-in-out;
+    }
+
+    .button-group button.active {
+      transform: scale(1.05);
+      background: #1a3bb0;
+    }
+
+    .button-group button:hover {
+      background: #254eda;
+    }
+
+    .project-section {
+      margin-bottom: 30px;
+    }
+
+    .task-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .task-list li {
+      background: #f0f4ff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #3366ff;
+      text-align: left;
+    }
+
+    .task-list li h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #3366ff;
+    }
+
+    .task-list li p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .task-list li {
+      background: #f0f4ff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #3366ff;
+      text-align: left;
+    }
+
+    .task-list li h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #3366ff;
+    }
+
+    .task-details {
+      margin-top: 10px;
+    }
+
+    .task-details p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .toggle-description {
+      background: #3366ff;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .toggle-description:hover {
+      background: #254eda;
+    }
+
+    .description {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e0e7ff;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #333;
+    }
+    .form-head{
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: center;
+    }
+
+
+    .project-title{
+      font-size: 14px;
+      color: black;
+      font-weight: normal;
+    }
+
+    .btn-back {
+      background-color: transparent;
+      color: #3366ff;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      padding-bottom: 1px;
+    }
+
+    .btn-back::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: transparent; /* Изначально подчёркивание невидимо */
+      transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+    }
+
+    .btn-back:hover::after {
+      background-color: #3366ff; /* Подчёркивание при наведении */
+    }
+
+    .layout-btn {
+      background: #3366ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease-in-out;
+      margin-left: 10px; /* Отступ между кнопками */
+      i{
+        font-size: 14px;
+      }
+    }
+
+    .layout-btn.active {
+      background: #1a3bb0; /* Активная кнопка */
+    }
+
+    .layout-btn:hover {
+      background: #254eda;
+    }
+
+    /* Стили для списка задач */
+    .task-list {
+      list-style-type: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr; /* По умолчанию один столбец */
+      gap: 20px; /* Отступ между элементами */
+    }
+
+    .task-list.grid-2x2 {
+      grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
+      >li h3{
+        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+        max-width: 500px; /* Ограничиваем максимальную ширину */
+      }
+    }
+
+    .task-list.grid-3x3 {
+      grid-template-columns: repeat(3, 1fr); /* Сетка 3x3 */
+      >li h3{
+        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+        max-width: 300px; /* Ограничиваем максимальную ширину */
+      }
+    }
+
+    .task-list li {
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #3366ff;
+      text-align: left;
+    }
+
+    /* Стили для модального окна */
+    .modal {
+      display: none; /* Скрыто по умолчанию */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+      color: #3366ff;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #254eda;
+    }
+
+    .details-btn {
+      background-color: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Montserrat', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .details-btn:hover {
+      background-color: #254eda;
+      transform: scale(1.05);
+    }
+
+    .details-btn:active {
+      background-color: #1a3bb0;
+      transform: scale(0.95);
+    }
+
+    .details-btn i {
+      margin-right: 8px;
+    }
+
+    .task-type-section {
+      margin-top: 20px;
+    }
+
+    #taskTypeButtons {
+      margin-bottom: 20px;
+    }
+
+    #taskTypeButtons button {
+      background: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease-in-out;
+    }
+
+    #taskTypeButtons button.active {
+      background: #1a3bb0;
+    }
+
+    #taskTypeButtons button:hover {
+      background: #254eda;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <button class="toggle-btn">☰</button>
+  <h2>celesma</h2>
+  <ul>
+    <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
+    <li><a href="#"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+    <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
+    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
+  </ul>
+  <div class="user-container">
+    <span class="user-name" sec:authentication="name"></span>
+    <a href="/user/profile" class="user-icon">
+      <i class="fas fa-user"></i>
+    </a>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="container">
+    <div class="form-head">
+      <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
+    </div>
+    <h1 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 0;">
+      Мои задачи
+    </h1>
+
+    <!-- Переключатели для фильтрации задач -->
+    <div class="button-group">
+      <div>
+        <button id="assignedTasksBtn" class="active"
+                onclick="showSection('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn')">Назначенные мне</button>
+        <button id="createdTasksBtn"
+                onclick="showSection('createdTasksSection', 'createdTasksBtn', 'assignedTasksBtn')"
+                style="margin-left: 10px;"
+        >Созданные мной</button>
+      </div>
+      <div>
+        <!-- Кнопки для выбора режима отображения -->
+        <button id="singleColumnBtn" class="layout-btn active" onclick="setLayout('single-column')">
+          <i class="fas fa-grip-lines"></i> <!-- Иконка двух полосок -->
+        </button>
+        <button id="grid2x2Btn" class="layout-btn" onclick="setLayout('grid-2x2')">
+          <i class="fas fa-grip-vertical"></i> <!-- Иконка в 2 столбца -->
+        </button>
+        <button id="grid3x3Btn" class="layout-btn" onclick="setLayout('grid-3x3')">
+          <i class="fas fa-grip-horizontal"></i> <!-- Иконка Иконка в 3 столбца  -->
+        </button>
+      </div>
+    </div>
+
+    <!-- Сортировка -->
+    <div class="sort-section">
+      <label for="sort">Сортировать по:</label>
+      <select id="sort" onchange="sortProjects()">
+        <option value="name">Названию</option>
+        <option value="date">Дате создания</option>
+        <option value="status">Статусу</option>
+      </select>
+    </div>
+
+    <!-- Секция для задач, где пользователь исполнитель -->
+    <div id="assignedTasksSection" class="project-section">
+      <h2>Назначенные мне задачи</h2>
+      <ul class="task-list">
+        <li th:each="task : ${assignedTasks}">
+          <h3 th:text="${task.title}">Название задачи</h3>
+          <div class="task-details">
+            <p><strong>Проект:</strong> <span class="project-title" th:text="${task.project.name}"></span></p>
+            <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
+            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
+            <p><strong>Дата создания:</strong>
+              <span class="created-date" th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+            </p>
+            <p><strong>Дата окончания:</strong>
+              <span class="end-date" th:text="${#temporals.format(task.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+              <span class="end-date-display" th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}">Срок</span>
+            </p>
+            <p><strong>До конца:</strong>
+              <span class="days-until-end"></span>
+            </p>
+            <!--<button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+            <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+            <p class="description" id="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Секция для задач, созданных пользователем -->
+    <div id="createdTasksSection" class="project-section" style="display: none;">
+      <h2>Созданные мной задачи</h2>
+      <ul class="task-list">
+        <li th:each="createdtask : ${createdTasks}">
+          <h3 th:text="${createdtask.title}">Название задачи</h3>
+          <div class="task-details">
+            <p><strong>Проект:</strong> <span class="project-title" th:text="${createdtask.project.name}"></span></p>
+            <p><strong>Создатель:</strong> <span th:text="${createdtask.creator.username}">Создатель</span></p>
+            <p><strong>Исполнитель:</strong> <span th:text="${createdtask.assignee.username}">Исполнитель</span></p>
+            <p><strong>Дата создания:</strong>
+              <span class="created-date" th:text="${#temporals.format(createdtask.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+            </p>
+            <p><strong>Дата окончания:</strong>
+              <span class="end-date" th:text="${#temporals.format(createdtask.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+              <span class="end-date-display" th:text="${#temporals.format(createdtask.endDate, 'dd.MM.yyyy')}">Срок</span>
+            </p>
+            <p><strong>До конца:</strong>
+              <span class="days-until-end"></span>
+            </p>
+            <!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+            <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+            <p class="description" style="display: none;" th:text="${createdtask.description}">Описание задачи</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Модальное окно для деталей задачи -->
+    <div id="taskModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTaskTitle"></h2>
+        <div id="modalTaskDetails"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showSection(sectionId, activeBtnId, inactiveBtnId) {
+    document.getElementById('createdTasksSection').style.display = 'none';
+    document.getElementById('assignedTasksSection').style.display = 'none';
+
+    document.getElementById(sectionId).style.display = 'block';
+
+    document.getElementById(activeBtnId).classList.add('active');
+    document.getElementById(inactiveBtnId).classList.remove('active');
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    showSection('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn');
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let sidebar = document.querySelector(".sidebar");
+    let toggleBtn = document.querySelector(".toggle-btn");
+
+    if (localStorage.getItem("sidebarCollapsed") === "true") {
+      sidebar.classList.add("collapsed");
+    }
+
+    toggleBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("collapsed");
+      localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+    });
+  });
+</script>
+
+<script>
+  function sortProjects() {
+    const sortBy = document.getElementById("sort").value;
+
+    // Сортировка проектов, назначенных пользователю
+    const assignedProjects = Array.from(document.querySelectorAll(".project-section:first-child .task-list li"));
+    assignedProjects.sort((a, b) => {
+      const aValue = a.querySelector("h3").textContent.toLowerCase();
+      const bValue = b.querySelector("h3").textContent.toLowerCase();
+      return sortBy === "name" ? aValue.localeCompare(bValue) : 0;
+    });
+
+    const assignedList = document.querySelector(".project-section:first-child .task-list");
+    assignedList.innerHTML = "";
+    assignedProjects.forEach(project => assignedList.appendChild(project));
+
+    // Сортировка всех проектов
+    const allProjects = Array.from(document.querySelectorAll(".project-section:last-child .task-list li"));
+    allProjects.sort((a, b) => {
+      const aValue = a.querySelector("h3").textContent.toLowerCase();
+      const bValue = b.querySelector("h3").textContent.toLowerCase();
+      return sortBy === "name" ? aValue.localeCompare(bValue) : 0;
+    });
+
+    const allList = document.querySelector(".project-section:last-child .task-list");
+    allList.innerHTML = "";
+    allProjects.forEach(project => allList.appendChild(project));
+  }
+</script>
+
+<script>
+  // Функция для сворачивания/разворачивания описания
+  function toggleDescription(button) {
+    const taskItem = button.closest("li"); // Находим родительский элемент задачи
+    const description = taskItem.querySelector(".description"); // Находим описание
+    if (description.style.display === "none") {
+      description.style.display = "block";
+      button.textContent = "Скрыть описание";
+    } else {
+      description.style.display = "none";
+      button.textContent = "Показать описание";
+    }
+  }
+</script>
+
+<script>
+  function calculateDaysUntilEnd() {
+    const endDateElements = document.querySelectorAll('.end-date');
+    endDateElements.forEach(endDateElement => {
+      const endDateStr = endDateElement.textContent;
+      const endDate = new Date(endDateStr).setHours(0,0,0,0);
+      // console.log("endDate: " + endDate)
+      const now = new Date();
+      const timeDifference = endDate - now;
+
+      // Вычисляем разницу в днях и часах
+      const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      // console.log("дни: " + daysDifference)
+      const hoursDifference = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); //floor(5.95) -> 5
+      // console.log("часы: " + hoursDifference)
+      const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+      // Находим элемент для отображения результата
+      const daysUntilEndElement = endDateElement.closest('.task-details').querySelector('.days-until-end');
+
+      // Логика отображения
+      if (daysDifference > 1) {
+        daysUntilEndElement.textContent = `${daysDifference} дней`;
+      } else if (daysDifference === 1) {
+        daysUntilEndElement.textContent = `${hoursDifference} часов`;
+      } else if (hoursDifference > 0) {
+        daysUntilEndElement.textContent = `${hoursDifference} часов ${minutesDifference} минут`;
+      } else if (minutesDifference > 0) {
+        daysUntilEndElement.textContent = `${minutesDifference} минут`;
+      } else {
+        daysUntilEndElement.textContent = 'Срок истек()';
+      }
+    });
+  }
+
+  // Вызываем функцию после загрузки страницы
+  document.addEventListener('DOMContentLoaded', calculateDaysUntilEnd);
+</script>
+
+<script>
+  function setLayout(layout) {
+    const taskLists = document.querySelectorAll(".task-list");
+    const singleColumnBtn = document.getElementById("singleColumnBtn");
+    const grid2x2Btn = document.getElementById("grid2x2Btn");
+    const grid3x3Btn = document.getElementById("grid3x3Btn");
+
+    // Убираем активный класс со всех кнопок
+    singleColumnBtn.classList.remove("active");
+    grid2x2Btn.classList.remove("active");
+    grid3x3Btn.classList.remove("active");
+
+    // Добавляем активный класс к выбранной кнопке
+    if (layout === "single-column") {
+      singleColumnBtn.classList.add("active");
+      taskLists.forEach(taskList => {
+        taskList.classList.remove("grid-2x2", "grid-3x3"); // Убираем сетку 2x2 и 3x3
+      });
+    } else if (layout === "grid-2x2") {
+      grid2x2Btn.classList.add("active");
+      taskLists.forEach(taskList => {
+        taskList.classList.remove("grid-3x3"); // Убираем сетку 3x3
+        taskList.classList.add("grid-2x2"); // Добавляем сетку 2x2
+      });
+    } else if (layout === "grid-3x3") {
+      grid3x3Btn.classList.add("active");
+      taskLists.forEach(taskList => {
+        taskList.classList.remove("grid-2x2"); // Убираем сетку 2x2
+        taskList.classList.add("grid-3x3"); // Добавляем сетку 3x3
+      });
+    }
+  }
+</script>
+
+<script>
+  function openTaskModal(button) {
+    const taskItem = button.closest("li"); // Находим родительский элемент задачи
+
+    // Получаем данные задачи
+    const taskTitle = taskItem.querySelector("h3").textContent;
+    const projectName = taskItem.querySelector(".project-title").textContent;
+    const creator = taskItem.querySelector("p:nth-child(2) span").textContent;
+    const assignee = taskItem.querySelector("p:nth-child(3) span").textContent;
+    const createdAt = taskItem.querySelector(".created-date").textContent;
+    const endDate = taskItem.querySelector(".end-date-display").textContent;
+    const daysUntilEnd = taskItem.querySelector(".days-until-end").textContent;
+    const description = taskItem.querySelector(".description").textContent;
+
+    // Формируем HTML для модального окна
+    const modalContent = `
+        <p><strong>Проект:</strong> ${projectName}</p>
+        <p><strong>Создатель:</strong> ${creator}</p>
+        <p><strong>Исполнитель:</strong> ${assignee}</p>
+        <p><strong>Дата создания:</strong> ${createdAt}</p>
+        <p><strong>Дата окончания:</strong> ${endDate}</p>
+        <p><strong>До конца:</strong> ${daysUntilEnd}</p>
+        <p><strong>Описание:</strong> ${description}</p>
+    `;
+
+    // Заполняем модальное окно данными
+    document.getElementById("modalTaskTitle").textContent = taskTitle;
+    document.getElementById("modalTaskDetails").innerHTML = modalContent;
+
+    // Показываем модальное окно
+    document.getElementById("taskModal").style.display = "block";
+  }
+
+  // Функция для закрытия модального окна
+  function closeTaskModal() {
+    document.getElementById("taskModal").style.display = "none";
+  }
+
+  // Закрытие модального окна при клике на крестик
+  document.querySelector(".close").addEventListener("click", closeTaskModal);
+
+  // Закрытие модального окна при нажатии на Esc
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") { // Проверяем, была ли нажата клавиша Esc
+      closeTaskModal(); // Закрываем модальное окно
+    }
+  });
+
+  // Закрытие модального окна при клике вне его области
+  window.addEventListener("click", function (event) {
+    const modal = document.getElementById("taskModal");
+    if (event.target === modal) {
+      closeTaskModal();
+    }
+  });
+</script>
+
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Просмотр проекта</title>
+    <title>Задачи проекта</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
@@ -310,6 +310,32 @@
             background: #254eda;
         }
 
+        .button-group-task-type {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .button-group-task-type button {
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .button-group-task-type button.active {
+            transform: scale(1.05);
+            background: #1a3bb0;
+        }
+
+        .button-group-task-type button:hover {
+            background: #254eda;
+        }
+
         .project-section {
             margin-bottom: 30px;
         }
@@ -461,10 +487,22 @@
 
         .task-list.grid-2x2 {
             grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
+            >li h3{
+                white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+                overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+                text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+                max-width: 500px; /* Ограничиваем максимальную ширину */
+            }
         }
 
         .task-list.grid-3x3 {
             grid-template-columns: repeat(3, 1fr); /* Сетка 3x3 */
+            >li h3{
+                white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+                overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+                text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+                max-width: 300px; /* Ограничиваем максимальную ширину */
+            }
         }
 
         .task-list li {
@@ -546,7 +584,7 @@
     <h2>celesma</h2>
     <ul>
         <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
-        <li><a href="#"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+        <li><a href="/mytasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
         <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
         <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
     </ul>
@@ -605,28 +643,64 @@
 
         <div id="myProjectsSection" class="project-section">
             <h2>Мои задачи</h2>
-            <ul class="task-list">
-                <li th:each="myTask : ${userTasks}">
-                    <h3 th:text="${myTask.title}">Название задачи</h3>
-                    <div class="task-details">
-                        <p><strong>Создатель:</strong> <span th:text="${myTask.creator.username}">Создатель</span></p>
-                        <p><strong>Исполнитель:</strong> <span th:text="${myTask.assignee.username}">Исполнитель</span></p>
-                        <p><strong>Дата создания:</strong>
-                            <span class="created-date" th:text="${#temporals.format(myTask.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
-                        </p>
-                        <p><strong>Дата окончания:</strong>
-                            <span class="end-date" th:text="${#temporals.format(myTask.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
-                            <span class="end-date-display" th:text="${#temporals.format(myTask.endDate, 'dd.MM.yyyy')}">Срок</span>
-                        </p>
-                        <p><strong>До конца:</strong>
-                            <span class="days-until-end"></span>
-                        </p>
-<!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
-                        <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
-                        <p class="description" style="display: none;" th:text="${myTask.description}">Описание задачи</p>
-                    </div>
-                </li>
-            </ul>
+            <div class="button-group-task-type" id="taskTypeButtons" style="display: none;">
+                <button id="assignedTasksBtn" class="active" onclick="showTaskType('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn')">Назначенные мне</button>
+                <button id="createdTasksBtn"  onclick="showTaskType('createdTasksSection', 'createdTasksBtn', 'assignedTasksBtn')">Созданные мной</button>
+            </div>
+
+            <!-- Секция для задач, где пользователь исполнитель -->
+            <div id="assignedTasksSection" class="task-type-section">
+                <!--                <h2>Назначенные мне задачи</h2>-->
+                <ul class="task-list">
+                    <li th:each="task : ${assignedTasks}">
+                        <h3 th:text="${task.title}">Название задачи</h3>
+                        <div class="task-details">
+                            <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
+                            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
+                            <p><strong>Дата создания:</strong>
+                                <span class="created-date" th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+                            </p>
+                            <p><strong>Дата окончания:</strong>
+                                <span class="end-date" th:text="${#temporals.format(task.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+                                <span class="end-date-display" th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}">Срок</span>
+                            </p>
+                            <p><strong>До конца:</strong>
+                                <span class="days-until-end"></span>
+                            </p>
+                            <!--<button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+                            <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+                            <p class="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Секция для задач, созданных пользователем -->
+            <div id="createdTasksSection" class="task-type-section" style="display: none;">
+<!--                <h2>Созданные мной задачи</h2>-->
+                <ul class="task-list">
+                    <li th:each="createdtask : ${createdTasks}">
+                        <h3 th:text="${createdtask.title}">Название задачи</h3>
+                        <div class="task-details">
+                            <p><strong>Создатель:</strong> <span th:text="${createdtask.creator.username}">Создатель</span></p>
+                            <p><strong>Исполнитель:</strong> <span th:text="${createdtask.assignee.username}">Исполнитель</span></p>
+                            <p><strong>Дата создания:</strong>
+                                <span class="created-date" th:text="${#temporals.format(createdtask.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+                            </p>
+                            <p><strong>Дата окончания:</strong>
+                                <span class="end-date" th:text="${#temporals.format(createdtask.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+                                <span class="end-date-display" th:text="${#temporals.format(createdtask.endDate, 'dd.MM.yyyy')}">Срок</span>
+                            </p>
+                            <p><strong>До конца:</strong>
+                                <span class="days-until-end"></span>
+                            </p>
+                            <!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
+                            <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+                            <p class="description" style="display: none;" th:text="${createdtask.description}">Описание задачи</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <div id="allProjectsSection" class="project-section" style="display: none;">
@@ -649,7 +723,7 @@
                         </p>
 <!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
                         <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
-                        <p class="description" id="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
+                        <p class="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
                     </div>
                 </li>
             </ul>
@@ -715,7 +789,22 @@
 </script>
 
 <script>
-    // Функция для переключения разделов
+    // Функция для переключения между "Созданные мной" и "Назначенные мне"
+    function showTaskType(sectionId, activeBtnId, inactiveBtnId) {
+        // Скрываем все секции задач
+        document.querySelectorAll('.task-type-section').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Показываем выбранную секцию
+        document.getElementById(sectionId).style.display = 'block';
+
+        // Устанавливаем активную кнопку
+        document.getElementById(activeBtnId).classList.add('active');
+        document.getElementById(inactiveBtnId).classList.remove('active');
+    }
+
+    // Функция для отображения кнопок при выборе "Мои задачи"
     function showSection(sectionId, activeBtnId, inactiveBtnId) {
         // Скрыть все разделы
         document.getElementById('myProjectsSection').style.display = 'none';
@@ -727,9 +816,17 @@
         // Установить активную кнопку
         document.getElementById(activeBtnId).classList.add('active');
         document.getElementById(inactiveBtnId).classList.remove('active');
+
+        // Показываем кнопки "Созданные мной" и "Назначенные мне" только для "Мои задачи"
+        if (sectionId === 'myProjectsSection') {
+            document.getElementById('taskTypeButtons').style.display = 'flex';
+            showTaskType('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn'); // По умолчанию показываем "Созданные мной"
+        } else {
+            document.getElementById('taskTypeButtons').style.display = 'none';
+        }
     }
 
-    // По умолчанию показываем "Мои проекты"
+    // По умолчанию показываем "Мои задачи"
     document.addEventListener("DOMContentLoaded", function () {
         showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn');
     });
@@ -861,6 +958,13 @@
 
     // Закрытие модального окна при клике на крестик
     document.querySelector(".close").addEventListener("click", closeTaskModal);
+
+    // Закрытие модального окна при нажатии на Esc
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") { // Проверяем, была ли нажата клавиша Esc
+            closeTaskModal(); // Закрываем модальное окно
+        }
+    });
 
     // Закрытие модального окна при клике вне его области
     window.addEventListener("click", function (event) {

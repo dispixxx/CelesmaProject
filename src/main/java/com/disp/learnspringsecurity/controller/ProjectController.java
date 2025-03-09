@@ -25,6 +25,9 @@ public class ProjectController {
     private UserRepository userRepository;
 
     @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
     private ProjectMemberRepository projectMemberRepository;
 
 
@@ -37,7 +40,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     public String viewProject(@PathVariable Long id, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userRepository.findByUsername(username).get();
+        User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(id);
         List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
         List<User> projectUsers = project.getMembers().stream()

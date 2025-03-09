@@ -1,5 +1,6 @@
 package com.disp.learnspringsecurity.controller;
 
+import com.disp.learnspringsecurity.model.CustomUserDetailsService;
 import com.disp.learnspringsecurity.model.User;
 import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class RegistrationController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/user")
     public String createUser(@RequestParam String username,
@@ -28,7 +31,7 @@ public class RegistrationController {
                              @RequestParam String password,
                              RedirectAttributes redirectAttributes) {
         // Check if username already exists
-        if (userRepository.findByUsername(username).isPresent()) {
+        if (userDetailsService.getUserByUsername(username)!=null) {
             redirectAttributes.addFlashAttribute("error", "Username already taken!");
             return "redirect:/register";
         }
@@ -38,7 +41,8 @@ public class RegistrationController {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
-        userRepository.save(user);
+        userDetailsService.saveUser(user);
+//        userRepository.save(user);
 
         redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
         return "redirect:/login";

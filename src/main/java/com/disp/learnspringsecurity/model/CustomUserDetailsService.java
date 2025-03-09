@@ -56,6 +56,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         userRepository.save(user.get());
     }
 
+    public User getUserByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.orElse(null);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
 /*
     private String[] getRoles(User user) {
         if (user.getRole() == null) {

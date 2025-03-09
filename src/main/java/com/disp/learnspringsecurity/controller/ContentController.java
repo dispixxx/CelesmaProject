@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +27,12 @@ public class ContentController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @RequestMapping("/welcome") //Страница для НЕавторизованных пользователей
     public String handleWelcome() {
@@ -55,14 +62,26 @@ public class ContentController {
         return "dashboard";
     }
 
+    @GetMapping("/mytasks")
+    public String getMyTasks(Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username); // Получаем имя текущего пользователя
+        List<Task> createdTasks = taskService.getTasksByCreatorId(currentUser.getId()); // Задачи, где пользователь создатель
+        List<Task> assignedTasks = taskService.getTasksByAssigneeId(currentUser.getId()); // Задачи, где пользователь исполнитель
+
+        model.addAttribute("createdTasks", createdTasks);
+        model.addAttribute("assignedTasks", assignedTasks);
+        return "my_tasks"; // Имя шаблона Thymeleaf
+    }
+
     @GetMapping("/user/profile")
     public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String username = authenticationFacade.getAuthenticatedUsername();
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        User currentUser = userDetailsService.getUserByUsername(username);
         //String username = userDetails.getUsername();
         String userEmail = userDetails.getEmail();
-        String userFirstName = userOptional.get().getFirstName();
-        String userLastName = userOptional.get().getLastName();
+        String userFirstName = currentUser.getFirstName();
+        String userLastName = currentUser.getLastName();
         model.addAttribute("userFirstName", Objects.requireNonNullElse(userFirstName, "[FIRSTNAME]"));
         model.addAttribute("userLastName", Objects.requireNonNullElse(userLastName, "[LASTNAME]"));
         model.addAttribute("username", username);

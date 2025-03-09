@@ -19,7 +19,7 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
-    public Task createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate) {
+    public void createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate) {
         Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);
@@ -31,7 +31,7 @@ public class TaskService {
             User assignee = userRepository.findById(assigneeId).orElseThrow();
             task.setAssignee(assignee);
         }
-        return taskRepository.save(task);
+        taskRepository.save(task);
     }
 
     public List<Task> getTasksByAssigneeIdAndProjectId(Long assigneeId, Long projectId) {
@@ -40,5 +40,13 @@ public class TaskService {
 
     public List<Task> getTasksByProjectId(Long projectId) {
         return taskRepository.findByProjectId(projectId);
+    }
+
+    public List<Task> getTasksByCreatorId(Long creatorId) {
+        return taskRepository.findByCreatorId(creatorId);
+    }
+
+    public List<Task> getTasksByAssigneeId(Long creatorId) {
+        return taskRepository.findByAssigneeId(creatorId);
     }
 }
