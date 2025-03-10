@@ -128,5 +128,17 @@ public class ProjectService {
 
         return members;
     }
+
+    public void addJoinRequest(Project project, User user) {
+        // Логика для добавления заявки на вступление
+    }
+
+    public void approveJoinRequest(Project project, User user) {
+        // Логика для одобрения заявки
+    }
+
+    public void rejectJoinRequest(Project project, User user) {
+        // Логика для отклонения заявки
+    }
 }
 

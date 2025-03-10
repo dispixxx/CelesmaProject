@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -33,7 +31,7 @@
             position: sticky;
             top: 0; /* Прилипает к верхнему краю */
             left: 0; /* Прилипает к левому краю */
-            transition: width 0.3s;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
         }
@@ -44,22 +42,26 @@
         }
 
         .sidebar h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding-left: 9px;
-            /*margin-top: 0;*/
-            transition: opacity 0.3s;
             font-family: "Orbitron", serif;
             font-optical-sizing: auto;
             font-style: normal;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            >span{
+                width: 100%;
+            }
         }
 
         .sidebar.collapsed h2 {
-            opacity: 0;
+            transform: translateX(-9px);
         }
 
         .sidebar ul {
             list-style-type: none;
             padding: 0;
-            /*margin-top: 30px;*/
             transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
         }
 
@@ -99,7 +101,7 @@
         }
 
         .sidebar span {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             display: inline-block;
             min-height: 20px; /* Устанавливаем высоту, чтобы текст не исчезал полностью */
             white-space: nowrap;
@@ -110,7 +112,7 @@
             opacity: 0;
             width: 0;
             visibility: hidden;
-         }
+        }
         .sidebar.collapsed span::after {
             content: "";
             display: none;
@@ -132,6 +134,7 @@
         }
 
         .user-name {
+            width: 130px;
             max-width: 130px; /* Ограничивает ширину */
             white-space: nowrap; /* Запрещает перенос текста */
             overflow: hidden; /* Обрезает текст.Убирает анимацию на свертывании((ПЕЧАЛЬ БЕДА(( */
@@ -243,39 +246,8 @@
         .main-content {
             flex-grow: 1;
             padding: 20px 30px 20px 40px;
-            /*background: linear-gradient(to bottom, #ffffff, #cce0ff);*/
             transition: margin-left 0.3s;
         }
-
-        /*.project {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .project h3 {
-            margin-top: 0;
-        }
-
-        .create-project-btn {
-            display: block;
-            margin: 0 auto;
-        }
-
-        button {
-            background-color: #3366ff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #2851a3;
-        }*/
 
         footer {
             display: flex;
@@ -308,15 +280,37 @@
         .search-project-btn:hover {
             background: #254eda;
         }
+
+        .toggle-icon {
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: transform 0.5s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .toggle-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
+        }
+
+        .sidebar.collapsed .toggle-icon {
+            transform: scale(-1, 1) translateX(9px);
+        }
+
     </style>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
 </head>
 <body>
+
 <div class="sidebar">
-    <button class="toggle-btn">☰</button>
-    <h2>celesma</h2>
+    <!--    <button class="toggle-btn">☰</button>-->
+    <h2>
+        <span>celesma</span>
+        <i class="fas fa-chevron-left toggle-icon"></i> <!-- Добавленная иконка -->
+    </h2>
     <ul>
         <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
-        <li><a href="/mytasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+        <li><a href="/my-tasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
         <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
         <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
     </ul>
@@ -359,17 +353,21 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let sidebar = document.querySelector(".sidebar");
-        let toggleBtn = document.querySelector(".toggle-btn");
+        // let toggleBtn = document.querySelector(".toggle-btn");
+        let toggleIcon = document.querySelector(".toggle-icon");
 
         // Проверяем состояние из localStorage
         if (localStorage.getItem("sidebarCollapsed") === "true") {
             sidebar.classList.add("collapsed");
         }
 
-        toggleBtn.addEventListener("click", function () {
-            sidebar.classList.toggle("collapsed");
+        // toggleBtn.addEventListener("click", function () {
+        //     sidebar.classList.toggle("collapsed");
+        //     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        // });
 
-            // Запоминаем состояние сайдбара
+        toggleIcon.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
             localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
         });
     });

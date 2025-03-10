@@ -62,7 +62,7 @@ public class ContentController {
         return "dashboard";
     }
 
-    @GetMapping("/mytasks")
+    @GetMapping("/my-tasks")
     public String getMyTasks(Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username); // Получаем имя текущего пользователя

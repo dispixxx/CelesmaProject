@@ -37,22 +37,58 @@ public class ProjectController {
         return "project_create";
     }
 
-    @GetMapping("/{id}")
-    public String viewProject(@PathVariable Long id, Model model) {
+    @GetMapping("/{projectId}")
+    public String viewProject(@PathVariable Long projectId, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
-        Project project = projectService.getProjectById(id);
+        Project project = projectService.getProjectById(projectId);
         List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
         List<User> projectUsers = project.getMembers().stream()
                 .map(ProjectMember::getUser)
                 .toList();
+
+        // Проверяем, является ли пользователь участником проекта
+        boolean isMember = projectUsers.contains(currentUser);
+        // Проверяем, является ли пользователь администратором или модератором
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
         model.addAttribute("project", project);
         model.addAttribute("members", members);
         model.addAttribute("projectUsers", projectUsers);
         model.addAttribute("currentUser", currentUser); // Передаем текущего пользователя
         model.addAttribute("projectRoles", ProjectRole.values());
+        model.addAttribute("isMember", isMember);
+        model.addAttribute("isAdminOrModerator", isAdminOrModerator);
         return "project_view";
     }
+
+    @PostMapping("/{projectId}/join")
+    public String joinProject(@PathVariable Long projectId) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        projectService.addJoinRequest(project, currentUser);
+        return "redirect:/projects/" + projectId;
+    }
+
+/*    @PostMapping("/{projectId}/approve/{userId}")
+    public String approveJoinRequest(@PathVariable Long projectId, @PathVariable Long userId) {
+        Project project = projectService.getProjectById(projectId);
+        User user = userDetailsService.getUserById(userId);
+        projectService.approveJoinRequest(project, user);
+        return "redirect:/projects/" + projectId;
+    }
+
+    @PostMapping("/{projectId}/reject/{userId}")
+    public String rejectJoinRequest(@PathVariable Long projectId, @PathVariable Long userId) {
+        Project project = projectService.getProjectById(projectId);
+        User user = userDetailsService.getUserById(userId);
+        projectService.rejectJoinRequest(project, user);
+        return "redirect:/projects/" + projectId;
+    }*/
 
     @GetMapping("/search") // Поиск проектов
     public String projectSearch(@RequestParam(name = "query", required = false) String query, Model model) {

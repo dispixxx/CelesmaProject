@@ -41,16 +41,21 @@
     }
 
     .sidebar h2 {
-      padding-left: 9px;
-      /*margin-top: 0;*/
-      transition: opacity 0.3s;
-      font-family: "Orbitron", serif;
-      font-optical-sizing: auto;
-      font-style: normal;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 9px;
+        font-family: "Orbitron", serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+        transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        >span{
+            width: 100%;
+        }
     }
 
     .sidebar.collapsed h2 {
-      opacity: 0;
+        transform: translateX(-9px);
     }
 
     .sidebar ul {
@@ -94,7 +99,7 @@
     }
 
     .sidebar span {
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+        transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         display: inline-block;
         min-height: 20px; /* Устанавливаем высоту, чтобы текст не исчезал полностью */
         white-space: nowrap;
@@ -127,6 +132,7 @@
     }
 
     .user-name {
+        width: 130px;
         max-width: 130px; /* Ограничивает ширину */
         white-space: nowrap; /* Запрещает перенос текста */
         overflow: hidden; /* Обрезает текст */
@@ -293,25 +299,43 @@
       text-align: right;
       margin-right: 5px;
     }
+
+    .toggle-icon {
+        cursor: pointer;
+        padding: 5px 10px;
+        transition: transform 0.3s ease-in-out;
+        border-radius: 5px;
+    }
+
+    .toggle-icon:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
+    }
+
+    .sidebar.collapsed .toggle-icon {
+        transform: scale(-1, 1) translateX(9px);
+    }
   </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <button class="toggle-btn">☰</button>
-  <h2>celesma</h2>
-  <ul>
-    <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
-    <li><a href="/mytasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
-    <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
-    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
-  </ul>
-  <div class="user-container">
-    <span class="user-name" sec:authentication="name"></span>
-    <a href="/user/profile" class="user-icon">
-      <i class="fas fa-user"></i>
-    </a>
-  </div>
+    <!--    <button class="toggle-btn">☰</button>-->
+    <h2>
+        <span>celesma</span>
+        <i class="fas fa-chevron-left toggle-icon"></i> <!-- Добавленная иконка -->
+    </h2>
+    <ul>
+        <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
+        <li><a href="/my-tasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
+    </ul>
+    <div class="user-container">
+        <span class="user-name" sec:authentication="name"></span>
+        <a href="/user/profile" class="user-icon">
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
 </div>
 
 <div class="container">
@@ -344,24 +368,26 @@
 </script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let sidebar = document.querySelector(".sidebar");
-    let toggleBtn = document.querySelector(".toggle-btn");
+    document.addEventListener("DOMContentLoaded", function () {
+        let sidebar = document.querySelector(".sidebar");
+        // let toggleBtn = document.querySelector(".toggle-btn");
+        let toggleIcon = document.querySelector(".toggle-icon");
 
-    // Проверяем состояние из localStorage
-    if (localStorage.getItem("sidebarCollapsed") === "true") {
-      sidebar.classList.add("collapsed");
-    }
+        // Проверяем состояние из localStorage
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
 
-    toggleBtn.addEventListener("click", function () {
-      sidebar.classList.toggle("collapsed");
+        // toggleBtn.addEventListener("click", function () {
+        //     sidebar.classList.toggle("collapsed");
+        //     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        // });
 
-      // Запоминаем состояние сайдбара
-      localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-
+        toggleIcon.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
     });
-  });
-
 </script>
 </body>
 </html>

@@ -61,6 +61,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user.orElse(null);
     }
 
+    public User getUserById(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        return user.orElse(null);
+    }
+
     public void saveUser(User user) {
         userRepository.save(user);
     }
