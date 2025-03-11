@@ -279,7 +279,7 @@
       /*color: #3366ff;!*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*!*/
     }
 
-    .back-btn, .create-btn, .view-task-btn {
+    .back-btn, .create-btn, .view-task-btn, .request-btn {
       display: block;
       margin: 20px auto;
       background: #3366ff;
@@ -293,13 +293,16 @@
       transition: background 0.3s ease-in-out;
     }
 
-    .back-btn:hover, .create-btn:hover, .view-task-btn:hover {
+    .back-btn:hover, .create-btn:hover, .view-task-btn:hover, .request-btn:hover {
       background-color: #254eda;
     }
 
-    button:hover {
-      /*background-color: #254eda;*/
+    .request-btn.disabled {
+      background-color: grey !important;
+      cursor: not-allowed !important;
     }
+
+
 
     .project-name-and-id{
       display: flex;
@@ -378,32 +381,6 @@
       transform: scale(-1, 1) translateX(9px);
     }
 
-    .approve-btn {
-      background-color: #4CAF50;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      margin-left: 10px;
-    }
-
-    .reject-btn {
-      background-color: #f44336;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      margin-left: 10px;
-    }
-
-    .approve-btn:hover {
-      background-color: #45a049;
-    }
-
-    .reject-btn:hover {
-      background-color: #d32f2f;
-    }
-
   </style>
 </head>
 <body>
@@ -454,17 +431,25 @@
     </div>
 
     <div th:unless="${isMember}">
-      <a id="joinRequestButton" class="create-btn">Подать заявку на вступление</a>
+      <div th:if="${isApplicant}">
+        <a class="request-btn disabled" style="background-color: grey; cursor: not-allowed;">Вы уже подали заявку на вступление</a>
+      </div>
+      <div th:unless="${isApplicant}">
+        <a id="joinRequestButton" class="request-btn">Подать заявку на вступление</a>
+      </div>
     </div>
 
-    <!-- Список заявок на вступление (виден только администраторам и модераторам) -->
+    <div th:if="${isAdminOrModerator}">
+      <a th:href="@{/projects/{projectId}/manage(projectId=${project.id})}" class="create-btn">Управление проектом</a>
+    </div>
+
 <!--    <div th:if="${isAdminOrModerator}">
       <h2>Заявки на вступление</h2>
       <ul>
-        <li th:each="request : ${joinRequests}">
-          <span th:text="${request.user.username}"></span>
-          <a th:href="@{/projects/{projectId}/approve/{userId}(projectId=${project.id}, userId=${request.user.id})}" class="approve-btn">Одобрить</a>
-          <a th:href="@{/projects/{projectId}/reject/{userId}(projectId=${project.id}, userId=${request.user.id})}" class="reject-btn">Отклонить</a>
+        <li th:each="applicant : ${project.applicants}">
+          <span th:text="${applicant.username}"></span>
+          <a th:href="@{/projects/{projectId}/approve/{userId}(projectId=${project.id}, userId=${applicant.id})}" class="approve-btn">Одобрить</a>
+          <a th:href="@{/projects/{projectId}/reject/{userId}(projectId=${project.id}, userId=${applicant.id})}" class="reject-btn">Отклонить</a>
         </li>
       </ul>
     </div>-->
@@ -508,7 +493,7 @@
 </script>
 
 <script>
-  document.getElementById('joinRequestButton').addEventListener('click', function() {
+  document.getElementById('joinRequestButton')?.addEventListener('click', function() {
     const projectId = [[${project.id}]]; // Получаем ID проекта из Thymeleaf
     const userId = [[${currentUser.id}]]; // Получаем ID текущего пользователя из Thymeleaf
 

@@ -27,6 +27,14 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectMember> members = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "project_applicants",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> applicants = new HashSet<>();
+
     public void addMember(User user, ProjectRole role) {
         ProjectMember member = new ProjectMember();
         member.setProject(this);
@@ -93,4 +101,11 @@ public class Project {
         this.ownerUser = ownerUser;
     }
 
+    public Set<User> getApplicants() {
+        return applicants;
+    }
+
+    public void setApplicants(Set<User> applicants) {
+        this.applicants = applicants;
+    }
 }

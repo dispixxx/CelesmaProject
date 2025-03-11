@@ -22,14 +22,7 @@ public class ProjectController {
     private AuthenticationFacade authenticationFacade;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private ProjectMemberRepository projectMemberRepository;
-
 
     @GetMapping("/new")
     public String showProjectForm(Model model) {
@@ -55,6 +48,10 @@ public class ProjectController {
             ProjectRole role = project.getMemberRole(currentUser);
             isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
         }
+
+        List<User> projectApplicants =project.getApplicants().stream().toList(); //Список тех, кто уже отправил запрос.
+        boolean isApplicant = projectApplicants.contains(currentUser);
+
         model.addAttribute("project", project);
         model.addAttribute("members", members);
         model.addAttribute("projectUsers", projectUsers);
@@ -62,7 +59,98 @@ public class ProjectController {
         model.addAttribute("projectRoles", ProjectRole.values());
         model.addAttribute("isMember", isMember);
         model.addAttribute("isAdminOrModerator", isAdminOrModerator);
+        model.addAttribute("isApplicant", isApplicant);
         return "project_view";
+    }
+
+    @GetMapping("/{projectId}/manage")
+    public String manageProject(@PathVariable Long projectId, Model model){
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<User> projectUsers = project.getMembers().stream()
+                .map(ProjectMember::getUser)
+                .toList();
+
+        // Проверяем, является ли пользователь участником проекта
+        boolean isMember = projectUsers.contains(currentUser);
+        // Проверяем, является ли пользователь администратором или модератором
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
+
+        // Проверяем, является ли пользователь администратором или модератором
+        if (!isAdminOrModerator) {
+            return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
+        }
+        model.addAttribute("project", project);
+
+        return "project_management";
+
+    }
+
+    @GetMapping("/{projectId}/manage/members")
+    public String manageProjectMembers(@PathVariable Long projectId, Model model){
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
+
+        model.addAttribute("project", project);
+        model.addAttribute("projectMembers", members);
+        return "project_members";
+    }
+
+    /*@PostMapping("/{userId}/change-role")
+    @ResponseBody
+    public ResponseEntity<Void> changeRole(
+            @PathVariable Long projectId,
+            @PathVariable Long userId,
+            @RequestParam String role) {
+        projectService.changeMemberRole(projectId, userId, role);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{userId}/remove-member")
+    @ResponseBody
+    public ResponseEntity<Void> removeMember(
+            @PathVariable Long projectId,
+            @PathVariable Long userId) {
+        projectService.removeMember(projectId, userId);
+        return ResponseEntity.ok().build();
+    }*/
+
+    @GetMapping("/{projectId}/manage/applicants")
+    public String manageProjectApplicants(@PathVariable Long projectId, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<User> projectUsers = project.getMembers().stream()
+                .map(ProjectMember::getUser)
+                .toList();
+
+        // Проверяем, является ли пользователь участником проекта
+        boolean isMember = projectUsers.contains(currentUser);
+        // Проверяем, является ли пользователь администратором или модератором
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
+
+        // Проверяем, является ли пользователь администратором или модератором
+        if (!isAdminOrModerator) {
+            return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
+        }
+
+        // Получаем список заявок на вступление
+        List<User> applicants = project.getApplicants().stream().toList();
+        model.addAttribute("applicants", applicants);
+        model.addAttribute("project", project);
+
+        return "project_applicants_requests"; // Имя шаблона для страницы управления
     }
 
     @PostMapping("/{projectId}/join")
@@ -74,21 +162,17 @@ public class ProjectController {
         return "redirect:/projects/" + projectId;
     }
 
-/*    @PostMapping("/{projectId}/approve/{userId}")
-    public String approveJoinRequest(@PathVariable Long projectId, @PathVariable Long userId) {
-        Project project = projectService.getProjectById(projectId);
-        User user = userDetailsService.getUserById(userId);
-        projectService.approveJoinRequest(project, user);
-        return "redirect:/projects/" + projectId;
+    @PostMapping("/{projectId}/manage/applicants/approve/{userId}")
+    public String approveApplicant(@PathVariable Long projectId, @PathVariable Long userId) {
+        projectService.approveApplicant(projectId, userId);
+        return "redirect:/projects/" + projectId + "/manage";
     }
 
-    @PostMapping("/{projectId}/reject/{userId}")
-    public String rejectJoinRequest(@PathVariable Long projectId, @PathVariable Long userId) {
-        Project project = projectService.getProjectById(projectId);
-        User user = userDetailsService.getUserById(userId);
-        projectService.rejectJoinRequest(project, user);
-        return "redirect:/projects/" + projectId;
-    }*/
+    @PostMapping("/{projectId}/manage/applicants/reject/{userId}")
+    public String rejectApplicant(@PathVariable Long projectId, @PathVariable Long userId) {
+        projectService.rejectApplicant(projectId, userId);
+        return "redirect:/projects/" + projectId + "/manage";
+    }
 
     @GetMapping("/search") // Поиск проектов
     public String projectSearch(@RequestParam(name = "query", required = false) String query, Model model) {

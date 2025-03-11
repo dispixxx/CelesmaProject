@@ -130,15 +130,49 @@ public class ProjectService {
     }
 
     public void addJoinRequest(Project project, User user) {
-        // Логика для добавления заявки на вступление
+        // Проверяем, не подал ли пользователь уже заявку и не числится ли пользователь в уже проекте
+        List<User> alreadyMembers = project.getMembers().stream().map(ProjectMember::getUser).toList();
+        if (!project.getApplicants().contains(user) && !alreadyMembers.contains(user)) {
+            project.getApplicants().add(user);
+            projectRepository.save(project);
+        }
     }
 
-    public void approveJoinRequest(Project project, User user) {
-        // Логика для одобрения заявки
+    public void approveApplicant(Long projectId, Long userId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Удаляем пользователя из списка заявок
+        project.getApplicants().remove(user);
+
+        // Добавляем пользователя в список участников
+        ProjectMember member = new ProjectMember();
+        member.setProject(project);
+        member.setUser(user);
+        member.setRole(ProjectRole.MEMBER);
+        project.getMembers().add(member);
+
+        projectRepository.save(project);
     }
 
-    public void rejectJoinRequest(Project project, User user) {
-        // Логика для отклонения заявки
+    public void rejectApplicant(Long projectId, Long userId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Удаляем пользователя из списка заявок
+        project.getApplicants().remove(user);
+        projectRepository.save(project);
     }
+
+    public boolean isAdminOrModerator(Project project, User user) {
+        return project.getMembers().stream()
+                .anyMatch(member -> member.getUser().equals(user) &&
+                        (member.getRole() == ProjectRole.ADMIN || member.getRole() == ProjectRole.MODERATOR));
+    }
+
 }
 

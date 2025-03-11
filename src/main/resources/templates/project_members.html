@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление проектом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <style>
+        /* Стили аналогичные странице просмотра проекта */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, #eef2ff, #cfd9ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2C2F33;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: sticky;
+            top: 0; /* Прилипает к верхнему краю */
+            left: 0; /* Прилипает к левому краю */
+            transition: width 0.3s;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+            padding: 20px 20px 20px 20px;
+        }
+
+        .sidebar h2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 9px;
+            font-family: "Orbitron", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            >span{
+                width: 100%;
+            }
+        }
+
+        .sidebar.collapsed h2 {
+            transform: translateX(-9px);
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed ul {
+            transform: translateX(-9px);
+        }
+
+        .sidebar ul li {
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            min-height: 30px;
+        }
+
+        .sidebar ul li a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+        }
+
+        .sidebar.collapsed ul li a:hover {
+            padding: 5px 5px 5px 10px;
+        }
+
+        .sidebar span {
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            display: inline-block;
+            min-height: 20px;
+            white-space: nowrap;
+            visibility: visible;
+        }
+
+        .sidebar.collapsed span {
+            opacity: 0;
+            width: 0;
+            visibility: hidden;
+        }
+
+        .user-container {
+            padding-left: 9px;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            transition: left 0.3s;
+        }
+
+        .sidebar.collapsed .user-container {
+            left: -2px;
+        }
+
+        .user-name {
+            width: 130px;
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            padding-left: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .sidebar.collapsed .user-name {
+            cursor: none;
+        }
+
+        .user-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #8A8D91;
+            color: white;
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed .user-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+
+        .user-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+
+        .sidebar.collapsed .toggle-btn {
+            right: -10px;
+        }
+
+        .main-content {
+            scrollbar-gutter: stable; /* Резервирует место для скроллбара */
+            overflow-y: auto; /* Включаем вертикальную прокрутку */
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .container {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "Orbitron", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-head{
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+            .project-title{
+                font-size: 14px;
+                color: gray;
+                font-weight: normal;
+            }
+        }
+
+        .btn-back {
+            background-color: transparent;
+            color: #3366ff;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 1px;
+        }
+
+        .btn-back::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: transparent; /* Изначально подчёркивание невидимо */
+            transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+        }
+
+        .btn-back:hover::after {
+            background-color: #3366ff; /* Подчёркивание при наведении */
+        }
+
+        .toggle-icon {
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: transform 0.3s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .toggle-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
+        }
+
+        .sidebar.collapsed .toggle-icon {
+            transform: scale(-1, 1) translateX(9px);
+        }
+
+        .member-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .member-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-action.change-role {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .btn-action.remove-member {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>
+        <span>celesma</span>
+        <i class="fas fa-chevron-left toggle-icon"></i>
+    </h2>
+    <ul>
+        <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
+        <li><a href="/my-tasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
+    </ul>
+    <div class="user-container">
+        <span class="user-name" sec:authentication="name"></span>
+        <a href="/user/profile" class="user-icon">
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container">
+        <div class="form-head">
+            <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
+            <div class="project-title" th:text="${project.name}"></div>
+        </div>
+        <h1 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 0;">
+            <span>Управление проектом</span>
+        </h1>
+        <h2 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 0; font-size: 20px">
+            <span>Участники</span>
+        </h2>
+
+        <div class="container-members">
+<!--            <h1 class="text-center mb-4">Управление участниками проекта</h1>-->
+
+            <!-- Список участников -->
+            <div th:each="member : ${projectMembers}" class="member-card">
+                <div class="member-info">
+                    <i class="fas fa-user-circle fa-3x"></i>
+                    <div>
+                        <h5 th:text="${member.user.username}">Имя пользователя</h5>
+                        <p th:text="${member.role}">Роль</p>
+                    </div>
+                </div>
+                <div class="member-actions">
+                    <!-- Кнопка для изменения роли -->
+                    <button class="btn-action change-role" th:onclick="|changeRole(${member.user.id})|">
+                        Изменить роль
+                    </button>
+                    <!-- Кнопка для удаления участника -->
+                    <button class="btn-action remove-member" th:onclick="|removeMember(${member.user.id})|">
+                        Удалить
+                    </button>
+                </div>
+            </div>
+
+            <!-- Кнопка для возврата на страницу проекта -->
+            <div class="text-center mt-4">
+                <a th:href="@{/projects/{id}(id=${project.id})}" class="btn btn-secondary">
+                    Назад к проекту
+                </a>
+            </div>
+        </div>
+
+        <!-- Модальное окно для изменения роли -->
+        <!--<div class="modal fade" id="changeRoleModal" tabindex="-1" aria-labelledby="changeRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeRoleModalLabel">Изменить роль участника</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="changeRoleForm">
+                            <div class="mb-3">
+                                <label for="roleSelect" class="form-label">Выберите роль</label>
+                                <select class="form-select" id="roleSelect" name="role">
+                                    <option value="ADMIN">Администратор</option>
+                                    <option value="MEMBER">Участник</option>
+                                    <option value="VIEWER">Наблюдатель</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="userId" name="userId">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary" onclick="submitRoleChange()">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+
+    </div>
+</div>
+<!-- Подключение Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!--<script>
+    // Функция для открытия модального окна изменения роли
+    function changeRole(userId) {
+        document.getElementById('userId').value = userId;
+        const modal = new bootstrap.Modal(document.getElementById('changeRoleModal'));
+        modal.show();
+    }
+
+    // Функция для отправки формы изменения роли
+    function submitRoleChange() {
+        const form = document.getElementById('changeRoleForm');
+        const formData = new FormData(form);
+        const userId = formData.get('userId');
+        const role = formData.get('role');
+
+        fetch(`/projects/${userId}/change-role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        }).then(response => {
+            if (response.ok) {
+                location.reload(); // Перезагрузить страницу после успешного изменения
+            }
+        });
+    }
+
+    // Функция для удаления участника
+    function removeMember(userId) {
+        if (confirm('Вы уверены, что хотите удалить этого участника?')) {
+            fetch(`/projects/${userId}/remove-member`, {
+                method: 'POST',
+            }).then(response => {
+                if (response.ok) {
+                    location.reload(); // Перезагрузить страницу после успешного удаления
+                }
+            });
+        }
+    }
+</script>-->
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let sidebar = document.querySelector(".sidebar");
+        // let toggleBtn = document.querySelector(".toggle-btn");
+        let toggleIcon = document.querySelector(".toggle-icon");
+
+        // Проверяем состояние из localStorage
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+        }
+
+        // toggleBtn.addEventListener("click", function () {
+        //     sidebar.classList.toggle("collapsed");
+        //     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        // });
+
+        toggleIcon.addEventListener("click", function () {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
+    });
+</script>
+
+</body>
+</html>
