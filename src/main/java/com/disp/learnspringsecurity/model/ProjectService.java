@@ -46,26 +46,34 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    // Добавление участника в проект с указанием роли
-    public void addMemberToProject(Long projectId, Long userId, ProjectRole role) {
+    // Обновление роли участника в проекте
+    public void updateMemberRole(Long projectId, Long memberId, ProjectRole role) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        project.addMember(user, role); // Добавляем участника с ролью
+        ProjectMember projectMember = projectMemberRepository.findById(memberId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found. UserId:" + memberId));
+        Long userId = projectMember.getUser().getId();
+        Long ownerId = project.getOwnerUser().getId();
+        if(userId.equals(ownerId)) {
+            throw new IllegalStateException("User is owner");
+        }
+        project.updateMemberRole(projectMember, role); // Обновляем роль участника
         projectRepository.save(project);
     }
 
-    // Обновление роли участника в проекте
-    public void updateMemberRole(Long projectId, Long userId, ProjectRole role) {
+    public void deleteMember(Long projectId, Long memberId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        project.updateMemberRole(user, role); // Обновляем роль участника
+            .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+        ProjectMember projectMember = projectMemberRepository.findById(memberId)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found. UserId:" + memberId));
+        Long userId = projectMember.getUser().getId();
+        Long ownerId = project.getOwnerUser().getId();
+        if(userId.equals(ownerId)) {
+            throw new IllegalStateException("User is owner");
+        }
+        project.deleteMember(projectMember);
         projectRepository.save(project);
+
     }
 
     // Получение проектов, в которых участвует пользователь
@@ -85,7 +93,7 @@ public class ProjectService {
 
     // Получение проекта по ID с участниками
     public Project getProjectById(Long id) {
-        return projectRepository.findByIdWithMembers(id)
+        return projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
     }
 
@@ -115,6 +123,7 @@ public class ProjectService {
         }
     }
 
+    //Сортированный список по приоритету (ADMIN->MODERATOR->MEMBER)
     public List<ProjectMember> getSortedProjectMembers(Long projectId) {
         List<ProjectMember> members = projectMemberRepository.findByProjectId(projectId);
 
@@ -129,6 +138,7 @@ public class ProjectService {
         return members;
     }
 
+    //Добавляем пользователя в список желащтх вступить
     public void addJoinRequest(Project project, User user) {
         // Проверяем, не подал ли пользователь уже заявку и не числится ли пользователь в уже проекте
         List<User> alreadyMembers = project.getMembers().stream().map(ProjectMember::getUser).toList();
@@ -138,6 +148,7 @@ public class ProjectService {
         }
     }
 
+    //Принять запрос на вступление
     public void approveApplicant(Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
@@ -157,6 +168,7 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    //Отказать в запрое на вступление
     public void rejectApplicant(Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
@@ -166,12 +178,6 @@ public class ProjectService {
         // Удаляем пользователя из списка заявок
         project.getApplicants().remove(user);
         projectRepository.save(project);
-    }
-
-    public boolean isAdminOrModerator(Project project, User user) {
-        return project.getMembers().stream()
-                .anyMatch(member -> member.getUser().equals(user) &&
-                        (member.getRole() == ProjectRole.ADMIN || member.getRole() == ProjectRole.MODERATOR));
     }
 
 }

@@ -43,13 +43,14 @@ public class Project {
         this.members.add(member);
     }
 
-    public void updateMemberRole(User user, ProjectRole role) {
-        for (ProjectMember member : members) {
-            if (member.getUser().equals(user)) {
-                member.setRole(role);
-                break;
-            }
+    public void updateMemberRole(ProjectMember projectMember, ProjectRole role) {
+        if (members.contains(projectMember)){
+            projectMember.setRole(role);
         }
+    }
+
+    public void deleteMember(ProjectMember projectMember) {
+        members.remove(projectMember);
     }
 
     public ProjectRole getMemberRole(User user) {
