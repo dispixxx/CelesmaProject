@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="(${task.title} ?: (${task.id}))"></title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, #eef2ff, #cfd9ff);
+            margin: 0;
+            padding: 20px;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("/image/background_work.jpg");
+            opacity: 0.1;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            >h1{
+                font-family: 'Montserrat', sans-serif;
+                color: #3366ff;
+                margin-top: 10px;
+                text-align: center;
+            }
+        }
+
+        .task-details {
+            margin-top: 20px;
+        }
+        .task-details p {
+            margin: 10px 0;
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+        .comment {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .comment p {
+            margin: 5px 0;
+        }
+        .comment-form {
+            margin-top: 20px;
+        }
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .comment-form button {
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .comment-form button:hover {
+            background: #254eda;
+        }
+
+        /*    КНОПКА НАЗАД  */
+        .form-head{
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+            .project-title{
+                font-size: 14px;
+                color: gray;
+                font-weight: normal;
+            }
+        }
+
+        .btn-back {
+            background-color: transparent;
+            color: #3366ff;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 1px;
+        }
+
+        .btn-back::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: transparent; /* Изначально подчёркивание невидимо */
+            transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+        }
+
+        .btn-back:hover::after {
+            background-color: #3366ff; /* Подчёркивание при наведении */
+        }
+    /*    КНОПКА НАЗАД  */
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-head">
+        <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
+        <div class="project-title" th:text="${task.project.name}"></div>
+    </div>
+    <h1 th:text="${task.title}">Название задачи</h1>
+    <div class="task-details">
+        <p><strong>Проект:</strong> <span th:text="${task.project.name}"></span></p>
+        <p><strong>Создатель:</strong> <span th:text="${task.creator.username}"></span></p>
+        <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}"></span></p>
+        <p><strong>Дата создания:</strong> <span th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}"></span></p>
+        <p><strong>Дата окончания:</strong> <span th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}"></span></p>
+        <p><strong>Описание:</strong> <span th:text="${task.description}"></span></p>
+    </div>
+    <div class="comments-section"><!--
+        <h2>Комментарии</h2>
+        <div th:each="comment : ${task.comments}" class="comment">
+            <p><strong th:text="${comment.author.username}"></strong> <span th:text="${comment.text}"></span></p>
+            <p><small th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}"></small></p>
+        </div>
+        <div class="comment-form">
+            <form th:action="@{/tasks/{id}/comment(id=${task.id})}" method="post">
+                <textarea name="commentText" placeholder="Добавить комментарий..." required></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+        </div>
+    --></div>
+</div>
+</body>
+</html>

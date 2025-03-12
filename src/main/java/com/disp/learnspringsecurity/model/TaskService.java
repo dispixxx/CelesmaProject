@@ -49,4 +49,8 @@ public class TaskService {
     public List<Task> getTasksByAssigneeId(Long creatorId) {
         return taskRepository.findByAssigneeId(creatorId);
     }
+
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Задача не найдена"));
+    }
 }

@@ -30,17 +30,15 @@ public class TaskController {
     @Autowired
     private ProjectService projectService;
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private AuthenticationFacade authenticationFacade;
 
-    @Autowired
-    private TaskRepository taskRepository;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+
 
     @GetMapping
     public String getProjectsTasks(@PathVariable Long projectId, Model model) {
@@ -63,6 +61,13 @@ public class TaskController {
         model.addAttribute("projectId", project.getId());
 
         return "project_tasks";
+    }
+
+    @GetMapping("/{id}")
+    public String getTaskDetails(@PathVariable Long id, Model model) {
+        Task task = taskService.getTaskById(id);
+        model.addAttribute("task", task);
+        return "task";
     }
 
     @GetMapping("/create")
@@ -95,4 +100,6 @@ public class TaskController {
             throw new UsernameNotFoundException(userDetails.getUsername());
         }
     }
+
+
 }

@@ -18,6 +18,19 @@
       display: flex;
     }
 
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("/image/background_work.jpg");
+      opacity: 0.1;
+      background-size: cover;
+      z-index: -1;
+    }
+
     .sidebar {
       width: 250px;
       background-color: #2C2F33;
@@ -169,26 +182,6 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
 
-    .toggle-btn {
-      position: absolute;
-      top: 50%;
-      right: -10px;
-      width: 40px;
-      height: 20vh;
-      background: #2C2F33;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: white;
-      transform: translateY(-50%);
-      padding: 10px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.3s ease-in-out;
-    }
-
     .sidebar.collapsed .toggle-btn {
       right: -10px;
     }
@@ -205,7 +198,8 @@
 
     .container {
       flex: 2;
-      background: rgba(255, 255, 255, 0.8);
+      /*background: rgba(255, 255, 255, 0.8);*/
+      background: rgba(255, 255, 255);
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -228,37 +222,93 @@
       padding: 0;
     }
 
-    .task-list li {
-      background: #f0f4ff;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 10px;
-      border: 2px solid #3366ff;
-      text-align: left;
-    }
-
     .task-list li p {
       margin: 5px 0;
       font-size: 14px;
       color: #333;
     }
 
-    .back-btn {
-      display: block;
-      margin: 20px auto;
-      background: #3366ff;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      width: 150px;
-      transition: background 0.3s ease-in-out;
+    .task-list.grid-2x2 {
+      grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
+      >li h3{
+        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+        max-width: 500px; /* Ограничиваем максимальную ширину */
+      }
     }
 
-    .back-btn:hover {
+    .task-list.grid-3x3 {
+      grid-template-columns: repeat(3, 1fr); /* Сетка 3x3 */
+      >li h3{
+        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
+        max-width: 300px; /* Ограничиваем максимальную ширину */
+      }
+    }
+
+
+    /* Стили для модального окна */
+    .modal {
+      display: none; /* Скрыто по умолчанию */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+      color: #3366ff;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #254eda;
+    }
+
+    .details-btn {
+      background-color: #3366ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Montserrat', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .details-btn:hover {
       background-color: #254eda;
+      transform: scale(1.05);
+    }
+
+    .details-btn:active {
+      background-color: #1a3bb0;
+      transform: scale(0.95);
+    }
+
+    .details-btn i {
+      margin-right: 8px;
     }
     .sort-section {
       margin-bottom: 20px;
@@ -319,21 +369,6 @@
       padding: 0;
     }
 
-    .task-list li {
-      background: #f0f4ff;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 10px;
-      border: 2px solid #3366ff;
-      text-align: left;
-    }
-
-    .task-list li p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #333;
-    }
-
     .task-list li h3 {
       margin: 0;
       font-size: 18px;
@@ -348,21 +383,6 @@
       margin: 5px 0;
       font-size: 14px;
       color: #333;
-    }
-
-    .toggle-description {
-      background: #3366ff;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-      margin-top: 10px;
-    }
-
-    .toggle-description:hover {
-      background: #254eda;
     }
 
     .description {
@@ -471,6 +491,7 @@
       border-radius: 10px;
       border: 2px solid #3366ff;
       text-align: left;
+      min-width: 300px;
     }
 
     /* Стили для модального окна */
@@ -533,6 +554,34 @@
 
     .details-btn i {
       margin-right: 8px;
+    }
+
+    .task-btn {
+      background-color: #4CAF50; /* Зеленый цвет */
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Montserrat', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+      margin-left: 10px; /* Отступ от кнопки "Подробнее" */
+      text-decoration: none; /* Убираем подчеркивание */
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .task-btn:hover {
+      background-color: #45a049; /* Темно-зеленый при наведении */
+      transform: scale(1.05);
+    }
+
+    .task-btn:active {
+      background-color: #3d8b40; /* Еще темнее при нажатии */
+      transform: scale(0.95);
     }
 
     .task-type-section {
@@ -664,8 +713,10 @@
             <p><strong>До конца:</strong>
               <span class="days-until-end"></span>
             </p>
-            <!--<button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
             <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}(taskId=${task.id}, projectId=${task.project.id})}" class="task-btn">
+              <i class="fas fa-external-link-alt"></i>К задаче
+            </a>
             <p class="description" id="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
           </div>
         </li>
@@ -692,8 +743,10 @@
             <p><strong>До конца:</strong>
               <span class="days-until-end"></span>
             </p>
-            <!--                        <button class="toggle-description" onclick="toggleDescription(this)">Показать описание</button>-->
             <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}(taskId=${createdtask.id}, projectId=${createdtask.project.id})}" class="task-btn">
+              <i class="fas fa-external-link-alt"></i>К задаче
+            </a>
             <p class="description" style="display: none;" th:text="${createdtask.description}">Описание задачи</p>
           </div>
         </li>
@@ -737,11 +790,6 @@
     if (localStorage.getItem("sidebarCollapsed") === "true") {
       sidebar.classList.add("collapsed");
     }
-
-    // toggleBtn.addEventListener("click", function () {
-    //     sidebar.classList.toggle("collapsed");
-    //     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-    // });
 
     toggleIcon.addEventListener("click", function () {
       sidebar.classList.toggle("collapsed");
@@ -924,7 +972,6 @@
     }
   });
 </script>
-
 
 </body>
 </html>

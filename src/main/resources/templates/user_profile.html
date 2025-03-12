@@ -20,6 +20,19 @@
             display: flex;
         }
 
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("/image/background_work.jpg");
+            opacity: 0.1;
+            background-size: cover;
+            z-index: -1;
+        }
+
         /* Сайдбар */
         .sidebar {
             width: 250px;
@@ -200,7 +213,8 @@
         .main-content {
             flex-grow: 1;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.8);
+            /*background: rgba(255, 255, 255, 0.8);*/
+            background: rgba(255, 255, 255);
             border-radius: 20px;
             /*margin: 20px;*/
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -589,7 +603,7 @@
         <div class="avatar-container" id="avatarContainer">
             <img id="userAvatar" src="/image/logo.png" alt="Аватар">
             <div id="avatarEditIcon" class="avatar-edit-icon">
-                <img src="/image/camera.png" alt="Изменить">
+                <img src="/image/camera .png" alt="Изменить">
             </div>
             <input type="file" id="avatarInput" accept="image/*" style="display: none;">
         </div>
