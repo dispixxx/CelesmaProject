@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Мои Задачи</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles/sidebar.css}">
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
@@ -25,165 +25,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: url("/image/background_work.jpg");
+      /*background: url("/image/background_work.jpg");*/
       opacity: 0.1;
       background-size: cover;
       z-index: -1;
-    }
-
-    .sidebar {
-      width: 250px;
-      background-color: #2C2F33;
-      color: white;
-      padding: 20px;
-      height: 100vh;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      position: sticky;
-      top: 0; /* Прилипает к верхнему краю */
-      left: 0; /* Прилипает к левому краю */
-      transition: width 0.3s;
-      border-top-right-radius: 15px;
-      border-bottom-right-radius: 15px;
-    }
-
-    .sidebar.collapsed {
-      width: 60px;
-      padding: 20px 20px 20px 20px;
-    }
-
-    .sidebar h2 {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-left: 9px;
-      font-family: "Orbitron", serif;
-      font-optical-sizing: auto;
-      font-style: normal;
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out;
-      >span{
-        width: 100%;
-      }
-    }
-
-    .sidebar.collapsed h2 {
-      transform: translateX(-9px);
-    }
-
-    .sidebar ul {
-      list-style-type: none;
-      padding: 0;
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
-    }
-
-    .sidebar.collapsed ul {
-      transform: translateX(-9px);
-    }
-
-    .sidebar ul li {
-      position: relative;
-      margin: 30px 0;
-      display: flex;
-      align-items: center;
-      min-height: 30px;
-    }
-
-    .sidebar ul li a {
-      position: relative;
-      color: white;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      width: 100%;
-    }
-
-    .sidebar ul li a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 5px 10px;
-    }
-
-    .sidebar.collapsed ul li a:hover {
-      padding: 5px 5px 5px 10px;
-    }
-
-    .sidebar span {
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-      display: inline-block;
-      min-height: 20px;
-      white-space: nowrap;
-      visibility: visible;
-    }
-
-    .sidebar.collapsed span {
-      opacity: 0;
-      width: 0;
-      visibility: hidden;
-    }
-
-    .user-container {
-      padding-left: 9px;
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      position: absolute;
-      bottom: 60px;
-      left: 20px;
-      transition: left 0.3s;
-    }
-
-    .sidebar.collapsed .user-container {
-      left: -2px;
-    }
-
-    .user-name {
-      width: 130px;
-      max-width: 130px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
-      padding-left: 5px;
-      margin-right: 10px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .sidebar.collapsed .user-name {
-      cursor: none;
-    }
-
-    .user-icon {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #8A8D91;
-      color: white;
-      padding: 5px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 24px;
-      width: 50px;
-      height: 50px;
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
-    }
-
-    .sidebar.collapsed .user-icon {
-      width: 35px;
-      height: 35px;
-      font-size: 18px;
-    }
-
-    .user-icon:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar.collapsed .toggle-btn {
-      right: -10px;
     }
 
     .main-content {
@@ -217,99 +62,7 @@
       margin-bottom: 20px;
     }
 
-    .task-list {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .task-list li p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .task-list.grid-2x2 {
-      grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
-      >li h3{
-        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
-        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
-        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
-        max-width: 500px; /* Ограничиваем максимальную ширину */
-      }
-    }
-
-    .task-list.grid-3x3 {
-      grid-template-columns: repeat(3, 1fr); /* Сетка 3x3 */
-      >li h3{
-        white-space: nowrap; /* Запрещаем перенос текста на новую строку */
-        overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
-        text-overflow: ellipsis; /* Добавляем многоточие, если текст обрезается */
-        max-width: 300px; /* Ограничиваем максимальную ширину */
-      }
-    }
-
-
-    /* Стили для модального окна */
-    .modal {
-      display: none; /* Скрыто по умолчанию */
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 80%;
-      max-width: 600px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .close {
-      color: #3366ff;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .close:hover {
-      color: #254eda;
-    }
-
-    .details-btn {
-      background-color: #3366ff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      font-family: 'Montserrat', sans-serif;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      margin-top: 10px;
-    }
-
-    .details-btn:hover {
-      background-color: #254eda;
-      transform: scale(1.05);
-    }
-
-    .details-btn:active {
-      background-color: #1a3bb0;
-      transform: scale(0.95);
-    }
-
-    .details-btn i {
-      margin-right: 8px;
-    }
+    /*SORT*/
     .sort-section {
       margin-bottom: 20px;
       text-align: left;
@@ -326,13 +79,9 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
+    /*SORT*/
 
-    .project-section h2 {
-      font-size: 20px;
-      color: #3366ff;
-      margin-bottom: 15px;
-    }
-
+    /*BUTTONS*/
     .button-group {
       display: flex;
       gap: 10px;
@@ -359,21 +108,19 @@
     .button-group button:hover {
       background: #254eda;
     }
+    /*BUTTONS*/
 
     .project-section {
       margin-bottom: 30px;
     }
 
-    .task-list {
-      list-style-type: none;
-      padding: 0;
+    .project-section h2 {
+      font-size: 20px;
+      color: #3366ff;
+      margin-bottom: 15px;
+      margin-top: 15px;
     }
 
-    .task-list li h3 {
-      margin: 0;
-      font-size: 18px;
-      color: #3366ff;
-    }
 
     .task-details {
       margin-top: 10px;
@@ -393,6 +140,7 @@
       font-size: 14px;
       color: #333;
     }
+
     .form-head{
       display: flex;
       justify-content: space-between;
@@ -465,6 +213,29 @@
       gap: 20px; /* Отступ между элементами */
     }
 
+    .task-list li {
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #3366ff;
+      text-align: left;
+      min-width: 300px;
+    }
+
+    .task-list li p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .task-list li h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #3366ff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .task-list.grid-2x2 {
       grid-template-columns: repeat(2, 1fr); /* Сетка 2x2 */
       >li h3{
@@ -484,15 +255,7 @@
         max-width: 300px; /* Ограничиваем максимальную ширину */
       }
     }
-
-    .task-list li {
-      background: #f0f4ff;
-      padding: 15px;
-      border-radius: 10px;
-      border: 2px solid #3366ff;
-      text-align: left;
-      min-width: 300px;
-    }
+    /* Стили для списка задач */
 
     /* Стили для модального окна */
     .modal {
@@ -555,7 +318,9 @@
     .details-btn i {
       margin-right: 8px;
     }
+    /* Стили для модального окна */
 
+    /* GO TO TASK BUTTON */
     .task-btn {
       background-color: #4CAF50; /* Зеленый цвет */
       color: white;
@@ -583,79 +348,39 @@
       background-color: #3d8b40; /* Еще темнее при нажатии */
       transform: scale(0.95);
     }
+    /* GO TO TASK BUTTON */
 
-    .task-type-section {
-      margin-top: 20px;
+    /*STAR*/
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    #taskTypeButtons {
-      margin-bottom: 20px;
-    }
-
-    #taskTypeButtons button {
-      background: #3366ff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
+    .star-icon {
       cursor: pointer;
-      font-size: 14px;
-      transition: background 0.3s ease-in-out;
+      color: #ccc; /* Цвет неактивной звездочки */
+      font-size: 20px;
+      transition: color 0.3s ease;
     }
 
-    #taskTypeButtons button.active {
-      background: #1a3bb0;
+    .star-icon.active {
+      color: #ffcc00; /* Цвет активной звездочки */
     }
-
-    #taskTypeButtons button:hover {
-      background: #254eda;
-    }
-
-    .toggle-icon {
-      cursor: pointer;
-      padding: 5px 10px;
-      transition: transform 0.3s ease-in-out;
-      border-radius: 5px;
-    }
-
-    .toggle-icon:hover {
-      background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
-    }
-
-    .sidebar.collapsed .toggle-icon {
-      transform: scale(-1, 1) translateX(9px);
-    }
+    /*STAR*/
 
   </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <!--    <button class="toggle-btn">☰</button>-->
-  <h2>
-    <span>celesma</span>
-    <i class="fas fa-chevron-left toggle-icon"></i> <!-- Добавленная иконка -->
-  </h2>
-  <ul>
-    <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
-    <li><a href="/my-tasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
-    <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
-    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
-  </ul>
-  <div class="user-container">
-    <span class="user-name" sec:authentication="name"></span>
-    <a href="/user/profile" class="user-icon">
-      <i class="fas fa-user"></i>
-    </a>
-  </div>
-</div>
+<div th:insert="~{fragments/sidebar :: sidebar}"></div>
 
 <div class="main-content">
   <div class="container">
     <div class="form-head">
       <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
     </div>
-    <h1 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 0;">
+    <h1 style="font-family: 'Montserrat', sans-serif; color: #3366ff; margin-top: 10px;">
       Мои задачи
     </h1>
 
@@ -663,9 +388,9 @@
     <div class="button-group">
       <div>
         <button id="assignedTasksBtn" class="active"
-                onclick="showSection('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn')">Назначенные мне</button>
-        <button id="createdTasksBtn"
-                onclick="showSection('createdTasksSection', 'createdTasksBtn', 'assignedTasksBtn')"
+                onclick="showSection('assignedTasksSection', 'assignedTasksBtn', 'tasksBtn')">Назначенные мне</button>
+        <button id="tasksBtn"
+                onclick="showSection('tasksSection', 'tasksBtn', 'assignedTasksBtn')"
                 style="margin-left: 10px;"
         >Созданные мной</button>
       </div>
@@ -697,8 +422,11 @@
     <div id="assignedTasksSection" class="project-section">
       <h2>Назначенные мне задачи</h2>
       <ul class="task-list">
-        <li th:each="task : ${assignedTasks}">
-          <h3 th:text="${task.title}">Название задачи</h3>
+        <li th:each="task : ${assignedTasks}" th:data-task-id="${task.id}">
+          <div class="task-header">
+            <h3 th:text="${task.title}">Название задачи</h3>
+            <i class="fas fa-star star-icon" onclick="toggleStar(this)"></i> <!-- Иконка звездочки -->
+          </div>
           <div class="task-details">
             <p><strong>Проект:</strong> <span class="project-title" th:text="${task.project.name}"></span></p>
             <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
@@ -724,30 +452,33 @@
     </div>
 
     <!-- Секция для задач, созданных пользователем -->
-    <div id="createdTasksSection" class="project-section" style="display: none;">
+    <div id="tasksSection" class="project-section" style="display: none;">
       <h2>Созданные мной задачи</h2>
       <ul class="task-list">
-        <li th:each="createdtask : ${createdTasks}">
-          <h3 th:text="${createdtask.title}">Название задачи</h3>
+        <li th:each="task : ${createdTasks}" th:data-task-id="${task.id}">
+          <div class="task-header">
+            <h3 th:text="${task.title}">Название задачи</h3>
+            <i class="fas fa-star star-icon" onclick="toggleStar(this)"></i> <!-- Иконка звездочки -->
+          </div>
           <div class="task-details">
-            <p><strong>Проект:</strong> <span class="project-title" th:text="${createdtask.project.name}"></span></p>
-            <p><strong>Создатель:</strong> <span th:text="${createdtask.creator.username}">Создатель</span></p>
-            <p><strong>Исполнитель:</strong> <span th:text="${createdtask.assignee.username}">Исполнитель</span></p>
+            <p><strong>Проект:</strong> <span class="project-title" th:text="${task.project.name}"></span></p>
+            <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
+            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
             <p><strong>Дата создания:</strong>
-              <span class="created-date" th:text="${#temporals.format(createdtask.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
+              <span class="created-date" th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}">Дата создания</span>
             </p>
             <p><strong>Дата окончания:</strong>
-              <span class="end-date" th:text="${#temporals.format(createdtask.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
-              <span class="end-date-display" th:text="${#temporals.format(createdtask.endDate, 'dd.MM.yyyy')}">Срок</span>
+              <span class="end-date" th:text="${#temporals.format(task.endDate, 'yyyy-MM-dd')}" style="display: none;"></span>
+              <span class="end-date-display" th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}">Срок</span>
             </p>
             <p><strong>До конца:</strong>
               <span class="days-until-end"></span>
             </p>
             <button class="details-btn" onclick="openTaskModal(this)"><i class="fas fa-info-circle"></i>Подробнее</button>
-            <a th:href="@{/projects/{projectId}/tasks/{taskId}(taskId=${createdtask.id}, projectId=${createdtask.project.id})}" class="task-btn">
+            <a th:href="@{/projects/{projectId}/tasks/{taskId}(taskId=${task.id}, projectId=${task.project.id})}" class="task-btn">
               <i class="fas fa-external-link-alt"></i>К задаче
             </a>
-            <p class="description" style="display: none;" th:text="${createdtask.description}">Описание задачи</p>
+            <p class="description" style="display: none;" th:text="${task.description}">Описание задачи</p>
           </div>
         </li>
       </ul>
@@ -766,7 +497,7 @@
 
 <script>
   function showSection(sectionId, activeBtnId, inactiveBtnId) {
-    document.getElementById('createdTasksSection').style.display = 'none';
+    document.getElementById('tasksSection').style.display = 'none';
     document.getElementById('assignedTasksSection').style.display = 'none';
 
     document.getElementById(sectionId).style.display = 'block';
@@ -776,27 +507,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    showSection('assignedTasksSection', 'assignedTasksBtn', 'createdTasksBtn');
+    showSection('assignedTasksSection', 'assignedTasksBtn', 'tasksBtn');
   });
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let sidebar = document.querySelector(".sidebar");
-    // let toggleBtn = document.querySelector(".toggle-btn");
-    let toggleIcon = document.querySelector(".toggle-icon");
+<script th:src="@{/js/sidebar.js}"></script>
 
-    // Проверяем состояние из localStorage
-    if (localStorage.getItem("sidebarCollapsed") === "true") {
-      sidebar.classList.add("collapsed");
-    }
-
-    toggleIcon.addEventListener("click", function () {
-      sidebar.classList.toggle("collapsed");
-      localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-    });
-  });
-</script>
+<script th:src="@{/js/star.js}"></script>
 
 <script>
   function sortProjects() {
@@ -972,6 +689,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>

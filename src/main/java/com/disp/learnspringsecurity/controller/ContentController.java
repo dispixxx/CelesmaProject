@@ -5,6 +5,7 @@ import com.disp.learnspringsecurity.model.*;
 import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,7 +59,10 @@ public class ContentController {
     public String getUserProjects(Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         List<Project> userProjects = projectService.getProjectsByMember(username);
+        User currentUser = userDetailsService.getUserByUsername(username);
         model.addAttribute("projects", userProjects);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("projectRoles", ProjectRole.values());
         return "dashboard";
     }
 

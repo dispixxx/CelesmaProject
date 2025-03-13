@@ -44,9 +44,8 @@ public class TaskController {
     public String getProjectsTasks(@PathVariable Long projectId, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
-//        User currentUser = userRepository.findByUsername(username).isPresent() ? userRepository.findByUsername(username).get() : null;
 
-        List<Task> userTasks = taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(),projectId);
+//        List<Task> userTasks = taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(),projectId);
         List<Task> allTasks = taskService.getTasksByProjectId(projectId);
         Project project = projectService.getProjectById(projectId);
         List<Task> createdTasks = taskService.getTasksByCreatorId(currentUser.getId()); // Задачи, где пользователь создатель
@@ -55,7 +54,7 @@ public class TaskController {
         model.addAttribute("createdTasks", createdTasks);
         model.addAttribute("assignedTasks", assignedTasks);
 
-        model.addAttribute("userTasks", userTasks);
+//        model.addAttribute("userTasks", userTasks);
         model.addAttribute("allTasks", allTasks);
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectId", project.getId());

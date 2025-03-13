@@ -75,9 +75,15 @@ public class ProjectController {
         boolean isMember = projectUsers.contains(currentUser);
         // Проверяем, является ли пользователь администратором или модератором
         boolean isAdminOrModerator = false;
+        boolean isAdmin = false;
         if (isMember) {
             ProjectRole role = project.getMemberRole(currentUser);
             isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+
+        }
+        if(isMember){
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdmin = role == ProjectRole.ADMIN;
         }
 
         List<User> projectApplicants =project.getApplicants().stream().toList(); //Список тех, кто уже отправил запрос.

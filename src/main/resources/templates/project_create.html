@@ -3,10 +3,11 @@
 <head>
   <title>Create Project</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles/sidebar.css}">
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
@@ -29,188 +30,6 @@
         background-size: cover;
         z-index: -1;
     }
-
-    /*SIDEBAR*/
-    .sidebar {
-      width: 250px;
-      background-color: #2C2F33;
-      color: white;
-      padding: 20px;
-      height: 100vh;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      position: sticky;
-      top: 0; /* Прилипает к верхнему краю */
-      left: 0; /* Прилипает к левому краю */
-      transition: width 0.3s;
-      border-top-right-radius: 15px;
-      border-bottom-right-radius: 15px;
-    }
-
-    .sidebar.collapsed {
-      width: 60px;
-      padding: 20px 20px 20px 20px;
-    }
-
-    .sidebar h2 {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-left: 9px;
-        font-family: "Orbitron", serif;
-        font-optical-sizing: auto;
-        font-style: normal;
-        transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        >span{
-            width: 100%;
-        }
-    }
-
-    .sidebar.collapsed h2 {
-        transform: translateX(-9px);
-    }
-
-    .sidebar ul {
-      list-style-type: none;
-      padding: 0;
-      /*margin-top: 30px;*/
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
-    }
-
-    .sidebar.collapsed ul {
-      transform: translateX(-9px);
-    }
-
-    .sidebar ul li {
-      position: relative;
-      margin: 30px 0;
-      display: flex;
-      align-items: center;
-      min-height:30px; /*Чтобы иконки не прыгали при сворачивании*/
-    }
-
-    .sidebar ul li a {
-      position: relative;
-      color: white;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      /*width: auto; !* Убираем растяжение *!*/
-      padding: 5px 10px; /* Добавляем немного отступов для удобного клика */
-      border-radius: 5px; /* Скругление при наведении */
-      width: 100%; /*Заполнить всю область сайдбара*/
-    }
-    .sidebar ul li a:hover {
-      background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
-      padding: 5px 10px;
-    }
-
-    .sidebar.collapsed ul li a:hover{
-      padding: 5px 5px 5px 10px;
-    }
-
-    .sidebar span {
-        transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        display: inline-block;
-        min-height: 20px; /* Устанавливаем высоту, чтобы текст не исчезал полностью */
-        white-space: nowrap;
-        visibility: visible;
-    }
-    .sidebar.collapsed span {
-        /*left: 5px;*/
-        opacity: 0;
-        width: 0;
-        visibility: hidden;
-    }
-    .sidebar.collapsed span::after {
-        content: "";
-        display: none;
-    }
-
-    .user-container {
-      padding-left: 9px;
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      position: absolute;
-      bottom: 60px;
-      left: 20px;
-      transition: left 0.3s;
-    }
-
-    .sidebar.collapsed .user-container {
-      left: -2px;
-    }
-
-    .user-name {
-        width: 130px;
-        max-width: 130px; /* Ограничивает ширину */
-        white-space: nowrap; /* Запрещает перенос текста */
-        overflow: hidden; /* Обрезает текст */
-        text-overflow: ellipsis; /* Добавляет "..." */
-        display: inline-block;
-        padding-left: 5px;
-        margin-right: 10px;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .sidebar.collapsed .user-name {
-      cursor: none;
-    }
-
-    .user-icon {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #8A8D91;
-      color: white;
-      padding: 5px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 24px;
-      width: 50px;
-      height: 50px;
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out, 0.3s ease-in-out;
-    }
-
-    .sidebar.collapsed .user-icon {
-      width: 35px;
-      height: 35px;
-      font-size: 18px;
-    }
-
-    .user-icon:hover {
-      background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
-    }
-
-    .toggle-btn {
-      position: absolute;
-      top: 50%;
-      right: -10px; /* Увеличиваем отступ от сайдбара */
-      width: 40px; /* Делаем кнопку более вытянутой */
-      height: 20vh; /* Увеличиваем высоту для овальной формы */
-      background: #2C2F33;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: white;
-      transform: translateY(-50%);
-      padding: 10px;
-      border-radius: 30px; /* Делаем кнопку овальной */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.3s ease-in-out;
-    }
-
-    .sidebar.collapsed .toggle-btn {
-      right: -10px; /* Двигаем кнопку дальше при свернутом сайдбаре */
-    }
-    /*SIDEBAR*/
 
     .container {
       /*background: rgba(255, 255, 255, 0.8);*/
@@ -315,43 +134,11 @@
       margin-right: 5px;
     }
 
-    .toggle-icon {
-        cursor: pointer;
-        padding: 5px 10px;
-        transition: transform 0.3s ease-in-out;
-        border-radius: 5px;
-    }
-
-    .toggle-icon:hover {
-        background-color: rgba(255, 255, 255, 0.1); /* Эффект при наведении */
-    }
-
-    .sidebar.collapsed .toggle-icon {
-        transform: scale(-1, 1) translateX(9px);
-    }
   </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <!--    <button class="toggle-btn">☰</button>-->
-    <h2>
-        <span>celesma</span>
-        <i class="fas fa-chevron-left toggle-icon"></i> <!-- Добавленная иконка -->
-    </h2>
-    <ul>
-        <li><a href="/dashboard"><i class="fas fa-folder-open"></i> <span>Проекты</span></a></li>
-        <li><a href="/my-tasks"><i class="fas fa-tasks"></i> <span>Задачи</span></a></li>
-        <li><a href="#"><i class="fas fa-cog"></i> <span>Настройки</span></a></li>
-        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Выйти</span></a></li>
-    </ul>
-    <div class="user-container">
-        <span class="user-name" sec:authentication="name"></span>
-        <a href="/user/profile" class="user-icon">
-            <i class="fas fa-user"></i>
-        </a>
-    </div>
-</div>
+<div th:insert="~{fragments/sidebar :: sidebar}"></div>
 
 <div class="container">
   <h2 style="
@@ -382,27 +169,6 @@
   }
 </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let sidebar = document.querySelector(".sidebar");
-        // let toggleBtn = document.querySelector(".toggle-btn");
-        let toggleIcon = document.querySelector(".toggle-icon");
-
-        // Проверяем состояние из localStorage
-        if (localStorage.getItem("sidebarCollapsed") === "true") {
-            sidebar.classList.add("collapsed");
-        }
-
-        // toggleBtn.addEventListener("click", function () {
-        //     sidebar.classList.toggle("collapsed");
-        //     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-        // });
-
-        toggleIcon.addEventListener("click", function () {
-            sidebar.classList.toggle("collapsed");
-            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-        });
-    });
-</script>
+<script th:src="@{/js/sidebar.js}"></script>
 </body>
 </html>
