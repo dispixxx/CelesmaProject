@@ -389,6 +389,48 @@
         }
         /*STAR*/
 
+        /*  STATUS_START*/
+        /* Стили для статуса задачи */
+        .task-status {
+            width: auto;
+            padding: 2px 4px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            /*margin-bottom: 10px;*/
+            text-align: left;
+        }
+
+        /* Цвета для каждого статуса */
+        .status-NEW {
+            background-color: #a0a0a0; /* Приглушенный серый */
+        }
+
+        .status-IN_PROGRESS {
+            background-color: #6c8cff; /* Приглушенный синий */
+        }
+
+        .status-REVIEW {
+            background-color: #a64ca6; /* Приглушенный фиолетовый */
+        }
+
+        .status-COMPLETED {
+            background-color: #6fbf73; /* Приглушенный зеленый */
+        }
+
+        .status-ON_HOLD {
+            background-color: #ffb84d; /* Приглушенный оранжевый */
+        }
+
+        .status-CANCELED {
+            background-color: #ff6666; /* Приглушенный красный */
+        }
+        /*  STATUS_END*/
+
     </style>
 </head>
 <body>
@@ -457,6 +499,11 @@
                             <i class="fas fa-star star-icon" onclick="toggleStar(this)"></i> <!-- Иконка звездочки -->
                         </div>
                         <div class="task-details">
+                            <div class="task-status" th:classappend="${'status-' + task.status}">
+                                <span>Статус:</span>
+                                <span th:text="${task.status}"></span>
+                            </div>
+<!--                            <p><strong>Создатель:</strong> <span th:text="${projectName}">Создатель</span></p>-->
                             <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
                             <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
                             <p><strong>Дата создания:</strong>
@@ -489,6 +536,11 @@
                             <i class="fas fa-star star-icon" onclick="toggleStar(this)"></i> <!-- Иконка звездочки -->
                         </div>
                         <div class="task-details">
+                            <div class="task-status" th:classappend="${'status-' + task.status}">
+                                <span>Статус:</span>
+                                <span th:text="${task.status}"></span>
+                            </div>
+<!--                            <p><strong>Создатель:</strong> <span th:text="${projectName}">Создатель</span></p>-->
                             <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
                             <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
                             <p><strong>Дата создания:</strong>
@@ -521,6 +573,11 @@
                         <i class="fas fa-star star-icon" onclick="toggleStar(this)"></i> <!-- Иконка звездочки -->
                     </div>
                     <div class="task-details">
+                        <div class="task-status" th:classappend="${'status-' + task.status}">
+                            <span>Статус:</span>
+                            <span th:text="${task.status}"></span>
+                        </div>
+<!--                        <p><strong>Создатель:</strong> <span th:text="${projectName}">Создатель</span></p>-->
                         <p><strong>Создатель:</strong> <span th:text="${task.creator.username}">Создатель</span></p>
                         <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}">Исполнитель</span></p>
                         <p><strong>Дата создания:</strong>
@@ -727,8 +784,9 @@
 
         // Получаем данные задачи
         const taskTitle = taskItem.querySelector("h3").textContent;
-        const creator = taskItem.querySelector("p:nth-child(1) span").textContent;
-        const assignee = taskItem.querySelector("p:nth-child(2) span").textContent;
+        const projectName = document.querySelector(".project-title").textContent;
+        const creator = taskItem.querySelector("p:nth-child(2) span").textContent;
+        const assignee = taskItem.querySelector("p:nth-child(3) span").textContent;
         const createdAt = taskItem.querySelector(".created-date").textContent;
         const endDate = taskItem.querySelector(".end-date-display").textContent;
         const daysUntilEnd = taskItem.querySelector(".days-until-end").textContent;
@@ -736,6 +794,7 @@
 
         // Формируем HTML для модального окна
         const modalContent = `
+        <p><strong>Проект:</strong> ${projectName}</p>
         <p><strong>Создатель:</strong> ${creator}</p>
         <p><strong>Исполнитель:</strong> ${assignee}</p>
         <p><strong>Дата создания:</strong> ${createdAt}</p>

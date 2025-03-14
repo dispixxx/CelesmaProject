@@ -2,8 +2,8 @@ package com.disp.learnspringsecurity.controller;
 
 import com.disp.learnspringsecurity.util.AuthenticationFacade;
 import com.disp.learnspringsecurity.model.*;
-import com.disp.learnspringsecurity.repo.ProjectMemberRepository;
-import com.disp.learnspringsecurity.repo.UserRepository;
+//import com.disp.learnspringsecurity.repo.ProjectMemberRepository;
+//import com.disp.learnspringsecurity.repo.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -217,13 +217,13 @@ public class ProjectController {
     @PostMapping("/{projectId}/manage/applicants/approve/{userId}")
     public String approveApplicant(@PathVariable Long projectId, @PathVariable Long userId) {
         projectService.approveApplicant(projectId, userId);
-        return "redirect:/projects/" + projectId + "/manage";
+        return "redirect:/projects/" + projectId + "/manage/applicants";
     }
 
     @PostMapping("/{projectId}/manage/applicants/reject/{userId}")
     public String rejectApplicant(@PathVariable Long projectId, @PathVariable Long userId) {
         projectService.rejectApplicant(projectId, userId);
-        return "redirect:/projects/" + projectId + "/manage";
+        return "redirect:/projects/" + projectId + "/manage/applicants";
     }
 
 }

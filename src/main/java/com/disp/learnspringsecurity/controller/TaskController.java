@@ -1,9 +1,7 @@
 package com.disp.learnspringsecurity.controller;
 
-import com.disp.learnspringsecurity.repo.TaskRepository;
 import com.disp.learnspringsecurity.util.AuthenticationFacade;
 import com.disp.learnspringsecurity.model.*;
-import com.disp.learnspringsecurity.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -63,11 +61,20 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public String getTaskDetails(@PathVariable Long id, Model model) {
+    public String getTaskDetails(@PathVariable Long id, @PathVariable Long projectId, Model model) {
         Task task = taskService.getTaskById(id);
         model.addAttribute("task", task);
+        model.addAttribute("taskStatus",TaskStatus.values());
+        model.addAttribute("projectId",projectId);
         return "task";
     }
+
+        @PostMapping("/{id}/status")
+        public String changeTaskStatus(@PathVariable Long id, @RequestParam TaskStatus status, @PathVariable String projectId) {
+            taskService.changeTaskStatus(id, status);
+            return "redirect:/projects/" + projectId + "/tasks/" + id;
+        }
+
 
     @GetMapping("/create")
     public String showCreateTaskForm(@PathVariable Long projectId, Model model) {

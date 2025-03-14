@@ -29,6 +29,9 @@ public class Task {
     @JoinColumn(name = "creator_id")
     private User creator;
 
+    @Enumerated(EnumType.STRING) // Указываем, что это перечисление
+    private TaskStatus status = TaskStatus.NEW; // По умолчанию статус "NEW"
+
     // Геттеры и сеттеры
     public Long getId() {
         return id;
@@ -92,5 +95,13 @@ public class Task {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 }

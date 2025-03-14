@@ -27,7 +27,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             scrollbar-gutter: stable; /* Резервирует место для скроллбара */
-            overflow-y: auto; /* Включаем вертикальную прокрутку */
+            /*overflow-y: auto; !* Включаем вертикальную прокрутку *!*/
             width: 100%;
             max-width: 1200px;
             margin: 50px auto;
@@ -142,6 +142,111 @@
         }
     /*    STAR*/
 
+    /*    STATUS*/
+        /* Цвета для каждого статуса */
+        .status-NEW {
+            background-color: #a0a0a0; /* Приглушенный серый */
+        }
+
+        .status-IN_PROGRESS {
+            background-color: #6c8cff; /* Приглушенный синий */
+        }
+
+        .status-REVIEW {
+            background-color: #a64ca6; /* Приглушенный фиолетовый */
+        }
+
+        .status-COMPLETED {
+            background-color: #6fbf73; /* Приглушенный зеленый */
+        }
+
+        .status-ON_HOLD {
+            background-color: #ffb84d; /* Приглушенный оранжевый */
+        }
+
+        .status-CANCELED {
+            background-color: #ff6666; /* Приглушенный красный */
+        }
+
+
+        .status-container {
+            position: relative; /* Для позиционирования выпадающего списка */
+            /*margin-top: 20px;*/
+            display: flex;
+        }
+
+        .status {
+            font-family: 'Montserrat', sans-serif;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .status-select option {
+            background-color: white;
+            color: black;
+        }
+
+        .status-dropdown {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10; /* Чтобы список был поверх других элементов */
+            width: 100%; /* Ширина списка равна ширине статуса */
+            /*margin-top: 5px; !* Отступ от статуса *!*/
+        }
+
+        .status-dropdown ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .status-dropdown li {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            border-radius: 20px;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .status-dropdown li:hover {
+            opacity: 0.9;
+        }
+
+        .status-dropdown {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-dropdown[style*="display: none"] {
+            opacity: 0;
+        }
+
+        .status-dropdown li.current-status {
+            color: black; /* Цвет текста для текущего статуса */
+        }
+
+        .current-status {
+            font-weight: bold; /* Жирный шрифт */
+            border: 2px solid #3366ff; /* Синяя рамка */
+            background-color: #e0e7ff; /* Светло-синий фон */
+            transition: all 0.3s ease;
+        }
+        /*    STATUS*/
     </style>
 </head>
 <body>
@@ -158,13 +263,30 @@
         <i class="fas fa-star star-icon" onclick="toggleStar(this)" th:data-task-id="${task.id}"></i>
     </div>
     <div class="task-details">
+        <div class="status-container">
+            <div th:classappend="${'status-' + task.status}" class="status" onclick="showStatusOptions(this)" th:data-task-id="${task.id}" th:data-project-id="${projectId}" style="display: block">
+                <span th:text="${task.status}"></span>
+            </div>
+            <div class="status-dropdown" style="display: none">
+                <ul>
+                    <li th:each="status : ${taskStatus}"
+                        th:data-status="${status}"
+                        th:classappend="${'status-' + status} + (${task.status == status} ? ' current-status' : '')"
+                        th:text="${status} + (${task.status == status} ? ' ✓' : '')"
+                        onclick="changeStatus(this)"></li>
+                </ul>
+            </div>
+        </div>
         <p><strong>Проект:</strong> <span th:text="${task.project.name}"></span></p>
         <p><strong>Создатель:</strong> <span th:text="${task.creator.username}"></span></p>
         <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.username}"></span></p>
         <p><strong>Дата создания:</strong> <span th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}"></span></p>
         <p><strong>Дата окончания:</strong> <span th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}"></span></p>
+
         <p><strong>Описание:</strong> <span th:text="${task.description}"></span></p>
     </div>
+
+
     <div class="comments-section"><!--
         <h2>Комментарии</h2>
         <div th:each="comment : ${task.comments}" class="comment">
@@ -183,5 +305,164 @@
 <script th:src="@{/js/sidebar.js}"></script>
 
 <script th:src="@{/js/star-in-task.js}"></script>
+
+<!--<script>
+    function changeStatus(selectElement) {
+        const taskId = selectElement.getAttribute('data-task-id');
+        const projectId = selectElement.getAttribute("data-project-id");
+        const newStatus = selectElement.value;
+
+        fetch(`/projects/${projectId}/tasks/${taskId}/status?status=${newStatus}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                // alert('Статус успешно изменён');
+                location.reload()
+            } else {
+                alert('Ошибка при изменении статуса');
+            }
+        }).catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+</script>-->
+
+<!--<script>
+    // Функция для отображения выпадающего списка
+    function showStatusOptions(element) {
+        const statusSelect = element.nextElementSibling; // Получаем выпадающий список
+        statusSelect.style.display = 'block'; // Показываем список
+        statusSelect.focus(); // Устанавливаем фокус на список
+    }
+
+    // Функция для изменения статуса
+    function changeStatus(selectElement) {
+        const taskId = selectElement.getAttribute('data-task-id');
+        const projectId = selectElement.getAttribute('data-project-id');
+        const newStatus = selectElement.value;
+
+        fetch(`/projects/${projectId}/tasks/${taskId}/status?status=${newStatus}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload(); // Перезагружаем страницу для обновления статуса
+            } else {
+                alert('Ошибка при изменении статуса');
+            }
+        }).catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+    // Скрываем выпадающий список при нажатии escape
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const statusSelects = document.querySelectorAll('.status-select');
+            statusSelects.forEach(select => {
+                select.style.display = 'none';
+            });
+        }
+    });
+
+    // Скрываем выпадающий список при потере фокуса
+    document.addEventListener('click', function(event) {
+        const statusSelect = document.getElementById('statusSelect');
+        if (statusSelect && event.target !== statusSelect && !statusSelect.contains(event.target)) {
+            statusSelect.style.display = 'none';
+        }
+    });
+</script>-->
+
+<script>// Функция для отображения выпадающего списка
+function showStatusOptions(element) {
+    console.log("PRESSED"); // Проверка, что функция вызывается
+    const statusContainer = element.parentElement; // Получаем контейнер статуса
+    const statusDropdown = statusContainer.querySelector('.status-dropdown'); // Получаем выпадающий список
+
+    if (statusDropdown) {
+        // Скрываем статус и показываем выпадающий список
+        element.style.display = 'none';
+        statusDropdown.style.display = 'block';
+    } else {
+        console.error('Выпадающий список не найден!');
+    }
+}
+
+// Функция для изменения статуса
+function changeStatus(element) {
+    const taskId = element.closest('.status-container').querySelector('.status').getAttribute('data-task-id');
+    const projectId = element.closest('.status-container').querySelector('.status').getAttribute('data-project-id');
+    const newStatus = element.getAttribute('data-status');
+
+    // Обновляем цвет фона статуса
+    const statusDiv = element.closest('.status-container').querySelector('.status');
+    statusDiv.className = `status status-${newStatus}`;
+    statusDiv.querySelector('span').textContent = newStatus;
+
+    // Скрываем выпадающий список
+    const statusDropdown = element.closest('.status-container').querySelector('.status-dropdown');
+    statusDropdown.style.display = 'none';
+
+    // Отправляем запрос на сервер
+    fetch(`/projects/${projectId}/tasks/${taskId}/status?status=${newStatus}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            location.reload(); // Перезагружаем страницу для обновления статуса
+        } else {
+            alert('Ошибка при изменении статуса');
+        }
+    }).catch(error => {
+        console.error('Ошибка:', error);
+    });
+}
+
+// Закрываем выпадающий список при клике вне его области
+document.addEventListener('click', function(event) {
+    const statusContainers = document.querySelectorAll('.status-container');
+    statusContainers.forEach(container => {
+        const statusDiv = container.querySelector('.status');
+        const statusDropdown = container.querySelector('.status-dropdown');
+
+        // Проверяем, был ли клик вне области статуса и выпадающего списка
+        if (statusDropdown && statusDropdown.style.display === 'block') {
+            if (!container.contains(event.target)) {
+                // Скрываем выпадающий список и показываем статус
+                statusDropdown.style.display = 'none';
+                if (statusDiv) {
+                    statusDiv.style.display = 'block';
+                }
+            }
+        }
+    });
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const statusContainers = document.querySelectorAll('.status-container');
+        statusContainers.forEach(container => {
+            const statusDiv = container.querySelector('.status');
+            const statusDropdown = container.querySelector('.status-dropdown');
+
+            // Скрываем выпадающий список и показываем статус
+            if (statusDropdown && statusDropdown.style.display === 'block') {
+                statusDropdown.style.display = 'none';
+                if (statusDiv) {
+                    statusDiv.style.display = 'block';
+                }
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>

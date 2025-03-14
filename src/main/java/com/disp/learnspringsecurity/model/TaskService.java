@@ -53,4 +53,11 @@ public class TaskService {
     public Task getTaskById(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Задача не найдена"));
     }
+
+    public void changeTaskStatus(Long taskId, TaskStatus status) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Задача не найдена"));
+        task.setStatus(status);
+        taskRepository.save(task);
+    }
 }
