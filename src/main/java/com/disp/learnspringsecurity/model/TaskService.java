@@ -38,6 +38,10 @@ public class TaskService {
         return taskRepository.findByAssigneeIdAndProjectId(assigneeId, projectId);
     }
 
+    public List<Task> getTasksByCreatorIdAndProject(Long creatorId, Long projectId) {
+        return taskRepository.findByCreatorIdAndProjectId(creatorId, projectId);
+    }
+
     public List<Task> getTasksByProjectId(Long projectId) {
         return taskRepository.findByProjectId(projectId);
     }

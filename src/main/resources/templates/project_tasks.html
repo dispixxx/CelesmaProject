@@ -484,7 +484,7 @@
 
         <div id="myProjectsSection" class="project-section">
             <h2>Мои задачи</h2>
-            <div class="button-group-task-type" id="taskTypeButtons" style="display: none;">
+            <div class="button-group-task-type" id="taskTypeButtons">
                 <button id="assignedTasksBtn" class="active" onclick="showTaskType('assignedTasksSection', 'assignedTasksBtn', 'tasksBtn')">Назначенные мне</button>
                 <button id="tasksBtn"  onclick="showTaskType('tasksSection', 'tasksBtn', 'assignedTasksBtn')">Созданные мной</button>
             </div>
@@ -660,6 +660,9 @@
         // Устанавливаем активную кнопку
         document.getElementById(activeBtnId).classList.add('active');
         document.getElementById(inactiveBtnId).classList.remove('active');
+
+        // Восстанавливаем состояние звездочек
+        restoreStarState();
     }
 
     // Функция для отображения кнопок при выборе "Мои задачи"
@@ -682,26 +685,45 @@
         } else {
             document.getElementById('taskTypeButtons').style.display = 'none';
         }
+
+        // Восстанавливаем состояние звездочек
+        restoreStarState();
     }
 
-    // По умолчанию показываем "Мои задачи"
-    document.addEventListener("DOMContentLoaded", function () {
-        showSection('myProjectsSection', 'myProjectsBtn', 'allProjectsBtn');
-    });
-</script>
+    // Функция для изменения макета
+    function setLayout(layout) {
+        const taskLists = document.querySelectorAll(".task-list");
+        const singleColumnBtn = document.getElementById("singleColumnBtn");
+        const grid2x2Btn = document.getElementById("grid2x2Btn");
+        const grid3x3Btn = document.getElementById("grid3x3Btn");
 
-<script>
-    // Функция для сворачивания/разворачивания описания
-    function toggleDescription(button) {
-        const taskItem = button.closest("li"); // Находим родительский элемент задачи
-        const description = taskItem.querySelector(".description"); // Находим описание
-        if (description.style.display === "none") {
-            description.style.display = "block";
-            button.textContent = "Скрыть описание";
-        } else {
-            description.style.display = "none";
-            button.textContent = "Показать описание";
+        // Убираем активный класс со всех кнопок
+        singleColumnBtn.classList.remove("active");
+        grid2x2Btn.classList.remove("active");
+        grid3x3Btn.classList.remove("active");
+
+        // Добавляем активный класс к выбранной кнопке
+        if (layout === "single-column") {
+            singleColumnBtn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-2x2", "grid-3x3"); // Убираем сетку 2x2 и 3x3
+            });
+        } else if (layout === "grid-2x2") {
+            grid2x2Btn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-3x3"); // Убираем сетку 3x3
+                taskList.classList.add("grid-2x2"); // Добавляем сетку 2x2
+            });
+        } else if (layout === "grid-3x3") {
+            grid3x3Btn.classList.add("active");
+            taskLists.forEach(taskList => {
+                taskList.classList.remove("grid-2x2"); // Убираем сетку 2x2
+                taskList.classList.add("grid-3x3"); // Добавляем сетку 3x3
+            });
         }
+
+        // Восстанавливаем состояние звездочек
+        restoreStarState();
     }
 </script>
 
@@ -742,40 +764,6 @@
 
     // Вызываем функцию после загрузки страницы
     document.addEventListener('DOMContentLoaded', calculateDaysUntilEnd);
-</script>
-
-<script>
-    function setLayout(layout) {
-        const taskLists = document.querySelectorAll(".task-list");
-        const singleColumnBtn = document.getElementById("singleColumnBtn");
-        const grid2x2Btn = document.getElementById("grid2x2Btn");
-        const grid3x3Btn = document.getElementById("grid3x3Btn");
-
-        // Убираем активный класс со всех кнопок
-        singleColumnBtn.classList.remove("active");
-        grid2x2Btn.classList.remove("active");
-        grid3x3Btn.classList.remove("active");
-
-        // Добавляем активный класс к выбранной кнопке
-        if (layout === "single-column") {
-            singleColumnBtn.classList.add("active");
-            taskLists.forEach(taskList => {
-                taskList.classList.remove("grid-2x2", "grid-3x3"); // Убираем сетку 2x2 и 3x3
-            });
-        } else if (layout === "grid-2x2") {
-            grid2x2Btn.classList.add("active");
-            taskLists.forEach(taskList => {
-                taskList.classList.remove("grid-3x3"); // Убираем сетку 3x3
-                taskList.classList.add("grid-2x2"); // Добавляем сетку 2x2
-            });
-        } else if (layout === "grid-3x3") {
-            grid3x3Btn.classList.add("active");
-            taskLists.forEach(taskList => {
-                taskList.classList.remove("grid-2x2"); // Убираем сетку 2x2
-                taskList.classList.add("grid-3x3"); // Добавляем сетку 3x3
-            });
-        }
-    }
 </script>
 
 <script>

@@ -1,5 +1,6 @@
 // Функция для переключения состояния звездочки
 function toggleStar(starIcon) {
+    console.log("toggleStar()")
     starIcon.classList.toggle("active"); // Переключаем класс "active"
     sortTasksByStar(); // Сортируем задачи
     saveStarState(starIcon); // Сохраняем состояние в localStorage
@@ -7,19 +8,21 @@ function toggleStar(starIcon) {
 
 // Функция для сортировки задач по звездочке
 function sortTasksByStar() {
-    const taskList = document.querySelector(".task-list");
-    const tasks = Array.from(taskList.querySelectorAll("li"));
+    const taskLists = document.querySelectorAll(".task-list"); // Все списки задач
+    taskLists.forEach(taskList => {
+        const tasks = Array.from(taskList.querySelectorAll("li"));
 
-    // Сортируем задачи: сначала с активной звездочкой, затем без
-    tasks.sort((a, b) => {
-        const aStar = a.querySelector(".star-icon").classList.contains("active");
-        const bStar = b.querySelector(".star-icon").classList.contains("active");
-        return bStar - aStar; // Сначала задачи с активной звездочкой
+        // Сортируем задачи: сначала с активной звездочкой, затем без
+        tasks.sort((a, b) => {
+            const aStar = a.querySelector(".star-icon").classList.contains("active");
+            const bStar = b.querySelector(".star-icon").classList.contains("active");
+            return bStar - aStar; // Сначала задачи с активной звездочкой
+        });
+
+        // Очищаем список и добавляем отсортированные задачи
+        taskList.innerHTML = "";
+        tasks.forEach(task => taskList.appendChild(task));
     });
-
-    // Очищаем список и добавляем отсортированные задачи
-    taskList.innerHTML = "";
-    tasks.forEach(task => taskList.appendChild(task));
 }
 
 // Функция для сохранения состояния звездочки в localStorage
@@ -29,22 +32,25 @@ function saveStarState(starIcon) {
     const isStarred = starIcon.classList.contains("active");
 
     // Сохраняем состояние в localStorage
-    console.log(taskId)
     localStorage.setItem(`task-${taskId}-starred`, isStarred);
 }
 
 // Функция для восстановления состояния звездочек при загрузке страницы
 function restoreStarState() {
-    const taskList = document.querySelector(".task-list");
-    const tasks = taskList.querySelectorAll("li");
+    console.log("Restored")
+    const taskLists = document.querySelectorAll(".task-list"); // Все списки задач
+    taskLists.forEach(taskList => {
+        const tasks = taskList.querySelectorAll("li");
+        tasks.forEach(task => {
+            const taskId = task.getAttribute("data-task-id"); // Используем ID задачи
+            const isStarred = localStorage.getItem(`task-${taskId}-starred`) === "true";
 
-    tasks.forEach(task => {
-        const taskId = task.getAttribute("data-task-id"); // Используем ID задачи
-        const isStarred = localStorage.getItem(`task-${taskId}-starred`) === "true";
-
-        if (isStarred) {
-            task.querySelector(".star-icon").classList.add("active");
-        }
+            if (isStarred) {
+                task.querySelector(".star-icon").classList.add("active");
+            } else {
+                task.querySelector(".star-icon").classList.remove("active");
+            }
+        });
     });
 
     sortTasksByStar(); // Сортируем задачи после восстановления состояния

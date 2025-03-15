@@ -85,6 +85,11 @@
                 font-size: 14px;
                 color: gray;
                 font-weight: normal;
+                white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+                overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+                text-overflow: ellipsis; /* Добавляем многоточие в конце обрезанного текста */
+                max-width: 200px; /* Устанавливаем максимальную ширину контейнера */
+                display: inline-block; /* Чтобы текст обрезался корректно */
             }
         }
 
@@ -125,6 +130,11 @@
                 font-family: 'Montserrat', sans-serif;
                 color: #3366ff;
                 margin:0 0 0 10px;
+                white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+                overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+                text-overflow: ellipsis; /* Добавляем многоточие в конце обрезанного текста */
+                max-width: 1000px; /* Устанавливаем максимальную ширину контейнера */
+                display: inline-block; /* Чтобы текст обрезался корректно */
             }
         }
 
@@ -173,6 +183,15 @@
             position: relative; /* Для позиционирования выпадающего списка */
             /*margin-top: 20px;*/
             display: flex;
+        }
+
+        .status-container.disabled .status {
+            cursor: not-allowed; /* Курсор "недоступно" */
+            /*opacity: 0.7; !* Уменьшаем прозрачность *!*/
+        }
+
+        .status-container.disabled .status-dropdown {
+            display: none !important; /* Скрываем выпадающий список */
         }
 
         .status {
@@ -247,6 +266,77 @@
             transition: all 0.3s ease;
         }
         /*    STATUS*/
+
+    /*    MEDIA*/
+        /* Медиа-запросы для адаптивности */
+
+        /* Для устройств с шириной экрана до 768px (планшеты и мобильные) */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .task-header h1 {
+                font-size: 20px; /* Уменьшаем размер заголовка */
+            }
+
+            .btn-back {
+                font-size: 14px; /* Уменьшаем размер текста кнопки */
+            }
+
+            .project-title {
+                font-size: 12px; /* Уменьшаем размер текста названия проекта */
+            }
+
+            .status {
+                font-size: 12px; /* Уменьшаем размер текста статуса */
+                padding: 6px 12px;
+            }
+
+            .task-details p {
+                font-size: 14px; /* Уменьшаем размер текста деталей задачи */
+            }
+        }
+
+        /* Для устройств с шириной экрана до 480px (мобильные) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 5px;
+            }
+
+            .task-header h1 {
+                font-size: 18px; /* Ещё меньше размер заголовка */
+            }
+
+            .btn-back {
+                font-size: 12px; /* Ещё меньше размер текста кнопки */
+            }
+
+            .project-title {
+                font-size: 11px; /* Ещё меньше размер текста названия проекта */
+            }
+
+            .status {
+                font-size: 11px; /* Ещё меньше размер текста статуса */
+                padding: 5px 10px;
+            }
+
+            .task-details p {
+                font-size: 12px; /* Ещё меньше размер текста деталей задачи */
+            }
+
+            .form-head {
+                flex-direction: column; /* Элементы в столбик на маленьких экранах */
+                align-items: flex-start;
+            }
+
+            .project-title {
+                margin-left: 0; /* Убираем отступ слева */
+                margin-top: 5px; /* Добавляем отступ сверху */
+            }
+        }
     </style>
 </head>
 <body>
@@ -263,8 +353,10 @@
         <i class="fas fa-star star-icon" onclick="toggleStar(this)" th:data-task-id="${task.id}"></i>
     </div>
     <div class="task-details">
-        <div class="status-container">
-            <div th:classappend="${'status-' + task.status}" class="status" onclick="showStatusOptions(this)" th:data-task-id="${task.id}" th:data-project-id="${projectId}" style="display: block">
+        <div class="status-container" th:classappend="${ not(isAdminOrModerator or isCreatorOrAssignee)} ? 'disabled'">
+            <div th:classappend="${'status-' + task.status}" class="status"
+                 th:onclick="${isAdminOrModerator or isCreatorOrAssignee} ? 'showStatusOptions(this)' : ''"
+                 th:data-task-id="${task.id}" th:data-project-id="${projectId}" style="display: block">
                 <span th:text="${task.status}"></span>
             </div>
             <div class="status-dropdown" style="display: none">
@@ -273,7 +365,7 @@
                         th:data-status="${status}"
                         th:classappend="${'status-' + status} + (${task.status == status} ? ' current-status' : '')"
                         th:text="${status} + (${task.status == status} ? ' ✓' : '')"
-                        onclick="changeStatus(this)"></li>
+                        th:onclick="${isAdminOrModerator or isCreatorOrAssignee} ? 'changeStatus(this)' : ''"></li>
                 </ul>
             </div>
         </div>
@@ -380,7 +472,6 @@
 
 <script>// Функция для отображения выпадающего списка
 function showStatusOptions(element) {
-    console.log("PRESSED"); // Проверка, что функция вызывается
     const statusContainer = element.parentElement; // Получаем контейнер статуса
     const statusDropdown = statusContainer.querySelector('.status-dropdown'); // Получаем выпадающий список
 
@@ -417,6 +508,8 @@ function changeStatus(element) {
     }).then(response => {
         if (response.ok) {
             location.reload(); // Перезагружаем страницу для обновления статуса
+        } else if (response.status === 403) {
+            alert('У вас нет прав для изменения статуса задачи'); // Сообщение об ошибке
         } else {
             alert('Ошибка при изменении статуса');
         }

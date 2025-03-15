@@ -554,6 +554,7 @@
 
     document.getElementById(activeBtnId).classList.add('active');
     document.getElementById(inactiveBtnId).classList.remove('active');
+    restoreStarState();
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -592,21 +593,6 @@
     const allList = document.querySelector(".project-section:last-child .task-list");
     allList.innerHTML = "";
     allProjects.forEach(project => allList.appendChild(project));
-  }
-</script>
-
-<script>
-  // Функция для сворачивания/разворачивания описания
-  function toggleDescription(button) {
-    const taskItem = button.closest("li"); // Находим родительский элемент задачи
-    const description = taskItem.querySelector(".description"); // Находим описание
-    if (description.style.display === "none") {
-      description.style.display = "block";
-      button.textContent = "Скрыть описание";
-    } else {
-      description.style.display = "none";
-      button.textContent = "Показать описание";
-    }
   }
 </script>
 
@@ -650,6 +636,7 @@
 </script>
 
 <script>
+  // Функция для изменения макета
   function setLayout(layout) {
     const taskLists = document.querySelectorAll(".task-list");
     const singleColumnBtn = document.getElementById("singleColumnBtn");
@@ -680,6 +667,9 @@
         taskList.classList.add("grid-3x3"); // Добавляем сетку 3x3
       });
     }
+
+    // Восстанавливаем состояние звездочек
+    restoreStarState();
   }
 </script>
 

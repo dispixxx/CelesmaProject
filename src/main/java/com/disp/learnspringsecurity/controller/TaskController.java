@@ -43,17 +43,14 @@ public class TaskController {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
 
-//        List<Task> userTasks = taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(),projectId);
-        List<Task> allTasks = taskService.getTasksByProjectId(projectId);
+        List<Task> projectTasks = taskService.getTasksByProjectId(projectId);
         Project project = projectService.getProjectById(projectId);
-        List<Task> createdTasks = taskService.getTasksByCreatorId(currentUser.getId()); // Задачи, где пользователь создатель
-        List<Task> assignedTasks = taskService.getTasksByAssigneeId(currentUser.getId()); // Задачи, где пользователь исполнитель
+        List<Task> createdTasksInProject =taskService.getTasksByCreatorIdAndProject(currentUser.getId(), projectId); // Задачи, где пользователь создатель
+        List<Task> assignedTasksInProject =taskService.getTasksByAssigneeIdAndProjectId(currentUser.getId(), projectId); // Задачи, где пользователь исполнитель
 
-        model.addAttribute("createdTasks", createdTasks);
-        model.addAttribute("assignedTasks", assignedTasks);
-
-//        model.addAttribute("userTasks", userTasks);
-        model.addAttribute("allTasks", allTasks);
+        model.addAttribute("createdTasks", createdTasksInProject);
+        model.addAttribute("assignedTasks", assignedTasksInProject);
+        model.addAttribute("allTasks", projectTasks);
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectId", project.getId());
 
@@ -63,17 +60,38 @@ public class TaskController {
     @GetMapping("/{id}")
     public String getTaskDetails(@PathVariable Long id, @PathVariable Long projectId, Model model) {
         Task task = taskService.getTaskById(id);
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<User> projectUsers = project.getMembers().stream()
+                .map(ProjectMember::getUser)
+                .toList();
+        boolean isMember = projectUsers.contains(currentUser);
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
+        User creator = task.getCreator();
+        User assignee = task.getAssignee();
+        boolean isCreatorOrAssignee = false;
+        if(currentUser.equals(creator) || currentUser.equals(assignee)){
+            isCreatorOrAssignee = true;
+        };
+
         model.addAttribute("task", task);
         model.addAttribute("taskStatus",TaskStatus.values());
         model.addAttribute("projectId",projectId);
+        model.addAttribute("isAdminOrModerator", isAdminOrModerator);
+        model.addAttribute("isCreatorOrAssignee", isCreatorOrAssignee);
         return "task";
     }
 
-        @PostMapping("/{id}/status")
-        public String changeTaskStatus(@PathVariable Long id, @RequestParam TaskStatus status, @PathVariable String projectId) {
-            taskService.changeTaskStatus(id, status);
-            return "redirect:/projects/" + projectId + "/tasks/" + id;
-        }
+    @PostMapping("/{id}/status")
+    public String changeTaskStatus(@PathVariable Long id, @RequestParam TaskStatus status, @PathVariable String projectId) {
+        taskService.changeTaskStatus(id, status);
+        return "redirect:/projects/" + projectId + "/tasks/" + id;
+    }
 
 
     @GetMapping("/create")
