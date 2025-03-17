@@ -61,6 +61,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user.orElse(null);
     }
 
+    public User getUserByEmail(String email){
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.orElse(null);
+    }
+
     public User getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         return user.orElse(null);

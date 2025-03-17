@@ -22,6 +22,7 @@ public class RegistrationController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -30,22 +31,31 @@ public class RegistrationController {
                              @RequestParam String email,
                              @RequestParam String password,
                              RedirectAttributes redirectAttributes) {
-        // Check if username already exists
-        if (userDetailsService.getUserByUsername(username)!=null) {
-            redirectAttributes.addFlashAttribute("error", "Username already taken!");
+
+        // Проверка на существование пользователя с таким именем
+        if (userDetailsService.getUserByUsername(username) != null) {
+            redirectAttributes.addFlashAttribute("error", "Пользователь с таким именем уже существует!");
             return "redirect:/register";
         }
 
+        // Проверка на существование пользователя с таким email
+        if (userDetailsService.getUserByEmail(email) != null) {
+            redirectAttributes.addFlashAttribute("error", "Пользователь с таким email уже зарегистрирован!");
+            return "redirect:/register";
+        }
+
+        // Создание нового пользователя
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
-        userDetailsService.saveUser(user);
-//        userRepository.save(user);
 
-        redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
+        // Сохранение пользователя
+        userDetailsService.saveUser(user);
+
+        // Сообщение об успешной регистрации
+        redirectAttributes.addFlashAttribute("success", "Регистрация прошла успешно! Теперь вы можете войти.");
         return "redirect:/login";
     }
 }
-

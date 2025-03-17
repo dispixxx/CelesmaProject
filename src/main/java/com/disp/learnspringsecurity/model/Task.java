@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Task {
@@ -31,6 +33,9 @@ public class Task {
 
     @Enumerated(EnumType.STRING) // Указываем, что это перечисление
     private TaskStatus status = TaskStatus.NEW; // По умолчанию статус "NEW"
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // Геттеры и сеттеры
     public Long getId() {
@@ -103,5 +108,13 @@ public class Task {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

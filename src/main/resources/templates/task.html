@@ -40,40 +40,6 @@
         .task-details p {
             margin: 10px 0;
         }
-        .comments-section {
-            margin-top: 30px;
-        }
-        .comment {
-            background: #f0f4ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .comment p {
-            margin: 5px 0;
-        }
-        .comment-form {
-            margin-top: 20px;
-        }
-        .comment-form textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .comment-form button {
-            background: #3366ff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .comment-form button:hover {
-            background: #254eda;
-        }
 
         /*    КНОПКА НАЗАД  */
         .form-head{
@@ -267,7 +233,129 @@
         }
         /*    STATUS*/
 
-    /*    MEDIA*/
+        .content-container {
+            display: flex;
+            gap: 40px; /* Расстояние между колонками */
+            margin-top: 20px;
+        }
+
+        /*COMMENT*/
+        .comments-section {
+            flex: 1; /* Левая колонка занимает половину контейнера */
+            /*margin-top: 30px;*/
+            /*max-height: 300px; !* Максимальная высота контейнера с комментариями *!*/
+            /*overflow-y: auto; !* Добавляем вертикальный скролл при необходимости *!*/
+        }
+
+        .comment-form{
+            margin-bottom: 10px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: 'Montserrat', sans-serif;
+            resize: none; /* Запрещаем изменение размера */
+            /*overflow-y: auto; !* Добавляем вертикальный скролл при необходимости *!*/
+            /*max-height: 300px; !* Максимальная высота текстового поля *!*/
+            box-sizing: border-box;
+        }
+
+        .comment {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center; /* Выравниваем по вертикали */
+            margin-bottom: 5px; /* Отступ между заголовком и текстом комментария */
+        }
+
+        .comment-header strong {
+            font-weight: 600; /* Жирный шрифт для имени пользователя */
+            white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+            overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+            text-overflow: ellipsis; /* Добавляем многоточие в конце обрезанного текста */
+            max-width: 300px; /* Устанавливаем максимальную ширину контейнера */
+            display: inline-block; /* Чтобы текст обрезался корректно */
+        }
+
+        .comment-header small {
+            color: #666; /* Серый цвет для даты */
+            font-size: 0.9em; /* Уменьшаем размер шрифта для даты */
+            padding-left: 30px;
+        }
+
+        .comment-text {
+            margin: 0; /* Убираем отступы у текста комментария */
+            word-wrap: break-word; /* Перенос длинных слов */
+        }
+
+        .comment p {
+            margin: 5px 0;
+        }
+
+        .comment-form button {
+            background: #3366ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .comment-form button:hover {
+            background: #254eda;
+        }
+        /*COMMENT*/
+
+        /*HISTORY*/
+        .history-section {
+            flex: 1; /* Правая колонка занимает половину контейнера */
+            /*margin-top: 30px;*/
+        }
+
+        .history-item {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between; /* Размещаем имя и дату по краям */
+            align-items: center; /* Выравниваем по вертикали */
+            margin-bottom: 5px; /* Отступ между заголовком и текстом истории */
+        }
+
+        .history-header strong {
+            font-weight: 600; /* Жирный шрифт для имени пользователя */
+            white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+            overflow: hidden; /* Скрываем текст, который выходит за пределы контейнера */
+            text-overflow: ellipsis; /* Добавляем многоточие в конце обрезанного текста */
+            max-width: 300px; /* Устанавливаем максимальную ширину контейнера */
+            display: inline-block; /* Чтобы текст обрезался корректно */
+        }
+
+        .history-header small {
+            color: #666; /* Серый цвет для даты */
+            font-size: 0.9em; /* Уменьшаем размер шрифта для даты */
+            padding-left: 30px;
+        }
+
+        .history-text {
+            margin: 0; /* Убираем отступы у текста истории */
+            word-wrap: break-word; /* Перенос длинных слов */
+        }
+        /*HISTORY*/
+
+        /*MEDIA*/
         /* Медиа-запросы для адаптивности */
 
         /* Для устройств с шириной экрана до 768px (планшеты и мобильные) */
@@ -337,6 +425,7 @@
                 margin-top: 5px; /* Добавляем отступ сверху */
             }
         }
+        /*MEDIA*/
     </style>
 </head>
 <body>
@@ -379,22 +468,41 @@
     </div>
 
 
-    <div class="comments-section"><!--
-        <h2>Комментарии</h2>
-        <div th:each="comment : ${task.comments}" class="comment">
-            <p><strong th:text="${comment.author.username}"></strong> <span th:text="${comment.text}"></span></p>
-            <p><small th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}"></small></p>
+    <div class="content-container">
+        <div class="comments-section">
+            <h2>Комментарии</h2>
+            <div class="comment-form">
+                <form th:action="@{/projects/{projectId}/tasks/{id}/comments(id=${task.id},projectId=${projectId})}" method="post">
+                    <textarea name="commentText" placeholder="Добавить комментарий..." required></textarea>
+                    <button type="submit">Отправить</button>
+                </form>
+            </div>
+
+            <div th:each="comment : ${task.comments}" class="comment">
+                <div class="comment-header">
+                    <strong th:text="${comment.author.username}"></strong>
+                    <small th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
+                </div>
+                <p class="comment-text" th:text="${comment.text}"></p>
+            </div>
         </div>
-        <div class="comment-form">
-            <form th:action="@{/tasks/{id}/comment(id=${task.id})}" method="post">
-                <textarea name="commentText" placeholder="Добавить комментарий..." required></textarea>
-                <button type="submit">Отправить</button>
-            </form>
-        </div>
-    --></div>
+
+<!--        <div class="history-section">
+            <h2>История изменений</h2>
+            <div th:each="history : ${task.history}" class="history-item">
+                <div class="history-header">
+                    <strong th:text="${history.user.username}"></strong>
+                    <small th:text="${#temporals.format(history.timestamp, 'dd.MM.yyyy HH:mm')}"></small>
+                </div>
+                <p class="history-text" th:text="${history.description}"></p>
+            </div>
+        </div>-->
+    </div>
 </div>
 
 <script th:src="@{/js/sidebar.js}"></script>
+
+<!--<form th:action="@{/projects/{projectId}/tasks/{id}/comments(id=${task.id},projectId=${projectId})}" method="post">-->
 
 <script th:src="@{/js/star-in-task.js}"></script>
 

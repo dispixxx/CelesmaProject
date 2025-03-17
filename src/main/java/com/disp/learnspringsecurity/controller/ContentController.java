@@ -25,17 +25,14 @@ public class ContentController {
 
     @Autowired
     private ProjectService projectService;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    
     @Autowired
     private TaskService taskService;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @RequestMapping("/welcome") //Страница для НЕавторизованных пользователей
+    @GetMapping("/welcome") //Страница для НЕавторизованных пользователей
     public String handleWelcome() {
         return "index";
     }

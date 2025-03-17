@@ -35,7 +35,8 @@ public class TaskController {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
-
+    @Autowired
+    private CommentService commentService;
 
 
     @GetMapping
@@ -60,6 +61,7 @@ public class TaskController {
     @GetMapping("/{id}")
     public String getTaskDetails(@PathVariable Long id, @PathVariable Long projectId, Model model) {
         Task task = taskService.getTaskById(id);
+        List<Comment> comments = commentService.getCommentsByTaskId(id);
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(projectId);
@@ -84,11 +86,12 @@ public class TaskController {
         model.addAttribute("projectId",projectId);
         model.addAttribute("isAdminOrModerator", isAdminOrModerator);
         model.addAttribute("isCreatorOrAssignee", isCreatorOrAssignee);
+        model.addAttribute("comments", comments);
         return "task";
     }
 
     @PostMapping("/{id}/status")
-    public String changeTaskStatus(@PathVariable Long id, @RequestParam TaskStatus status, @PathVariable String projectId) {
+    public String changeTaskStatus(@PathVariable Long id, @RequestParam TaskStatus status, @PathVariable Long projectId ) {
         taskService.changeTaskStatus(id, status);
         return "redirect:/projects/" + projectId + "/tasks/" + id;
     }

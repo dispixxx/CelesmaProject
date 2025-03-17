@@ -162,7 +162,7 @@ public class ProjectService {
         ProjectMember member = new ProjectMember();
         member.setProject(project);
         member.setUser(user);
-        member.setRole(ProjectRole.MEMBER);
+        member.setRole(ProjectRole.MEMBER); //Стандартная роль.
         project.getMembers().add(member);
 
         projectRepository.save(project);
