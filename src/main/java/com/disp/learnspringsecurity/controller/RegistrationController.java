@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RegistrationController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired

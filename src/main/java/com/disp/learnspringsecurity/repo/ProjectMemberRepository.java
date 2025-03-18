@@ -12,4 +12,5 @@ import java.util.List;
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
     List<ProjectMember> findByUser(User user);
     List<ProjectMember> findByProjectId(Long projectId);
+    int countByUserId(Long id);
 }

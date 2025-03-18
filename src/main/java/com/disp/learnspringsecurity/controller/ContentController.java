@@ -74,19 +74,4 @@ public class ContentController {
         model.addAttribute("assignedTasks", assignedTasks);
         return "my_tasks"; // Имя шаблона Thymeleaf
     }
-
-    @GetMapping("/user/profile")
-    public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String username = authenticationFacade.getAuthenticatedUsername();
-        User currentUser = userDetailsService.getUserByUsername(username);
-        //String username = userDetails.getUsername();
-        String userEmail = userDetails.getEmail();
-        String userFirstName = currentUser.getFirstName();
-        String userLastName = currentUser.getLastName();
-        model.addAttribute("userFirstName", Objects.requireNonNullElse(userFirstName, "[FIRSTNAME]"));
-        model.addAttribute("userLastName", Objects.requireNonNullElse(userLastName, "[LASTNAME]"));
-        model.addAttribute("username", username);
-        model.addAttribute("userEmail", userEmail);
-        return "user_profile";
-    }
 }

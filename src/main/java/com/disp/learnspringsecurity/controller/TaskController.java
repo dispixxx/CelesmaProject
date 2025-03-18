@@ -59,12 +59,13 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public String getTaskDetails(@PathVariable Long id, @PathVariable Long projectId, Model model) {
+    public String getTaskDetails(@PathVariable Long id, @PathVariable Long projectId,  @RequestParam(defaultValue = "desc") String sortOrder, Model model) {
         Task task = taskService.getTaskById(id);
         List<Comment> comments = commentService.getCommentsByTaskId(id);
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(projectId);
+        List<TaskHistory> history= taskService.getTaskHistory(id, sortOrder);
         List<User> projectUsers = project.getMembers().stream()
                 .map(ProjectMember::getUser)
                 .toList();
@@ -87,6 +88,8 @@ public class TaskController {
         model.addAttribute("isAdminOrModerator", isAdminOrModerator);
         model.addAttribute("isCreatorOrAssignee", isCreatorOrAssignee);
         model.addAttribute("comments", comments);
+        model.addAttribute("taskHistory", history);
+        model.addAttribute("sortOrder", sortOrder);
         return "task";
     }
 

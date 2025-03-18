@@ -242,9 +242,8 @@
         /*COMMENT*/
         .comments-section {
             flex: 1; /* Левая колонка занимает половину контейнера */
-            /*margin-top: 30px;*/
-            /*max-height: 300px; !* Максимальная высота контейнера с комментариями *!*/
-            /*overflow-y: auto; !* Добавляем вертикальный скролл при необходимости *!*/
+            max-width: 100%; /* Ограничиваем ширину контейнера */
+            overflow: hidden; /* Скрываем горизонтальную прокрутку */
         }
 
         .comment-form{
@@ -257,17 +256,25 @@
             border-radius: 5px;
             border: 1px solid #ccc;
             font-family: 'Montserrat', sans-serif;
-            resize: none; /* Запрещаем изменение размера */
+            resize: vertical;
             /*overflow-y: auto; !* Добавляем вертикальный скролл при необходимости *!*/
             /*max-height: 300px; !* Максимальная высота текстового поля *!*/
             box-sizing: border-box;
         }
 
         .comment {
+            display: flex;
+            flex-direction: column;
             background: #f0f4ff;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            max-height: 100px; /* Максимальная высота контейнера */
+            overflow-y: auto; /* Вертикальная прокрутка при необходимости */
+            max-width: 100%; /* Ограничиваем ширину контейнера */
+            word-wrap: break-word; /* Перенос длинных слов */
+            white-space: pre-wrap; /* Сохраняет пробелы и переносы строк */
+            overflow-x: hidden; /* Скрываем горизонтальную прокрутку */
         }
 
         .comment-header {
@@ -292,12 +299,37 @@
         }
 
         .comment-text {
-            margin: 0; /* Убираем отступы у текста комментария */
-            word-wrap: break-word; /* Перенос длинных слов */
+            margin: 0;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            hyphens: auto; /* Автоматический перенос слов */
         }
 
         .comment p {
-            margin: 5px 0;
+            margin: 0;
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .show-more-button {
+            display: none; /* По умолчанию скрываем кнопку */
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .comment.expanded .show-more-button {
+            display: none; /* Скрываем кнопку, если комментарий развернут */
         }
 
         .comment-form button {
@@ -315,21 +347,87 @@
         /*COMMENT*/
 
         /*HISTORY*/
+
+        .toggle-history-button {
+            background-color: #3366ff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .toggle-history-button:hover {
+            background-color: #254eda;
+        }
+
+        #history-content {
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            overflow: hidden;
+        }
+
+        #history-content.collapsed {
+            opacity: 0;
+            max-height: 0;
+        }
+
+        #history-content.expanded {
+            opacity: 1;
+            max-height: 1000px; /* Максимальная высота, чтобы анимация работала плавно */
+        }
+
+        .sort-buttons {
+            margin-bottom: 10px;
+        }
+
+        .sort-buttons a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            background-color: #f0f4ff;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #3366ff;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sort-buttons a:hover {
+            background-color: #3366ff;
+            color: white;
+        }
+
+        .sort-buttons a.active {
+            background-color: #3366ff;
+            color: white;
+        }
+
         .history-section {
             flex: 1; /* Правая колонка занимает половину контейнера */
+            overflow: hidden;
             /*margin-top: 30px;*/
         }
 
         .history-item {
+            display: flex;
+            flex-direction: column;
             background: #f0f4ff;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            max-height: 100px;
+            overflow-y: auto;
+            max-width: 100%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            overflow-x: hidden;
         }
 
         .history-header {
             display: flex;
-            justify-content: space-between; /* Размещаем имя и дату по краям */
+            /*justify-content: space-between; !* Размещаем имя и дату по краям *!*/
             align-items: center; /* Выравниваем по вертикали */
             margin-bottom: 5px; /* Отступ между заголовком и текстом истории */
         }
@@ -473,7 +571,8 @@
             <h2>Комментарии</h2>
             <div class="comment-form">
                 <form th:action="@{/projects/{projectId}/tasks/{id}/comments(id=${task.id},projectId=${projectId})}" method="post">
-                    <textarea name="commentText" placeholder="Добавить комментарий..." required></textarea>
+                    <textarea name="commentText" placeholder="Добавить комментарий..." required maxlength="499"></textarea>
+                    <div class="char-counter"><span id="char-count"></span></div>
                     <button type="submit">Отправить</button>
                 </form>
             </div>
@@ -484,19 +583,40 @@
                     <small th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
                 </div>
                 <p class="comment-text" th:text="${comment.text}"></p>
+                <button class="show-more-button">Показать больше</button>
             </div>
         </div>
 
-<!--        <div class="history-section">
-            <h2>История изменений</h2>
-            <div th:each="history : ${task.history}" class="history-item">
-                <div class="history-header">
-                    <strong th:text="${history.user.username}"></strong>
-                    <small th:text="${#temporals.format(history.timestamp, 'dd.MM.yyyy HH:mm')}"></small>
-                </div>
-                <p class="history-text" th:text="${history.description}"></p>
+        <div class="history-section">
+            <h2>
+                История изменений
+                <button id="toggle-history" class="toggle-history-button">Свернуть</button>
+            </h2>
+
+            <!-- Кнопки сортировки -->
+            <div class="sort-buttons">
+                <a th:href="@{/projects/{projectId}/tasks/{id}(id=${task.id},projectId=${projectId}, sortOrder='desc')}"
+                   th:classappend="${sortOrder == 'desc'} ? 'active' : ''">
+                    Сначала новые
+                </a>
+                <a th:href="@{/projects/{projectId}/tasks/{id}(id=${task.id},projectId=${projectId}, sortOrder='asc')}"
+                   th:classappend="${sortOrder == 'asc'} ? 'active' : ''">
+                    Сначала старые
+                </a>
             </div>
-        </div>-->
+
+            <!-- Блок истории изменений -->
+            <div id="history-content">
+                <div th:each="history : ${taskHistory}" class="history-item">
+                    <div class="history-header">
+                        <strong th:text="${history.user.username}"></strong>
+                        <small th:text="${#temporals.format(history.timestamp, 'dd.MM.yyyy HH:mm')}"></small>
+                    </div>
+                    <p class="history-text" th:text="${history.description}"></p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -663,6 +783,51 @@ document.addEventListener('keydown', function(event) {
         });
     }
 });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleButton = document.getElementById('toggle-history');
+        const historyContent = document.getElementById('history-content');
+
+        // Изначально блок развернут
+        historyContent.classList.add('expanded');
+
+        toggleButton.addEventListener('click', function () {
+            if (historyContent.classList.contains('expanded')) {
+                // Сворачиваем блок
+                historyContent.classList.remove('expanded');
+                historyContent.classList.add('collapsed');
+                toggleButton.textContent = 'Развернуть';
+            } else {
+                // Разворачиваем блок
+                historyContent.classList.remove('collapsed');
+                historyContent.classList.add('expanded');
+                toggleButton.textContent = 'Свернуть';
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.querySelector('textarea[name="commentText"]');
+        const charCount = document.getElementById('char-count');
+
+        if (textarea && charCount) {
+            textarea.addEventListener('input', function () {
+                const remainingChars = 499 - textarea.value.length;
+                charCount.textContent = `${textarea.value.length} / 499`;
+
+                // Меняем цвет текста, если осталось мало символов
+                if (remainingChars < 50) {
+                    charCount.style.color = 'red';
+                } else {
+                    charCount.style.color = '#666';
+                }
+            });
+        }
+    });
 </script>
 
 </body>

@@ -423,16 +423,19 @@
         <h2>Статистика</h2>
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>Проекты</h3>
-                <p class="stat-value">12</p>
+                <h3>Участие в проектах</h3>
+                <p class="stat-value" th:text="${projectCount}"></p>
             </div>
             <div class="stat-card">
-                <h3>Задачи</h3>
-                <p class="stat-value">45</p>
+                <h3>Задачи </h3>
+                <p class="stat-value">
+                    <span th:text="${taskCountAsAssignee}"></span> / <span th:text="${taskCountAsCreator}"></span>
+                </p>
+                <span style="color: gray; font-size: 12px">создатель / исполнитель</span>
             </div>
             <div class="stat-card">
-                <h3>Активность</h3>
-                <p class="stat-value">98%</p>
+                <h3>Завершено задач</h3>
+                <p class="stat-value" th:text="${completedTaskCount}"></p>
             </div>
         </div>
     </div>

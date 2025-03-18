@@ -1,8 +1,10 @@
 package com.disp.learnspringsecurity.model;
 
 
+import com.disp.learnspringsecurity.repo.TaskHistoryRepository;
 import com.disp.learnspringsecurity.repo.TaskRepository;
 import com.disp.learnspringsecurity.repo.UserRepository;
+import com.disp.learnspringsecurity.util.AuthenticationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,15 @@ public class TaskService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private TaskHistoryRepository taskHistoryRepository;
 
     public void createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate) {
         Task task = new Task();
@@ -58,10 +69,42 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Задача не найдена"));
     }
 
-    public void changeTaskStatus(Long taskId, TaskStatus status) {
+    public int getTaskCountByAssignee(Long assigneeId) {
+        return taskRepository.countByAssigneeId(assigneeId);
+    }
+
+    public int getTaskCountByCreator(Long creatorId) {
+        return taskRepository.countByCreatorId(creatorId);
+    }
+
+    public int getCompletedTaskCountByUser(Long userId) {
+        return taskRepository.countCompletedTasksByUser(userId,TaskStatus.COMPLETED);
+
+    }
+
+    public void changeTaskStatus(Long taskId, TaskStatus newStatus) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User user = userDetailsService.getUserByUsername(username);
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Задача не найдена"));
-        task.setStatus(status);
+        TaskStatus oldStatus = task.getStatus();
+        task.setStatus(newStatus);
+
+        TaskHistory history = new TaskHistory();
+        history.setTask(task);
+        history.setUser(user);
+        history.setTimestamp(LocalDateTime.now());
+        history.setDescription("Статус изменен с " + oldStatus + " на " + newStatus);
+        task.getHistory().add(history);
+
         taskRepository.save(task);
+    }
+
+    public List<TaskHistory> getTaskHistory(Long taskId, String sortOrder) {
+        if ("asc".equalsIgnoreCase(sortOrder)) {
+            return taskHistoryRepository.findByTaskIdOrderByTimestampAsc(taskId);
+        } else {
+            return taskHistoryRepository.findByTaskIdOrderByTimestampDesc(taskId);
+        }
     }
 }

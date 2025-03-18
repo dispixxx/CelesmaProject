@@ -37,6 +37,9 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskHistory> history = new ArrayList<>();
+
     // Геттеры и сеттеры
     public Long getId() {
         return id;
@@ -117,4 +120,13 @@ public class Task {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+    public List<TaskHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<TaskHistory> history) {
+        this.history = history;
+    }
+
 }

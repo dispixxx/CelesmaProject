@@ -2,7 +2,12 @@ package com.disp.learnspringsecurity.repo;
 
 
 import com.disp.learnspringsecurity.model.Task;
+import com.disp.learnspringsecurity.model.TaskStatus;
+import com.disp.learnspringsecurity.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -11,4 +16,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByCreatorId(Long creatorId);
     List<Task> findByAssigneeId(Long assigneeId);
     List<Task> findByCreatorIdAndProjectId(Long assignee_id, Long project_id);
+    int countByAssigneeId(Long assignee_id);
+    int countByCreatorId(Long creatorId);
+    @Query("SELECT COUNT(DISTINCT t.id) FROM Task t WHERE (t.assignee.id = :userId OR t.creator.id = :userId) AND t.status = 'COMPLETED'")
+    int countCompletedTasksByUser(@Param("userId") Long userId, TaskStatus status);
 }

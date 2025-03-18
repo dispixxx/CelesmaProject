@@ -91,6 +91,10 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    public int getUserProjectCount(Long userId) {
+        return projectMemberRepository.countByUserId(userId);
+    }
+
     // Получение проекта по ID с участниками
     public Project getProjectById(Long id) {
         return projectRepository.findById(id)
