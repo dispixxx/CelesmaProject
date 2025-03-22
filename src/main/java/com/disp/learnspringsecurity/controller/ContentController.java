@@ -57,6 +57,7 @@ public class ContentController {
         String username = authenticationFacade.getAuthenticatedUsername();
         List<Project> userProjects = projectService.getProjectsByMember(username);
         User currentUser = userDetailsService.getUserByUsername(username);
+
         model.addAttribute("projects", userProjects);
         model.addAttribute("user", currentUser);
         model.addAttribute("projectRoles", ProjectRole.values());

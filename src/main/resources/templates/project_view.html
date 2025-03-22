@@ -95,7 +95,7 @@
     .members-section h2 {
       font-size: 18px;
       font-weight: 600;
-      margin-top: 23px;
+      margin-top: 32px;
       margin-bottom: 23px;
     }
 
@@ -203,6 +203,51 @@
       background-color: #3366ff; /* Подчёркивание при наведении */
     }
 
+  /*  CIRCLE*/
+    .progress-circle-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .progress-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 10px auto;
+      position: relative;
+      background: #f0f0f0; /* Серый фон по умолчанию */
+    }
+
+    .progress-circle::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #fff;
+      top: 15px;
+      left: 15px;
+    }
+
+    .progress-legend {
+      margin-top: 10px;
+      text-align: left;
+      display: inline-block;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+  /*  CIRCLE*/
   </style>
 </head>
 <body>
@@ -245,6 +290,47 @@
 
     <div th:if="${isAdminOrModerator}">
       <a th:href="@{/projects/{projectId}/manage(projectId=${project.id})}" class="create-btn">Управление проектом</a>
+    </div>
+
+    <div class="progress-circle-container" th:if= "${isMember}">
+      <h3>Прогресс проекта</h3>
+      <input type="hidden" id="newTasks" th:value="${newTasks}">
+      <input type="hidden" id="inProgressTasks" th:value="${inProgressTasks}">
+      <input type="hidden" id="reviewTasks" th:value="${reviewTasks}">
+      <input type="hidden" id="completedTasks" th:value="${completedTasks}">
+      <input type="hidden" id="onHoldTasks" th:value="${onHoldTasks}">
+      <input type="hidden" id="canceledTasks" th:value="${canceledTasks}">
+      <input type="hidden" id="totalTasks" th:value="${totalTasks}">
+
+      <div class="progress-circle">
+      </div>
+
+      <div class="progress-legend">
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #a0a0a0;"></span>
+          <span>Новые: <span th:text="${newTasks}"></span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #6c8cff;"></span>
+          <span>В процессе: <span th:text="${inProgressTasks}"></span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #a64ca6;"></span>
+          <span>На проверке: <span th:text="${reviewTasks}"></span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #6fbf73;"></span>
+          <span>Завершённые: <span th:text="${completedTasks}"></span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #ffb84d;"></span>
+          <span>На паузе: <span th:text="${onHoldTasks}"></span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #ff6666;"></span>
+          <span>Отменённые: <span th:text="${canceledTasks}"></span></span>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -293,6 +379,53 @@
             .catch(error => {
               console.error('Ошибка:', error);
             });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Получаем данные из скрытых полей
+    const newTasks = parseInt(document.getElementById("newTasks").value);
+    const inProgressTasks = parseInt(document.getElementById("inProgressTasks").value);
+    const reviewTasks = parseInt(document.getElementById("reviewTasks").value);
+    const completedTasks = parseInt(document.getElementById("completedTasks").value);
+    const onHoldTasks = parseInt(document.getElementById("onHoldTasks").value);
+    const canceledTasks = parseInt(document.getElementById("canceledTasks").value);
+    const totalTasks = parseInt(document.getElementById("totalTasks").value);
+
+    const progressCircle = document.querySelector(".progress-circle");
+
+    if (totalTasks === 0) {
+      // Если задач нет, делаем круг пустым
+      progressCircle.style.background = "#f0f0f0"; // Серый фон для пустого круга
+    } else {
+      // Рассчитываем проценты для каждого статуса
+      const newPercentage = (newTasks / totalTasks) * 100;
+      const inProgressPercentage = (inProgressTasks / totalTasks) * 100;
+      const reviewPercentage = (reviewTasks / totalTasks) * 100;
+      const completedPercentage = (completedTasks / totalTasks) * 100;
+      const onHoldPercentage = (onHoldTasks / totalTasks) * 100;
+      const canceledPercentage = (canceledTasks / totalTasks) * 100;
+
+      // Формируем градиент
+      const gradient = `conic-gradient(
+        #a0a0a0 0%,
+        #a0a0a0 ${newPercentage}%,
+        #6c8cff ${newPercentage}%,
+        #6c8cff ${newPercentage + inProgressPercentage}%,
+        #a64ca6 ${newPercentage + inProgressPercentage}%,
+        #a64ca6 ${newPercentage + inProgressPercentage + reviewPercentage}%,
+        #6fbf73 ${newPercentage + inProgressPercentage + reviewPercentage}%,
+        #6fbf73 ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
+        #ffb84d ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
+        #ffb84d ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
+        #ff6666 ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
+        #ff6666 100%
+      )`;
+
+      // Применяем градиент к кругу
+      progressCircle.style.background = gradient;
+    }
   });
 </script>
 

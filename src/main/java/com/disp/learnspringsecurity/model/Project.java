@@ -21,13 +21,16 @@ public class Project {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-//    private Long ownerId;
+
     @ManyToOne
     @JoinColumn(name = "owner_user")
     private User ownerUser; // Связь с пользователем
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectMember> members = new HashSet<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Task> tasks = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -110,5 +113,23 @@ public class Project {
 
     public void setApplicants(Set<User> applicants) {
         this.applicants = applicants;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setProject(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setProject(null);
     }
 }

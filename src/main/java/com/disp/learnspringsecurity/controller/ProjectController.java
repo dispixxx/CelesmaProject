@@ -28,6 +28,8 @@ public class ProjectController {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping("/new")
     public String showProjectForm(Model model) {
@@ -70,6 +72,14 @@ public class ProjectController {
         List<User> projectUsers = project.getMembers().stream()
                 .map(ProjectMember::getUser)
                 .toList();
+        List<Task> tasks = taskService.getTasksByProjectId(projectId);
+        Long totalsTasks = (long) tasks.size();
+        Long completedTasks = (long) tasks.stream().filter(task->task.getStatus().equals(TaskStatus.COMPLETED)).count();
+        long newTasks = (long) tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.NEW)).count();
+        long inProgressTasks = (long) tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.IN_PROGRESS)).count();
+        long reviewTasks = (long) tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.REVIEW)).count();
+        long onHoldTasks = (long) tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.ON_HOLD)).count();
+        long canceledTasks = (long) tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.CANCELED)).count();
 
         // Проверяем, является ли пользователь участником проекта
         boolean isMember = projectUsers.contains(currentUser);
@@ -97,6 +107,13 @@ public class ProjectController {
         model.addAttribute("isMember", isMember);
         model.addAttribute("isAdminOrModerator", isAdminOrModerator);
         model.addAttribute("isApplicant", isApplicant);
+        model.addAttribute("totalTasks", totalsTasks);
+        model.addAttribute("newTasks", newTasks);
+        model.addAttribute("inProgressTasks", inProgressTasks);
+        model.addAttribute("reviewTasks", reviewTasks);
+        model.addAttribute("completedTasks", completedTasks);
+        model.addAttribute("onHoldTasks", onHoldTasks);
+        model.addAttribute("canceledTasks", canceledTasks);
         return "project_view";
     }
 

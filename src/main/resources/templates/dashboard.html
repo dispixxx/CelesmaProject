@@ -129,7 +129,7 @@
 
         <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
 
-        <a href="/projects/search"><button class="search-project-btn">Найти подходящий проект</button></a>
+        <a href="/projects/search"><button class="search-project-btn">Найти проект</button></a>
 
         <div class="projects-container">
             <div th:each="project : ${projects}" class="project">
@@ -138,6 +138,10 @@
                     <span th:if="${project.getMemberRole(user) eq projectRoles[0]}" class="user-admin">Администратор🔧</span>
                     <span th:if="${project.getMemberRole(user) eq projectRoles[1]}" class="user-moderator">Модератор🔧</span>
                     <span th:if="${!(project.getMemberRole(user) eq projectRoles[0] || project.getMemberRole(user) eq projectRoles[1])}" class="user-member">Участник👤</span>
+                </div>
+
+                <div class="progress-line">
+                    <div class="progress-bar"></div>
                 </div>
 <!--                <p th:text="${project.description}">Описание проекта</p>-->
                 <div class="project-footer">
