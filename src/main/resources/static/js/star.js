@@ -1,6 +1,5 @@
 // Функция для переключения состояния звездочки
 function toggleStar(starIcon) {
-    console.log("toggleStar()")
     starIcon.classList.toggle("active"); // Переключаем класс "active"
     sortTasksByStar(); // Сортируем задачи
     saveStarState(starIcon); // Сохраняем состояние в localStorage
@@ -37,7 +36,6 @@ function saveStarState(starIcon) {
 
 // Функция для восстановления состояния звездочек при загрузке страницы
 function restoreStarState() {
-    console.log("Restored")
     const taskLists = document.querySelectorAll(".task-list"); // Все списки задач
     taskLists.forEach(taskList => {
         const tasks = taskList.querySelectorAll("li");

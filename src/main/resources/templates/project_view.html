@@ -2,252 +2,415 @@
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Просмотр проекта</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <title>Просмотр проекта | TaskFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" th:href="@{/styles/sidebar.css}">
   <style>
+    :root {
+      --primary: #3366ff;
+      --primary-dark: #3a56cc;
+      --secondary: #6fbf73;
+      --danger: #ff6666;
+      --warning: #ffb84d;
+      --info: #6c8cff;
+      --purple: #a64ca6;
+      --gray: #a0a0a0;
+      --light-gray: #f5f7fa;
+      --dark-gray: #6c757d;
+      --white: #ffffff;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    /** {*/
+    /*  box-sizing: border-box;*/
+    /*}*/
+
     body {
       font-family: 'Montserrat', sans-serif;
+      /*background-color: #f8f9fa;*/
       background: linear-gradient(to right, #eef2ff, #cfd9ff);
       margin: 0;
       padding: 0;
       display: flex;
-    }
-
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      /*background: url("/image/background_work.jpg");*/
-      opacity: 0.1;
-      background-size: cover;
-      z-index: -1;
+      min-height: 100vh;
+      color: #333;
     }
 
     .main-content {
-      opacity: 100%;
       display: flex;
-      gap: 20px;
+      gap: 24px;
       width: 100%;
-      max-width: 1200px;
-      margin: 50px auto;
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
-    .container {
+    /* Карточка проекта */
+    .project-card {
       flex: 2;
-      /*background: rgba(255, 255, 255, 0.8);*/
-      background: rgba(255, 255, 255);
+      background: var(--white);
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
     }
 
-    h1 {
-      font-family: "Orbitron", serif;
-      font-optical-sizing: auto;
-      font-style: normal;
-      text-align: center; /* Центрируем заголовок */
-      font-size: 24px;
+    .project-card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .project-title {
+      font-family: "Orbitron", sans-serif;
       font-weight: 600;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-
-    .project-info {
-      /*margin-top: 20px;*/
-      padding: 15px;
-      border: 2px solid #3366ff; /* Обводка */
-      border-radius: 10px;
-      background-color: #f0f4ff; /* Легкий фон */
-      display: inline-block;
-      text-align: justify; /* Выравнивание по ширине */
-      /*max-width: 90%;*/
-    }
-
-    .project-info p {
-
+      font-size: 28px;
+      color: var(--primary);
       margin: 0;
-      font-size: 16px;
+    }
+
+    .project-id {
+      font-size: 14px;
+      color: var(--dark-gray);
+      background: var(--light-gray);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .project-description {
+      background: var(--light-gray);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-bottom: 30px;
       line-height: 1.6;
     }
 
-    .members-container {
+    .project-description p {
+      margin: 0;
+    }
+
+    /* Блок участников */
+    .members-card {
       flex: 1;
-      /*background: rgba(255, 255, 255, 0.8);*/
-      background: rgba(255, 255, 255);
+      background: var(--white);
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      height: fit-content;
+      position: sticky;
+      /*top: 100px;*/
     }
 
-    .members-section {
-      text-align: left;
-    }
-
-    .members-section h2 {
-      font-size: 18px;
+    .members-title {
+      font-size: 20px;
       font-weight: 600;
-      margin-top: 32px;
-      margin-bottom: 23px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .members-title i {
+      font-size: 18px;
     }
 
     .members-list {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
+      margin: 0;
     }
 
-    .members-list li {
+    .member-item {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .members-list li i {
-      margin-right: 10px;
-      /*color: #3366ff;!*Цвет должен быть взависимости от роли(Администратор - красный, Модератор-зеленый, Участник-синий(#3366ff)*!*/
+    .member-item:last-child {
+      border-bottom: none;
     }
 
-    .back-btn, .create-btn, .view-task-btn, .request-btn {
-      display: block;
-      margin: 20px auto;
-      background: #3366ff;
+    .member-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--primary);
       color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      width: 150px;
-      transition: background 0.3s ease-in-out;
-    }
-
-    .back-btn:hover, .create-btn:hover, .view-task-btn:hover, .request-btn:hover {
-      background-color: #254eda;
-    }
-
-    .request-btn.disabled {
-      background-color: grey !important;
-      cursor: not-allowed !important;
-    }
-
-
-
-    .project-name-and-id{
       display: flex;
-      justify-content: space-around;
-      margin-top: 10px;
-    }
-
-    .divider {
-      border: 0;
-      height: 1px;
-      background: #ccc; /* Цвет линии */
-      margin: 20px 0; /* Отступы сверху и снизу */
-    }
-
-    .members-list li i {
-      margin-right: 10px;
-      font-size: 18px; /* Размер иконки */
-    }
-
-    /* Стиль для администратора проекта (красный) */
-    .admin-icon {
-      color: red;
-    }
-
-    /* Стиль для модератора проекта (зелёный) */
-    .moderator-icon {
-      color: green;
-    }
-
-     /*Стиль для обычного участника (синий) */
-    .def-user-icon {
-      color: #3366ff;
-    }
-
-    .btn-back {
-      display: flex;
-      justify-content: space-between;
-      flex-direction: row;
       align-items: center;
-      background-color: transparent;
-      color: #3366ff;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 12px;
+    }
+
+    .member-name {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .member-role {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .role-admin {
+      background-color: rgba(255, 0, 0, 0.1);
+      color: var(--danger);
+    }
+
+    .role-moderator {
+      background-color: rgba(0, 128, 0, 0.1);
+      color: var(--secondary);
+    }
+
+    .role-member {
+      background-color: rgba(74, 107, 255, 0.1);
+      color: var(--primary);
+    }
+
+    /* Кнопки */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
       border: none;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      position: absolute;
-      padding-bottom: 1px;
+      font-size: 15px;
+      gap: 8px;
     }
 
-    .btn-back::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 1px;
-      background-color: transparent; /* Изначально подчёркивание невидимо */
-      transition: background-color 0.3s ease-in-out; /* Плавное изменение цвета */
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
     }
 
-    .btn-back:hover::after {
-      background-color: #3366ff; /* Подчёркивание при наведении */
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
     }
 
-  /*  CIRCLE*/
-    .progress-circle-container {
-      margin-top: 20px;
-      text-align: center;
+    .btn-secondary {
+      background-color: var(--light-gray);
+      color: var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e9ecef;
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #5ca360;
+      transform: translateY(-2px);
+    }
+
+    .btn-disabled {
+      background-color: #e9ecef !important;
+      color: #adb5bd !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+
+      .btn-back {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      /*margin-bottom: 20px;*/
+      padding: 6px 0;
+      transition: var(--transition);
+    }
+
+    .btn-back:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Прогресс проекта */
+    .progress-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+
+    .progress-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }
 
     .progress-circle {
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
       border-radius: 50%;
-      margin: 10px auto;
       position: relative;
-      background: #f0f0f0; /* Серый фон по умолчанию */
+      background: #f0f0f0;
+      flex-shrink: 0;
     }
 
     .progress-circle::before {
       content: '';
       position: absolute;
-      width: 120px;
-      height: 120px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
-      background: #fff;
+      background: var(--white);
       top: 15px;
       left: 15px;
     }
 
-    .progress-legend {
-      margin-top: 10px;
-      text-align: left;
-      display: inline-block;
+    .progress-stats {
+      flex: 1;
+      min-width: 250px;
     }
 
-    .legend-item {
+    .stat-item {
       display: flex;
       align-items: center;
-      margin-bottom: 5px;
+      margin-bottom: 12px;
     }
 
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-right: 8px;
+    .stat-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      margin-right: 12px;
+      flex-shrink: 0;
     }
-  /*  CIRCLE*/
+
+    .stat-label {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: var(--dark-gray);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 992px) {
+      .main-content {
+        flex-direction: column;
+      }
+
+      .members-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .project-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .progress-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Анимации */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .project-card, .members-card {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    /* Тултипы */
+    [data-tooltip] {
+      position: relative;
+      cursor: pointer;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+      min-width: 120px;
+      max-width: 250px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    [data-tooltip]:hover::after {
+      opacity: 1;
+      visibility: visible;
+      bottom: calc(100% + 8px);
+    }
+
+    /* Для многострочных тултипов */
+    [data-tooltip].multiline::after {
+      white-space: normal;
+      width: max-content;
+      max-width: 300px;
+    }
   </style>
 </head>
 <body>
@@ -255,45 +418,59 @@
 <div th:insert="~{fragments/sidebar :: sidebar}"></div>
 
 <div class="main-content">
-  <div class="container">
-    <button type="button" class="btn-back" onclick="history.back()">← Назад</button>
-    <div class="project-name-and-id">
-      <h1 th:text=" ${project.name}">Название проекта</h1>
-      <h1 th:text="|ID: ${project.id}|">ID проекта</h1>
+  <div class="project-card">
+    <button type="button" class="btn-back" onclick="history.back()">
+      <i class="fas fa-arrow-left"></i> Назад
+    </button>
+
+    <div class="project-header">
+      <h1 class="project-title" th:text="${project.name}">Название проекта</h1>
+      <span class="project-id" th:text="'ID: ' + ${project.id}">ID проекта</span>
     </div>
 
-    <div class="project-info">
+    <div class="project-description">
       <p><strong>Описание:</strong> <span th:text="${project.description}"></span></p>
     </div>
 
-    <hr class="divider">
-
-    <!-- Кнопка для создания задачи (видна только участникам) -->
-<!--    <div th:if="${#lists.contains(projectUsers, currentUser)}">-->
-    <div  th:if= "${isMember}">
-      <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="create-btn">Создать задачу</a>
-    </div>
-
-<!--    <div th:if="${#lists.contains(projectUsers, currentUser)}">-->
-    <div  th:if= "${isMember}">
-      <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="view-task-btn">Просмотреть задачи</a>
-    </div>
-
-    <div th:unless="${isMember}">
-      <div th:if="${isApplicant}">
-        <a class="request-btn disabled" style="background-color: grey; cursor: not-allowed;">Вы уже подали заявку на вступление</a>
+    <div class="action-buttons">
+      <!-- Кнопка для создания задачи (видна только участникам) -->
+      <div th:if="${isMember}">
+        <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Создать задачу
+        </a>
       </div>
-      <div th:unless="${isApplicant}">
-        <a id="joinRequestButton" class="request-btn">Подать заявку на вступление</a>
+
+      <div th:if="${isMember}">
+        <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="btn btn-secondary">
+          <i class="fas fa-tasks"></i> Просмотреть задачи
+        </a>
+      </div>
+
+      <div th:unless="${isMember}">
+        <div th:if="${isApplicant}">
+          <a class="btn btn-disabled">
+            <i class="fas fa-hourglass-half"></i> Заявка на рассмотрении
+          </a>
+        </div>
+        <div th:unless="${isApplicant}">
+          <a id="joinRequestButton" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Вступить в проект
+          </a>
+        </div>
+      </div>
+
+      <div th:if="${isAdminOrModerator}">
+        <a th:href="@{/projects/{projectId}/manage(projectId=${project.id})}" class="btn btn-secondary">
+          <i class="fas fa-cog"></i> Управление проектом
+        </a>
       </div>
     </div>
 
-    <div th:if="${isAdminOrModerator}">
-      <a th:href="@{/projects/{projectId}/manage(projectId=${project.id})}" class="create-btn">Управление проектом</a>
-    </div>
+    <div class="progress-section" th:if="${isMember}">
+      <h3 class="progress-title">
+        <i class="fas fa-chart-pie"></i> Прогресс проекта
+      </h3>
 
-    <div class="progress-circle-container" th:if= "${isMember}">
-      <h3>Прогресс проекта</h3>
       <input type="hidden" id="newTasks" th:value="${newTasks}">
       <input type="hidden" id="inProgressTasks" th:value="${inProgressTasks}">
       <input type="hidden" id="reviewTasks" th:value="${reviewTasks}">
@@ -302,52 +479,63 @@
       <input type="hidden" id="canceledTasks" th:value="${canceledTasks}">
       <input type="hidden" id="totalTasks" th:value="${totalTasks}">
 
-      <div class="progress-circle">
-      </div>
+      <div class="progress-container">
+        <div class="progress-circle"></div>
 
-      <div class="progress-legend">
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #a0a0a0;"></span>
-          <span>Новые: <span th:text="${newTasks}"></span></span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #6c8cff;"></span>
-          <span>В процессе: <span th:text="${inProgressTasks}"></span></span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #a64ca6;"></span>
-          <span>На проверке: <span th:text="${reviewTasks}"></span></span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #6fbf73;"></span>
-          <span>Завершённые: <span th:text="${completedTasks}"></span></span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #ffb84d;"></span>
-          <span>На паузе: <span th:text="${onHoldTasks}"></span></span>
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background-color: #ff6666;"></span>
-          <span>Отменённые: <span th:text="${canceledTasks}"></span></span>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--gray);"></span>
+            <span class="stat-label">Новые</span>
+            <span class="stat-value" th:text="${newTasks}">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--info);"></span>
+            <span class="stat-label">В процессе</span>
+            <span class="stat-value" th:text="${inProgressTasks}">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--purple);"></span>
+            <span class="stat-label">На проверке</span>
+            <span class="stat-value" th:text="${reviewTasks}">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--secondary);"></span>
+            <span class="stat-label">Завершённые</span>
+            <span class="stat-value" th:text="${completedTasks}">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--warning);"></span>
+            <span class="stat-label">На паузе</span>
+            <span class="stat-value" th:text="${onHoldTasks}">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-color" style="background-color: var(--danger);"></span>
+            <span class="stat-label">Отменённые</span>
+            <span class="stat-value" th:text="${canceledTasks}">0</span>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 
-  <div class="members-container">
-    <div class="members-section">
-      <h2>Участники проекта</h2>
-      <ul class="members-list">
-        <li th:each="member : ${members}">
-          <!-- Иконка с цветом в зависимости от роли -->
-          <i th:if="${member.role eq projectRoles[0]}" class="fas fa-user admin-icon"></i>
-          <i th:if="${member.role eq projectRoles[1]}" class="fas fa-user moderator-icon"></i>
-          <i th:if="${member.role != projectRoles[0] and member.role != projectRoles[1]}" class="fas fa-user def-user-icon"></i>
-          <span th:text="${member.user.username}"></span>
-        </li>
-      </ul>
-    </div>
+  <div class="members-card">
+    <h2 class="members-title">
+      <i class="fas fa-users"></i> Участники проекта
+      <span class="project-id" th:text="'(' + ${members.size()} + ')'"></span>
+    </h2>
+
+    <ul class="members-list">
+      <li class="member-item" th:each="member : ${members}">
+        <div class="member-avatar" th:text="${#strings.substring(member.user.username, 0, 1).toUpperCase()}"></div>
+        <span class="member-name" th:text="${member.user.username}"></span>
+        <span class="member-role"
+              th:classappend="${member.role eq projectRoles[0]} ? 'role-admin' :
+                     (${member.role eq projectRoles[1]} ? 'role-moderator' : 'role-member')"
+              th:text="${member.role eq projectRoles[0]} ? 'Админ' :
+               (${member.role eq projectRoles[1]} ? 'Модератор' : 'Участник')">
+</span>
+      </li>
+    </ul>
   </div>
 </div>
 
@@ -355,11 +543,8 @@
 
 <script>
   document.getElementById('joinRequestButton')?.addEventListener('click', function() {
-    const projectId = [[${project.id}]]; // Получаем ID проекта из Thymeleaf
-    const userId = [[${currentUser.id}]]; // Получаем ID текущего пользователя из Thymeleaf
-
-    console.log(projectId);
-    console.log(userId)
+    const projectId = [[${project.id}]];
+    const userId = [[${currentUser.id}]];
 
     fetch(`/projects/${projectId}/join`, {
       method: 'POST',
@@ -370,21 +555,51 @@
     })
             .then(response => {
               if (response.ok) {
-                alert('Заявка успешно отправлена!');
-                location.reload(); // Перезагружаем страницу для обновления данных
+                // Показываем красивый toast вместо alert
+                showToast('Заявка успешно отправлена!', 'success');
+                setTimeout(() => location.reload(), 1500);
               } else {
-                alert('Ошибка при отправке заявки.');
+                showToast('Ошибка при отправке заявки', 'error');
               }
             })
             .catch(error => {
               console.error('Ошибка:', error);
+              showToast('Произошла ошибка', 'error');
             });
   });
+
+  // Функция для показа toast-уведомлений
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '4px';
+    toast.style.color = 'white';
+    toast.style.fontWeight = '500';
+    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    toast.style.zIndex = '1000';
+    toast.style.animation = 'fadeIn 0.3s ease-out';
+
+    if (type === 'success') {
+      toast.style.backgroundColor = '#28a745';
+    } else {
+      toast.style.backgroundColor = '#dc3545';
+    }
+
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.animation = 'fadeOut 0.3s ease-out';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
 </script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Получаем данные из скрытых полей
     const newTasks = parseInt(document.getElementById("newTasks").value);
     const inProgressTasks = parseInt(document.getElementById("inProgressTasks").value);
     const reviewTasks = parseInt(document.getElementById("reviewTasks").value);
@@ -396,10 +611,8 @@
     const progressCircle = document.querySelector(".progress-circle");
 
     if (totalTasks === 0) {
-      // Если задач нет, делаем круг пустым
-      progressCircle.style.background = "#f0f0f0"; // Серый фон для пустого круга
+      progressCircle.style.background = "#f0f0f0";
     } else {
-      // Рассчитываем проценты для каждого статуса
       const newPercentage = (newTasks / totalTasks) * 100;
       const inProgressPercentage = (inProgressTasks / totalTasks) * 100;
       const reviewPercentage = (reviewTasks / totalTasks) * 100;
@@ -407,23 +620,21 @@
       const onHoldPercentage = (onHoldTasks / totalTasks) * 100;
       const canceledPercentage = (canceledTasks / totalTasks) * 100;
 
-      // Формируем градиент
       const gradient = `conic-gradient(
-        #a0a0a0 0%,
-        #a0a0a0 ${newPercentage}%,
-        #6c8cff ${newPercentage}%,
-        #6c8cff ${newPercentage + inProgressPercentage}%,
-        #a64ca6 ${newPercentage + inProgressPercentage}%,
-        #a64ca6 ${newPercentage + inProgressPercentage + reviewPercentage}%,
-        #6fbf73 ${newPercentage + inProgressPercentage + reviewPercentage}%,
-        #6fbf73 ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
-        #ffb84d ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
-        #ffb84d ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
-        #ff6666 ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
-        #ff6666 100%
+        var(--gray) 0%,
+        var(--gray) ${newPercentage}%,
+        var(--info) ${newPercentage}%,
+        var(--info) ${newPercentage + inProgressPercentage}%,
+        var(--purple) ${newPercentage + inProgressPercentage}%,
+        var(--purple) ${newPercentage + inProgressPercentage + reviewPercentage}%,
+        var(--secondary) ${newPercentage + inProgressPercentage + reviewPercentage}%,
+        var(--secondary) ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
+        var(--warning) ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage}%,
+        var(--warning) ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
+        var(--danger) ${newPercentage + inProgressPercentage + reviewPercentage + completedPercentage + onHoldPercentage}%,
+        var(--danger) 100%
       )`;
 
-      // Применяем градиент к кругу
       progressCircle.style.background = gradient;
     }
   });
