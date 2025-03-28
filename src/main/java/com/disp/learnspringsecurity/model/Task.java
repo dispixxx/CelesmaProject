@@ -14,6 +14,7 @@ public class Task {
     private Long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private LocalDateTime createdAt;
 
@@ -33,6 +34,9 @@ public class Task {
 
     @Enumerated(EnumType.STRING) // Указываем, что это перечисление
     private TaskStatus status = TaskStatus.NEW; // По умолчанию статус "NEW"
+
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority = TaskPriority.MEDIUM;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
@@ -129,4 +133,11 @@ public class Task {
         this.history = history;
     }
 
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
 }

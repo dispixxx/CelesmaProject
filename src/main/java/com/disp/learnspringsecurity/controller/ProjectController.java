@@ -45,6 +45,8 @@ public class ProjectController {
 
     @GetMapping("/search") // Поиск проектов
     public String projectSearch(@RequestParam(name = "query", required = false) String query, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
         List<Project> projects;
         boolean searchPerformed = false; // Флаг, указывающий, был ли выполнен поиск
 
@@ -60,6 +62,8 @@ public class ProjectController {
         model.addAttribute("projects", projects); // Передаем список проектов на страницу
         model.addAttribute("query", query); // Передаем поисковый запрос для отображения в поле ввода
         model.addAttribute("searchPerformed", searchPerformed); // Передаем флаг выполнения поиска
+        model.addAttribute("projectRoles", ProjectRole.values());
+        model.addAttribute("user", currentUser);
         return "search";
     }
 
@@ -149,6 +153,7 @@ public class ProjectController {
             return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
         }
         model.addAttribute("project", project);
+        model.addAttribute("countOfApplicants",project.getApplicants().size());
 
         return "project_management";
 

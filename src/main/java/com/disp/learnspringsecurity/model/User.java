@@ -14,6 +14,8 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
+    /*@Lob
+    private byte[] avatar;*/
     private String role; //ADMIN,USER GLOBAL ROL ON WEB SITE NOT ON PROJECT
 
     @OneToMany(mappedBy = "ownerUser")

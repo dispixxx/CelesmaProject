@@ -119,11 +119,12 @@ public class TaskController {
                              @RequestParam String description,
                              @RequestParam(required = false) Long assigneeId,
                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                             @RequestParam TaskPriority priority,
                              @AuthenticationPrincipal UserDetails userDetails) {
         if(userDetailsService.getUserByUsername(userDetails.getUsername())!=null) {
             User creator = userDetailsService.getUserByUsername(userDetails.getUsername());
             Project project = projectService.getProjectById(projectId);
-            taskService.createTask(title, description, project, creator, assigneeId, endDate);
+            taskService.createTask(title, description, project, creator, assigneeId, endDate, TaskPriority.valueOf(priority.name()));
             return "redirect:/projects/" + projectId;
         }
         else{

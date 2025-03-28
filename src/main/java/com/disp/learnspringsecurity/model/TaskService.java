@@ -30,7 +30,7 @@ public class TaskService {
     @Autowired
     private TaskHistoryRepository taskHistoryRepository;
 
-    public void createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate) {
+    public void createTask(String title, String description, Project project, User creator, Long assigneeId, LocalDate endDate, TaskPriority priority) {
         Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);
@@ -38,6 +38,8 @@ public class TaskService {
         task.setProject(project);
         task.setCreator(creator);
         task.setEndDate(endDate);
+        task.setPriority(priority);
+        task.setStatus(TaskStatus.NEW);
         if (assigneeId != null) {
             User assignee = userRepository.findById(assigneeId).orElseThrow();
             task.setAssignee(assignee);

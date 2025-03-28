@@ -47,6 +47,7 @@
       max-width: 1400px;
       margin: 40px auto;
       padding: 0 20px;
+      box-sizing: border-box;
     }
 
     /* Карточка проекта */
@@ -223,7 +224,7 @@
     }
 
     .btn-secondary:hover {
-      background-color: #e9ecef;
+      background-color: var(--white-hover);
       transform: translateY(-2px);
     }
 
@@ -238,7 +239,7 @@
     }
 
     .btn-disabled {
-      background-color: #e9ecef !important;
+      background-color: var(--white-hover) !important;
       color: #adb5bd !important;
       cursor: not-allowed !important;
       transform: none !important;
@@ -557,7 +558,7 @@
               if (response.ok) {
                 // Показываем красивый toast вместо alert
                 showToast('Заявка успешно отправлена!', 'success');
-                setTimeout(() => location.reload(), 1500);
+                setTimeout(() => location.reload(), 1000);
               } else {
                 showToast('Ошибка при отправке заявки', 'error');
               }

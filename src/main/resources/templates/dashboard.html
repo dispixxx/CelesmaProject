@@ -2,120 +2,260 @@
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Главная страница пользователя</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <title>Мой профиль | TaskFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" th:href="@{/styles/sidebar.css}">
     <style>
+        :root {
+            --primary: #3366ff;
+            --primary-light: #6c8cff;
+            --primary-dark: #254eda;
+            --secondary: #6fbf73;
+            --danger: #ff6666;
+            --warning: #ffb84d;
+            --info: #6c8cff;
+            --gray: #a0a0a0;
+            --light-gray: #f5f7fa;
+            --dark-gray: #6c757d;
+            --white: #ffffff;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
-            /*background: linear-gradient(to bottom, #ffffff, #cce0ff);*/
             background: linear-gradient(to right, #eef2ff, #cfd9ff);
             margin: 0;
             padding: 0;
             display: flex;
+            min-height: 100vh;
+            color: #333;
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /*background: url("/image/background_work.jpg");*/
-            opacity: 0.1;
-            background-size: cover;
-            z-index: -1;
+        .main-content {
+            flex-grow: 1;
+            padding: 0 2rem;
+            transition: margin-left 0.3s;
+            max-width: 1400px;
+            margin: 40px auto;
         }
 
-        .projects-container {
+        /* Header */
+        .dashboard-header {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            font-size: 28px;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(51, 102, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e6e9f2;
+            transform: translateY(-2px);
+        }
+
+        /* Projects Section */
+        .projects-section {
+            margin-top: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        .project {
-            /*background: rgba(255, 255, 255, 0.8);*/
-            background: rgba(255, 255, 255);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Project Card */
+        .project-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
             padding: 20px;
-            width: 45%;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 260px;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .project-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
 
-        .edit-btn {
-            background: #3366ff;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
+        .project-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: #2C2F33;
+            flex: 1;
         }
 
-        .edit-btn:hover {
-            background: #254eda;
+        .project-role {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-left: 10px;
         }
 
-        .create-project-btn {
-            margin-bottom: 20px;
-            background: #3366ff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            transition: background 0.3s;
+        .role-admin {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: var(--danger);
         }
 
-        .create-project-btn:hover {
-            background-color: #254eda;
+        .role-moderator {
+            background-color: rgba(0, 128, 0, 0.1);
+            color: var(--secondary);
         }
 
-        .main-content {
+        .role-member {
+            background-color: rgba(74, 107, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .project-description {
+            color: var(--dark-gray);
+            font-size: 14px;
+            margin: 10px 0;
             flex-grow: 1;
-            padding: 20px 30px 20px 40px;
-            transition: margin-left 0.3s;
+            overflow: hidden;
         }
 
-        footer {
+        .project-footer {
             display: flex;
-            justify-content: center;
-            padding: 20px;
-            background-color: #2C2F33;
-            color: white;
-            font-size: 16px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .progress-container {
             width: 100%;
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            height: 6px;
+            background-color: var(--light-gray);
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
         }
 
-        .search-project-btn {
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            border-radius: 3px;
+            width: 65%;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            color: var(--gray);
             margin-bottom: 20px;
-            background: #3366ff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            transition: background 0.3s;
         }
 
-        .search-project-btn:hover {
-            background: #254eda;
+        .empty-text {
+            color: var(--dark-gray);
+            margin-bottom: 20px;
         }
 
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                margin-bottom: 0;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .project-card {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
     </style>
 </head>
 <body>
@@ -123,35 +263,63 @@
 <div th:insert="~{fragments/sidebar :: sidebar}"></div>
 
 <div class="main-content">
-<!--    <h1>Добро пожаловать, <span sec:authentication="name"></span></h1>-->
-    <section>
-        <h2>Мои проекты</h2>
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Мои проекты</h1>
+        <div class="actions">
+            <a href="/projects/new" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Новый проект
+            </a>
+            <a href="/projects/search" class="btn btn-secondary" style="margin-left: 10px;">
+                <i class="fas fa-search"></i> Поиск
+            </a>
+        </div>
+    </div>
 
-        <a href="/projects/new"><button class="create-project-btn">Создать новый проект</button></a>
+    <div class="projects-section">
+        <div class="section-header">
+            <h2 class="section-title">Активные проекты</h2>
+        </div>
 
-        <a href="/projects/search"><button class="search-project-btn">Найти проект</button></a>
-
-        <div class="projects-container">
-            <div th:each="project : ${projects}" class="project">
+        <div class="projects-grid" th:if="${not #lists.isEmpty(projects)}">
+            <div th:each="project : ${projects}" class="project-card">
                 <div class="project-header">
-                    <h3 th:text="${project.name}">Название проекта</h3>
-                    <span th:if="${project.getMemberRole(user) eq projectRoles[0]}" class="user-admin">Администратор🔧</span>
-                    <span th:if="${project.getMemberRole(user) eq projectRoles[1]}" class="user-moderator">Модератор🔧</span>
-                    <span th:if="${!(project.getMemberRole(user) eq projectRoles[0] || project.getMemberRole(user) eq projectRoles[1])}" class="user-member">Участник👤</span>
+                    <h3 class="project-name" th:text="${project.name}">Название проекта</h3>
+                    <span th:if="${project.getMemberRole(user) eq projectRoles[0]}"
+                          class="project-role role-admin">Админ</span>
+                    <span th:if="${project.getMemberRole(user) eq projectRoles[1]}"
+                          class="project-role role-moderator">Модератор</span>
+                    <span th:if="${!(project.getMemberRole(user) eq projectRoles[0] || project.getMemberRole(user) eq projectRoles[1])}"
+                          class="project-role role-member">Участник</span>
                 </div>
 
-                <div class="progress-line">
-                    <div class="progress-bar"></div>
+                <p class="project-description" th:text="${project.description} ?: 'Описание отсутствует'">
+                    Краткое описание проекта
+                </p>
+
+                <div class="progress-container">
+<!--                    <div class="progress-bar"></div>-->
                 </div>
-<!--                <p th:text="${project.description}">Описание проекта</p>-->
+
                 <div class="project-footer">
-                    <a th:href="@{/projects/{id}(id=${project.id})}">
-                        <button class="edit-btn">Открыть</button>
+<!--                    <span class="progress-text" style="font-size: 12px; color: var(&#45;&#45;gray);">65% завершено</span>-->
+                    <a th:href="@{/projects/{id}(id=${project.id})}" class="btn btn-primary" style="padding: 8px 16px;">
+                        Открыть
                     </a>
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(projects)}">
+            <div class="empty-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h3>У вас пока нет проектов</h3>
+            <p class="empty-text">Создайте свой первый проект или найдите существующий</p>
+            <a href="/projects/new" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Создать проект
+            </a>
+        </div>
+    </div>
 </div>
 
 <script th:src="@{/js/sidebar.js}"></script>

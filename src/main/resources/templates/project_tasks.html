@@ -20,6 +20,7 @@
             --light-gray: #f5f7fa;
             --dark-gray: #6c757d;
             --white: #ffffff;
+            --white-hover: #e9ecef;
             --border-radius: 8px;
             --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
@@ -45,6 +46,7 @@
             max-width: 1400px;
             margin: 40px auto;
             padding: 0 20px;
+            box-sizing: border-box;
         }
 
         .container {
@@ -53,7 +55,7 @@
             padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            transition: var(--transition);
+            /*transition: var(--transition);*/
         }
 
         .container:hover {
@@ -68,6 +70,7 @@
         }
 
         .page-title {
+            text-align: center;
             font-family: "Orbitron", sans-serif;
             font-weight: 600;
             font-size: 24px;
@@ -169,7 +172,7 @@
         }
 
         .btn-secondary:hover {
-            background-color: #e9ecef;
+            background-color: var(--white-hover);
             transform: translateY(-2px);
         }
 
@@ -423,8 +426,12 @@
 
         /* Анимации */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
         /* Адаптивность */
@@ -902,7 +909,9 @@
         const daysLeft = taskCard.querySelector('.days-until-end').textContent;
         const description = taskCard.querySelector('.description').textContent || "Описание отсутствует";
 
-        const isStarred = localStorage.getItem(`task_${taskId}_starred`) === 'true';
+        const cardStar = taskCard.querySelector('.star-icon');
+        const isStarred = cardStar ? cardStar.classList.contains('active') :
+            localStorage.getItem(`task_${taskId}_starred`) === 'true';
 
         // Формируем HTML для модального окна
         const modalContent = `
@@ -954,14 +963,13 @@
             closeTaskModal();
         }
     });
+
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
             closeTaskModal();
         }
     });
 
-
-    // Переключение звездочки
     // Функция для переключения звезды в модальном окне
     function toggleModalStar(starElement, taskId) {
         starElement.classList.toggle('active');
