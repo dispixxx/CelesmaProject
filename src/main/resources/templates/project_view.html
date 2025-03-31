@@ -25,10 +25,6 @@
       --transition: all 0.3s ease;
     }
 
-    /** {*/
-    /*  box-sizing: border-box;*/
-    /*}*/
-
     body {
       font-family: 'Montserrat', sans-serif;
       /*background-color: #f8f9fa;*/
@@ -219,6 +215,8 @@
     }
 
     .btn-secondary {
+      border: solid 1px;
+      border-color: var(--light-gray);
       background-color: var(--light-gray);
       color: var(--primary);
     }
@@ -226,6 +224,8 @@
     .btn-secondary:hover {
       background-color: var(--white-hover);
       transform: translateY(-2px);
+      border: solid 1px;
+      border-color: var(--primary);
     }
 
     .btn-success {
@@ -434,15 +434,23 @@
     </div>
 
     <div class="action-buttons">
-      <!-- Кнопка для создания задачи (видна только участникам) -->
+      <!-- Кнопка для перехода на канбан-доску -->
+      <div th:if="${isMember}">
+        <a th:href="@{/projects/{projectId}/kanban(projectId=${project.id})}" class="btn btn-primary">
+          <i class="fas fa-columns"></i> Канбан-доска
+        </a>
+      </div>
+
+      <!-- Кнопка для создания задачи -->
       <div th:if="${isMember}">
         <a th:href="@{/projects/{projectId}/tasks/create(projectId=${project.id})}" class="btn btn-primary">
           <i class="fas fa-plus"></i> Создать задачу
         </a>
       </div>
 
+      <!-- Кнопка просмотра задач -->
       <div th:if="${isMember}">
-        <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="btn btn-secondary">
+        <a th:href="@{/projects/{projectId}/tasks(projectId=${project.id})}" class="btn btn-primary">
           <i class="fas fa-tasks"></i> Просмотреть задачи
         </a>
       </div>

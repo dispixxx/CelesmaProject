@@ -127,6 +127,10 @@ public class ProjectService {
         }
     }
 
+    public boolean isMember(List<User> projectUsers, User user) {
+        return projectUsers.contains(user);
+    }
+
     //Сортированный список по приоритету (ADMIN->MODERATOR->MEMBER)
     public List<ProjectMember> getSortedProjectMembers(Long projectId) {
         List<ProjectMember> members = projectMemberRepository.findByProjectId(projectId);
@@ -140,6 +144,11 @@ public class ProjectService {
         members.sort(Comparator.comparing(member -> rolePriority.getOrDefault(member.getRole(), Integer.MAX_VALUE)));
 
         return members;
+    }
+
+    //Перенесен из ProjectController. Конвертер типа: ProjectMember -> User
+    public List<User> getConvertedProjectMembersToUser(List<ProjectMember> members) {
+        return members.stream().map(ProjectMember::getUser).toList();
     }
 
     //Добавляем пользователя в список желащтх вступить
