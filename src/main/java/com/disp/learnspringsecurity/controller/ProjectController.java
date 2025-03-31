@@ -121,6 +121,22 @@ public class ProjectController {
         return "project_view";
     }
 
+    @GetMapping("/{projectId}/kanban")
+    public String handleKanban(@PathVariable Long projectId, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<Task> projectTasks = taskService.getTasksByProjectId(projectId);
+        List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
+        boolean isMember = projectService.isMember(projectUsers, currentUser);
+
+        model.addAttribute("project", project);
+        model.addAttribute("tasks", projectTasks);
+        model.addAttribute("isMember", isMember);
+        return "kanban";
+    }
+
     @PostMapping("/{projectId}/join")
     public String joinProject(@PathVariable Long projectId) {
         String username = authenticationFacade.getAuthenticatedUsername();
@@ -135,12 +151,11 @@ public class ProjectController {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(projectId);
-        List<User> projectUsers = project.getMembers().stream()
-                .map(ProjectMember::getUser)
-                .toList();
+        List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
 
         // Проверяем, является ли пользователь участником проекта
-        boolean isMember = projectUsers.contains(currentUser);
+        boolean isMember = projectService.isMember(projectUsers, currentUser);
         // Проверяем, является ли пользователь администратором или модератором
         boolean isAdminOrModerator = false;
         if (isMember) {
