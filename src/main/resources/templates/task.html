@@ -244,6 +244,7 @@
             min-height: 100px;
             margin-bottom: 1rem;
             transition: var(--transition);
+            box-sizing: border-box;
         }
 
         .comment-form textarea:focus {
@@ -264,6 +265,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 1rem;
         }
 
         .btn-submit:hover {
@@ -419,7 +421,7 @@
 <div class="main-content">
     <div class="container">
         <div class="page-header">
-            <button type="button" class="btn-back" onclick="history.back()">
+            <button type="button" class="btn-back" onclick="navigateBack()">
                 <i class="fas fa-arrow-left"></i> Назад
             </button>
             <div class="project-name" th:text="${task.project.name}"></div>
@@ -535,7 +537,7 @@
                     <button class="toggle-history" onclick="toggleHistory()">Свернуть</button>
                 </h3>
 
-                <div class="sort-buttons">
+                <!--<div class="sort-buttons">
                     <a th:href="@{/projects/{projectId}/tasks/{id}(id=${task.id},projectId=${projectId}, sortOrder='desc')}"
                        th:classappend="${sortOrder == 'desc'} ? 'active' : ''" class="sort-btn">
                         Сначала новые
@@ -544,6 +546,15 @@
                        th:classappend="${sortOrder == 'asc'} ? 'active' : ''" class="sort-btn">
                         Сначала старые
                     </a>
+                </div>-->
+
+                <div class="sort-buttons">
+                    <button class="sort-btn" onclick="sortHistory('desc')" th:classappend="${sortOrder == 'desc'} ? 'active' : ''">
+                        Сначала новые
+                    </button>
+                    <button class="sort-btn" onclick="sortHistory('asc')" th:classappend="${sortOrder == 'asc'} ? 'active' : ''">
+                        Сначала старые
+                    </button>
                 </div>
 
                 <div class="history-list" id="history-content">
@@ -555,6 +566,7 @@
                         <div class="history-text" th:text="${history.description}"></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -562,6 +574,7 @@
 
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/star-in-task.js}"></script>
+<script th:src="@{/js/sort-history-in-task.js}"></script>
 
 <script>
     // Функция для отображения выпадающего списка статусов
@@ -702,6 +715,28 @@
     function calculateDaysBetween(date1, date2) {
         const oneDay = 24 * 60 * 60 * 1000; // часов * минуты * секунды * миллисекунды
         return Math.round((date1 - date2) / oneDay);
+    }
+
+    function navigateBack() {
+        const referrer = document.referrer;
+        const projectTasksPattern = /\/projects\/\d+\/tasks/;
+        const myTasksPattern = /\/my-tasks/;
+
+        if (projectTasksPattern.test(referrer)) {
+            // Если пришли со страницы задач проекта
+            window.location.href = referrer;
+        } else if (myTasksPattern.test(referrer)) {
+            // Если пришли со страницы "Мои задачи"
+            window.location.href = referrer;
+        } else {
+            // Если referrer неизвестен или пуст, используем стандартное поведение
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Если нет истории, возвращаем на страницу проектов по умолчанию
+                window.location.href = '/dashboard';
+            }
+        }
     }
 
 </script>
