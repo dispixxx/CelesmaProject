@@ -79,6 +79,26 @@
             transition: var(--transition);
         }
 
+
+
+        .btn-back-my-tasks, .btn-back-project-tasks{
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        .btn-back-my-tasks:hover, .btn-back-project-tasks:hover{
+            background-color: var(--light-gray);
+        }
+
+
+
         .btn-back:hover {
             background-color: var(--light-gray);
         }
@@ -421,9 +441,14 @@
 <div class="main-content">
     <div class="container">
         <div class="page-header">
-            <button type="button" class="btn-back" onclick="navigateBack()">
-                <i class="fas fa-arrow-left"></i> Назад
-            </button>
+            <div class="back-actions">
+                <a th:href="@{/my-tasks}" class="btn-back-my-tasks">
+                    <i class=""></i> Мои задачи
+                </a>
+                <a th:href="@{/projects/{projectId}/tasks(projectId=${task.project.id})}" class="btn-back-project-tasks">
+                    <i class=""></i> Задачи проекта
+                </a>
+            </div>
             <div class="project-name" th:text="${task.project.name}"></div>
         </div>
 
@@ -718,18 +743,15 @@
     }
 
     function navigateBack() {
-        const referrer = document.referrer;
-        const projectTasksPattern = /\/projects\/\d+\/tasks/;
-        const myTasksPattern = /\/my-tasks/;
+        // Получаем сохраненный предыдущий URL из sessionStorage
+        const previousUrl = sessionStorage.getItem('previousUrl');
 
-        if (projectTasksPattern.test(referrer)) {
-            // Если пришли со страницы задач проекта
-            window.location.href = referrer;
-        } else if (myTasksPattern.test(referrer)) {
-            // Если пришли со страницы "Мои задачи"
-            window.location.href = referrer;
+        // Проверяем, есть ли сохраненный URL
+        if (previousUrl) {
+            // Если есть, переходим на сохраненный URL
+            window.location.href = previousUrl;
         } else {
-            // Если referrer неизвестен или пуст, используем стандартное поведение
+            // Если нет сохраненного URL, используем стандартное поведение
             if (window.history.length > 1) {
                 window.history.back();
             } else {
@@ -738,6 +760,12 @@
             }
         }
     }
+
+    // Сохраняем предыдущий URL перед перезагрузкой страницы
+    window.addEventListener('beforeunload', function() {
+        const referrer = document.referrer;
+        sessionStorage.setItem('previousUrl', referrer);
+    });
 
 </script>
 
