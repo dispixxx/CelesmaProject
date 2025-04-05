@@ -90,6 +90,7 @@ public class TaskController {
         model.addAttribute("comments", comments);
         model.addAttribute("taskHistory", history);
         model.addAttribute("sortOrder", sortOrder);
+        model.addAttribute("user", currentUser);
         return "task";
     }
 

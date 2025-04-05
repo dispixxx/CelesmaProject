@@ -466,7 +466,7 @@
                 <i class="fas fa-list"></i> Список задач
             </a>
         </div>
-    </div><!-- Канбан-доска --><div class="kanban-container">
+      </div><!-- Канбан-доска --><div class="kanban-container">
         <div class="kanban-board">
             <!-- Колонка "Новые" -->
             <div class="kanban-column new-column">
@@ -699,6 +699,32 @@
         });
     });
 </script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const project = {
+        id: /*[[${project.id}]]*/ 0,
+    };
+    /*]]>*/
+</script>
+
+<script>
+    // Обработчик клика на карточку задачи
+    document.querySelectorAll('.task-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Проверяем, не был ли клик по ссылке внутри карточки
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                return;
+            }
+
+            const taskId = this.getAttribute('data-task-id');
+            // Переходим на страницу задачи
+            window.location.href = `/projects/${project.id}/tasks/${taskId}`;
+        });
+    });
+</script>
+
+
 
 </body>
 </html>

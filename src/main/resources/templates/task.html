@@ -79,8 +79,6 @@
             transition: var(--transition);
         }
 
-
-
         .btn-back-my-tasks, .btn-back-project-tasks{
             text-decoration: none;
             color: var(--primary);
@@ -96,8 +94,6 @@
         .btn-back-my-tasks:hover, .btn-back-project-tasks:hover{
             background-color: var(--light-gray);
         }
-
-
 
         .btn-back:hover {
             background-color: var(--light-gray);
@@ -441,14 +437,17 @@
 <div class="main-content">
     <div class="container">
         <div class="page-header">
-            <div class="back-actions">
+            <!--<div class="back-actions">
                 <a th:href="@{/my-tasks}" class="btn-back-my-tasks">
                     <i class=""></i> Мои задачи
                 </a>
                 <a th:href="@{/projects/{projectId}/tasks(projectId=${task.project.id})}" class="btn-back-project-tasks">
                     <i class=""></i> Задачи проекта
                 </a>
-            </div>
+            </div>-->
+            <button type="button" class="btn-back" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Назад
+            </button>
             <div class="project-name" th:text="${task.project.name}"></div>
         </div>
 
@@ -497,9 +496,16 @@
                 <div class="detail-value" th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy')}"></div>
             </div>
 
-            <div class="detail-card">
+            <div class="detail-card"
+                 th:attr="
+                 data-start-date=${#temporals.format(task.createdAt, 'yyyy-MM-dd')},
+                 data-end-date=${#temporals.format(task.endDate, 'yyyy-MM-dd')}">
                 <div class="detail-label">Срок выполнения</div>
-                <div class="detail-value" th:text="${#temporals.format(task.endDate, 'dd.MM.yyyy')}"></div>
+                <div class="detail-value">
+                    <span class="days-difference" th:if="${task.createdAt != null and task.endDate != null}">
+                        <span class="days-count"></span> <span class="days-word"></span>
+                    </span>
+                </div>
             </div>
 
             <div class="detail-card">
@@ -535,9 +541,9 @@
                 </h3>
 
                 <div class="comment-form">
-                    <form th:action="@{/projects/{projectId}/tasks/{id}/comments(id=${task.id},projectId=${projectId})}" method="post">
-                        <textarea name="commentText" placeholder="Напишите комментарий..." required maxlength="500"
-                                  oninput="updateCharCount(this)"></textarea>
+                    <form id="commentForm" th:action="@{/projects/{projectId}/tasks/{id}/comments(id=${task.id},projectId=${projectId})}" method="post">
+        <textarea name="commentText" id="commentText" placeholder="Напишите комментарий..." required maxlength="500"
+                  oninput="updateCharCount(this)"></textarea>
                         <div class="char-counter"><span class="char-count">0 / 500</span></div>
                         <button type="submit" class="btn-submit">
                             <i class="fas fa-paper-plane"></i> Отправить
@@ -562,28 +568,13 @@
                     <button class="toggle-history" onclick="toggleHistory()">Свернуть</button>
                 </h3>
 
-                <!--<div class="sort-buttons">
-                    <a th:href="@{/projects/{projectId}/tasks/{id}(id=${task.id},projectId=${projectId}, sortOrder='desc')}"
-                       th:classappend="${sortOrder == 'desc'} ? 'active' : ''" class="sort-btn">
-                        Сначала новые
-                    </a>
-                    <a th:href="@{/projects/{projectId}/tasks/{id}(id=${task.id},projectId=${projectId}, sortOrder='asc')}"
-                       th:classappend="${sortOrder == 'asc'} ? 'active' : ''" class="sort-btn">
-                        Сначала старые
-                    </a>
-                </div>-->
-
                 <div class="sort-buttons">
-                    <button class="sort-btn" onclick="sortHistory('desc')" th:classappend="${sortOrder == 'desc'} ? 'active' : ''">
-                        Сначала новые
-                    </button>
-                    <button class="sort-btn" onclick="sortHistory('asc')" th:classappend="${sortOrder == 'asc'} ? 'active' : ''">
-                        Сначала старые
-                    </button>
+                    <button class="sort-btn" onclick="sortHistory('desc')" id="sort-desc">Сначала новые</button>
+                    <button class="sort-btn" onclick="sortHistory('asc')" id="sort-asc">Сначала старые</button>
                 </div>
 
                 <div class="history-list" id="history-content">
-                    <div th:each="history : ${taskHistory}" class="history-item">
+                    <div th:each="history : ${taskHistory}" class="history-item" th:attr="data-timestamp=${#temporals.format(history.timestamp, 'yyyy-MM-dd HH:mm:ss')}">
                         <div class="history-header">
                             <span class="history-user" th:text="${history.user.username}"></span>
                             <span class="history-date" th:text="${#temporals.format(history.timestamp, 'dd.MM.yyyy HH:mm')}"></span>
@@ -591,7 +582,6 @@
                         <div class="history-text" th:text="${history.description}"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -599,7 +589,18 @@
 
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/star-in-task.js}"></script>
-<script th:src="@{/js/sort-history-in-task.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const currentUser = {
+        id: /*[[${user.id}]]*/ 0,
+        username: /*[[${user.username}]]*/ '',
+        firstName: /*[[${user.firstName}]]*/ '',
+        lastName: /*[[${user.lastName}]]*/ ''
+        // добавьте другие нужные свойства
+    };
+    /*]]>*/
+</script>
 
 <script>
     // Функция для отображения выпадающего списка статусов
@@ -614,9 +615,22 @@
     // Функция для изменения статуса
     function changeStatus(element) {
         const container = element.closest('.status-container');
-        const taskId = container.querySelector('.status').getAttribute('data-task-id');
-        const projectId = container.querySelector('.status').getAttribute('data-project-id');
+        const statusElement = container.querySelector('.status');
+        const taskId = statusElement.getAttribute('data-task-id');
+        const projectId = statusElement.getAttribute('data-project-id');
         const newStatus = element.getAttribute('data-status');
+        const oldStatus = statusElement.textContent.trim();
+
+        // Создаем запись в истории на клиенте
+        addHistoryRecord({
+                user: {
+                    id: currentUser.id,
+                    username: currentUser.username,
+                    fullName: currentUser.firstName + ' ' + currentUser.lastName
+                },
+            timestamp: new Date().toISOString(),
+            description: `Статус изменен с ${oldStatus} на ${newStatus}`
+        });
 
         fetch(`/projects/${projectId}/tasks/${taskId}/status?status=${newStatus}`, {
             method: 'POST',
@@ -625,7 +639,12 @@
             }
         }).then(response => {
             if (response.ok) {
-                location.reload();
+                // Обновляем статус
+                statusElement.textContent = newStatus;
+                statusElement.className = 'status';
+                statusElement.classList.add(`status-${newStatus}`);
+                container.querySelector('.status-dropdown').classList.remove('show');
+                location.reload()
             } else if (response.status === 403) {
                 alert('У вас нет прав для изменения статуса задачи');
             } else {
@@ -634,6 +653,39 @@
         }).catch(error => {
             console.error('Ошибка:', error);
         });
+    }
+
+    // Функция для добавления записи в историю
+    function addHistoryRecord(historyItem) {
+        const historyContent = document.getElementById('history-content');
+        const historyItemElement = document.createElement('div');
+        historyItemElement.className = 'history-item';
+        historyItemElement.setAttribute('data-timestamp', historyItem.timestamp);
+
+        const formattedDate = new Date(historyItem.timestamp).toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).replace(',', '');
+
+        historyItemElement.innerHTML = `
+            <div class="history-header">
+                <span class="history-user">${historyItem.user.username}</span>
+                <span class="history-date">${formattedDate}</span>
+            </div>
+            <div class="history-text">${historyItem.description}</div>
+        `;
+
+        // Добавляем новую запись в начало списка
+        historyContent.insertBefore(historyItemElement, historyContent.firstChild);
+
+        // Обновляем сортировку, если активна сортировка по новым
+        const activeSortBtn = document.querySelector('.sort-btn.active');
+        if (activeSortBtn && activeSortBtn.id === 'sort-desc') {
+            sortHistory('desc');
+        }
     }
 
     // Закрытие выпадающего списка при клике вне его
@@ -645,16 +697,85 @@
         }
     });
 
-    // Обновление счетчика символов
     function updateCharCount(textarea) {
         const charCount = textarea.parentElement.querySelector('.char-count');
         charCount.textContent = `${textarea.value.length} / 500`;
+        charCount.style.color = textarea.value.length > 450 ? 'var(--danger)' : 'var(--gray)';
+    }
 
-        if (textarea.value.length > 450) {
-            charCount.style.color = 'var(--danger)';
-        } else {
-            charCount.style.color = 'var(--gray)';
+    // Обработка комментариев
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const textarea = document.querySelector('textarea[name="commentText"]');
+        if (textarea) {
+            updateCharCount(textarea);
         }
+
+        const commentForm = document.getElementById('commentForm');
+        if (commentForm) {
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitComment();
+            });
+        }
+
+        // Инициализация сортировки истории
+        sortHistory('desc');
+
+        // Обновление времени выполнения
+        updateTime();
+    });
+
+    async function submitComment() {
+        const commentText = document.getElementById('commentText').value.trim();
+        if (!commentText) return;
+
+        try {
+            const form = document.getElementById('commentForm');
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            });
+
+            if (!response.ok) throw new Error('Ошибка сервера');
+
+            const newComment = {
+                author: {username: currentUser.username},
+                text: commentText,
+                createdAt: new Date().toISOString()
+            };
+
+            addCommentToUI(newComment);
+            document.getElementById('commentText').value = '';
+            updateCharCount(document.getElementById('commentText'));
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось отправить комментарий');
+        }
+    }
+
+    function addCommentToUI(comment) {
+        const commentList = document.querySelector('.comment-list');
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment';
+
+        const formattedDate = new Date(comment.createdAt).toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).replace(',', '');
+
+        commentElement.innerHTML = `
+        <div class="comment-header">
+            <span class="comment-author">${comment.author.username}</span>
+            <span class="comment-date">${formattedDate}</span>
+        </div>
+        <div class="comment-text">${comment.text}</div>
+    `;
+
+        commentList.prepend(commentElement); // Добавляем в начало списка
     }
 
     // Переключение видимости истории
@@ -671,14 +792,34 @@
         }
     }
 
-    // Инициализация при загрузке
-    document.addEventListener('DOMContentLoaded', function() {
-        // Инициализация счетчика символов для существующих комментариев
-        const textarea = document.querySelector('textarea[name="commentText"]');
-        if (textarea) {
-            updateCharCount(textarea);
+    // Функция для сортировки истории на клиенте
+    function sortHistory(order) {
+        const historyContent = document.getElementById('history-content');
+        const items = Array.from(historyContent.querySelectorAll('.history-item'));
+
+        // Сортируем элементы по дате
+        items.sort((a, b) => {
+            const dateA = new Date(a.getAttribute('data-timestamp'));
+            const dateB = new Date(b.getAttribute('data-timestamp'));
+            return order === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+
+        // Очищаем контейнер
+        while (historyContent.firstChild) {
+            historyContent.removeChild(historyContent.firstChild);
         }
-    });
+
+        // Добавляем отсортированные элементы обратно
+        items.forEach(item => {
+            historyContent.appendChild(item);
+        });
+
+        // Обновляем активную кнопку сортировки
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(`sort-${order}`).classList.add('active');
+    }
 
     function getDayWord(days) {
         days = Math.abs(days);
@@ -697,7 +838,7 @@
         return "дней";
     }
 
-    function updateTimeRemaining() {
+    function updateTime() {
         const elements = document.querySelectorAll('.time-remaining');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -729,44 +870,36 @@
                 daysText.innerHTML = `Просрочено на <span>${-diffDays}</span> ${getDayWord(diffDays)}`;
             }
         });
-    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        updateTimeRemaining();
-        setInterval(updateTimeRemaining, 24 * 60 * 60 * 1000);
-    });
+        const startDateElements = document.querySelectorAll('[data-start-date]');
+        startDateElements.forEach(el => {
+            const startDateStr = el.getAttribute('data-start-date');
+            const endDateStr = el.getAttribute('data-end-date');
+
+            if (startDateStr && endDateStr) {
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(endDateStr);
+                const diffDays = calculateDaysBetween(endDate, startDate);
+
+                const daysDiffElement = el.querySelector('.days-difference span');
+                if (daysDiffElement) {
+                    daysDiffElement.textContent = diffDays;
+
+                    // Обновляем слово "день/дня/дней"
+                    const dayWordElement = daysDiffElement.nextElementSibling;
+                    if (dayWordElement) {
+                        dayWordElement.textContent = getDayWord(diffDays);
+                    }
+                }
+            }
+        });
+    }
 
     // Функция для вычисления разницы в днях между датами
     function calculateDaysBetween(date1, date2) {
         const oneDay = 24 * 60 * 60 * 1000; // часов * минуты * секунды * миллисекунды
         return Math.round((date1 - date2) / oneDay);
     }
-
-    function navigateBack() {
-        // Получаем сохраненный предыдущий URL из sessionStorage
-        const previousUrl = sessionStorage.getItem('previousUrl');
-
-        // Проверяем, есть ли сохраненный URL
-        if (previousUrl) {
-            // Если есть, переходим на сохраненный URL
-            window.location.href = previousUrl;
-        } else {
-            // Если нет сохраненного URL, используем стандартное поведение
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                // Если нет истории, возвращаем на страницу проектов по умолчанию
-                window.location.href = '/dashboard';
-            }
-        }
-    }
-
-    // Сохраняем предыдущий URL перед перезагрузкой страницы
-    window.addEventListener('beforeunload', function() {
-        const referrer = document.referrer;
-        sessionStorage.setItem('previousUrl', referrer);
-    });
-
 </script>
 
 </body>
