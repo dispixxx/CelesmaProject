@@ -29,6 +29,9 @@
         /** {
             box-sizing: border-box;
         }*/
+        *{
+            scroll-behavior: smooth;
+        }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -324,21 +327,24 @@
             z-index: 1000;
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw; /* Cover the entire viewport width */
+            height: 100vh; /* Cover the entire viewport height */
             background-color: rgba(0,0,0,0.5);
             animation: fadeIn 0.3s;
         }
 
         .modal-content {
             background-color: var(--white);
-            margin: 10% auto;
+            margin: auto;
             padding: 24px;
             border-radius: var(--border-radius);
             width: 90%;
             max-width: 600px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            position: relative;
+            position: fixed; /* Fixed position */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the modal */
         }
 
         .close {
@@ -451,6 +457,12 @@
             .task-list.grid-3x3 {
                 grid-template-columns: 1fr;
             }
+
+            .modal-content {
+                top: 20px;
+                transform: none;
+                margin: 20px auto;
+            }
         }
 
         /* Секции */
@@ -489,6 +501,37 @@
         .empty-state p {
             font-size: 16px;
             margin: 0;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -716,20 +759,25 @@
                 <p>В проекте пока нет задач</p>
             </div>
         </div>
-
-        <!-- Модальное окно -->
-        <div id="taskModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 class="modal-title" id="modalTaskTitle" style="display: none;"></h2>
-                <div class="modal-body" id="modalTaskDetails"></div>
-            </div>
+    </div>
+    <!-- Модальное окно -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title" id="modalTaskTitle" style="display: none;"></h2>
+            <div class="modal-body" id="modalTaskDetails"></div>
         </div>
+    </div>
+
+    <!-- Кнопка "Наверх" -->
+    <div class="scroll-to-top" onclick="scrollToTop()">
+        <i class="fa fa-angle-double-up"></i>
     </div>
 </div>
 
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/star.js}"></script>
+<script th:src="@{/js/scroll-to-top.js}"></script>
 
 <script>
     // Функции для переключения между секциями
@@ -915,34 +963,34 @@
 
         // Формируем HTML для модального окна
         const modalContent = `
-            <div class="modal-header">
-                <h2 class="modal-title">${taskTitle}</h2>
-                <i class="fas fa-star modal-star-icon ${isStarred ? 'active' : ''}"
-                   onclick="toggleModalStar(this, '${taskId}')"></i>
-            </div>
-            <div class="modal-row">
-                <strong>Проект:</strong> ${projectName}
-            </div>
-            <div class="modal-row">
-                <strong>Статус:</strong> <span class="task-status ${taskCard.querySelector('.task-status').className.split(' ')[1]}">${status}</span>
-            </div>
-            <div class="modal-row">
-                <strong>Создатель:</strong> ${creator}
-            </div>
-            <div class="modal-row">
-                <strong>Исполнитель:</strong> ${assignee}
-            </div>
-            <div class="modal-row">
-                <strong>Срок выполнения:</strong> ${endDate}
-            </div>
-            <div class="modal-row">
-                <strong>До окончания:</strong> ${daysLeft}
-            </div>
-            <div class="modal-description">
-                <strong>Описание:</strong><br>
-                ${description}
-            </div>
-        `;
+        <div class="modal-header">
+            <h2 class="modal-title">${taskTitle}</h2>
+            <i class="fas fa-star modal-star-icon ${isStarred ? 'active' : ''}"
+               onclick="toggleModalStar(this, '${taskId}')"></i>
+        </div>
+        <div class="modal-row">
+            <strong>Проект:</strong> ${projectName}
+        </div>
+        <div class="modal-row">
+            <strong>Статус:</strong> <span class="task-status ${taskCard.querySelector('.task-status').className.split(' ')[1]}">${status}</span>
+        </div>
+        <div class="modal-row">
+            <strong>Создатель:</strong> ${creator}
+        </div>
+        <div class="modal-row">
+            <strong>Исполнитель:</strong> ${assignee}
+        </div>
+        <div class="modal-row">
+            <strong>Срок выполнения:</strong> ${endDate}
+        </div>
+        <div class="modal-row">
+            <strong>До окончания:</strong> ${daysLeft}
+        </div>
+        <div class="modal-description">
+            <strong>Описание:</strong><br>
+            ${description}
+        </div>
+    `;
 
         // Заполняем модальное окно
         document.getElementById("modalTaskTitle").textContent = taskTitle;
@@ -950,10 +998,12 @@
 
         // Показываем модальное окно
         document.getElementById("taskModal").style.display = "block";
+        document.body.style.overflow = "hidden"; // Запрещаем прокрутку страницы
     }
 
     function closeTaskModal() {
         document.getElementById("taskModal").style.display = "none";
+        document.body.style.overflow = "auto"; // Запрещаем прокрутку страницы
     }
 
     // Закрытие модального окна
@@ -991,8 +1041,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         calculateDaysUntilEnd();
         restoreStarState();
-
-
     });
 </script>
 </body>

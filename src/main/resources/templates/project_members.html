@@ -526,15 +526,15 @@
 
                 changeRoleDropdown.style.display = "block";
 
-                const buttonRect = button.getBoundingClientRect();
+                const cardRect = currentMemberCard.getBoundingClientRect();
                 const dropdownRect = changeRoleDropdown.getBoundingClientRect();
 
-                const top = buttonRect.top + window.scrollY - dropdownRect.height / 2 - buttonRect.height ;
-                const left = buttonRect.left + window.scrollX - dropdownRect.width / 2 - buttonRect.width - 100;
+                // Расчитываем позицию dropdown, чтобы он появился прямо над карточкой
+                const top = cardRect.top + window.scrollY + 20 ; // 10px отступ сверху для визуального разделения
+                const left = cardRect.left + window.scrollX - dropdownRect.width;
+
                 changeRoleDropdown.style.top = `${top}px`;
                 changeRoleDropdown.style.left = `${left}px`;
-
-
             });
         });
 

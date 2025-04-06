@@ -46,8 +46,30 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    public void deleteProject(Long projectId) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Project project =  getProjectById(projectId);
+        if(!user.equals(project.getOwnerUser())) {
+            throw new IllegalStateException("User does not have permission to delete project. Only Owner can delete the project.");
+        }
+        projectRepository.deleteById(projectId);
+    }
+
+
+    public void updateProject(Project updatedProject, Long projectId) {
+        Project project =  getProjectById(projectId);
+        project.setName(updatedProject.getName());
+        project.setDescription(updatedProject.getDescription());
+        projectRepository.save(project);
+    };
+
     // Обновление роли участника в проекте
     public void updateMemberRole(Long projectId, Long memberId, ProjectRole role) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
         ProjectMember projectMember = projectMemberRepository.findById(memberId)
@@ -57,11 +79,17 @@ public class ProjectService {
         if(userId.equals(ownerId)) {
             throw new IllegalStateException("User is owner");
         }
+        if(userId.equals(currentUser.getId())) {
+            throw new IllegalStateException("User can't update myself");
+        }
         project.updateMemberRole(projectMember, role); // Обновляем роль участника
         projectRepository.save(project);
     }
 
     public void deleteMember(Long projectId, Long memberId) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Project project = projectRepository.findById(projectId)
             .orElseThrow(() -> new EntityNotFoundException("Project not found"));
         ProjectMember projectMember = projectMemberRepository.findById(memberId)
@@ -70,6 +98,9 @@ public class ProjectService {
         Long ownerId = project.getOwnerUser().getId();
         if(userId.equals(ownerId)) {
             throw new IllegalStateException("User is owner");
+        }
+        if(userId.equals(currentUser.getId())) {
+            throw new IllegalStateException("User can't remove myself");
         }
         project.deleteMember(projectMember);
         projectRepository.save(project);

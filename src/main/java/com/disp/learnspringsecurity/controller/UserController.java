@@ -30,7 +30,7 @@ public class UserController {
     public String viewUserProfile(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
-        String userEmail = userDetails.getEmail();
+        String userEmail = currentUser.getEmail();
         String userFirstName = currentUser.getFirstName();
         String userLastName = currentUser.getLastName();
 

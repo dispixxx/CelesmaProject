@@ -73,9 +73,8 @@ public class ProjectController {
         User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(projectId);
         List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
-        List<User> projectUsers = project.getMembers().stream()
-                .map(ProjectMember::getUser)
-                .toList();
+        List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
         Long totalsTasks = (long) tasks.size();
         Long completedTasks = (long) tasks.stream().filter(task->task.getStatus().equals(TaskStatus.COMPLETED)).count();
@@ -121,6 +120,48 @@ public class ProjectController {
         return "project_view";
     }
 
+    @GetMapping("/{projectId}/edit")
+    public String editProjectForm(@PathVariable Long projectId, Model model) {
+        String username = authenticationFacade.getAuthenticatedUsername();
+        User currentUser = userDetailsService.getUserByUsername(username);
+        Project project = projectService.getProjectById(projectId);
+        List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
+        // Проверяем, является ли пользователь участником проекта
+        boolean isMember = projectService.isMember(projectUsers, currentUser);
+        // Проверяем, является ли пользователь администратором или модератором
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
+
+        // Проверяем, является ли пользователь администратором или модератором
+        if (!isAdminOrModerator) {
+            return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
+        }
+        model.addAttribute("project", project);
+        return "project_edit";
+    }
+
+    @DeleteMapping("/{projectId}/delete")
+    public ResponseEntity<?> deleteProject(@PathVariable Long projectId) {
+        try {
+            projectService.deleteProject(projectId);
+            return ResponseEntity.ok().build();
+        }catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+
+    }
+
+    @PostMapping("/{projectId}/edit")
+    public String updateProject(@ModelAttribute("project") Project project, @PathVariable Long projectId, Model model) {
+
+        projectService.updateProject(project,projectId);
+        return "redirect:/projects/{projectId}";
+    }
+
     @GetMapping("/{projectId}/kanban")
     public String handleKanban(@PathVariable Long projectId, Model model) {
         String username = authenticationFacade.getAuthenticatedUsername();
@@ -130,6 +171,9 @@ public class ProjectController {
         List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
         List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
         boolean isMember = projectService.isMember(projectUsers, currentUser);
+        if (!isMember) {
+            return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
+        }
 
         model.addAttribute("project", project);
         model.addAttribute("tasks", projectTasks);
@@ -153,7 +197,6 @@ public class ProjectController {
         Project project = projectService.getProjectById(projectId);
         List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
         List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
-
         // Проверяем, является ли пользователь участником проекта
         boolean isMember = projectService.isMember(projectUsers, currentUser);
         // Проверяем, является ли пользователь администратором или модератором
@@ -179,10 +222,23 @@ public class ProjectController {
         String username = authenticationFacade.getAuthenticatedUsername();
         User currentUser = userDetailsService.getUserByUsername(username);
         Project project = projectService.getProjectById(projectId);
-        List<ProjectMember> members = projectService.getSortedProjectMembers(project.getId());
+        List<ProjectMember>  projectMembers = projectService.getSortedProjectMembers(project.getId());
+        List<User> projectUsers = projectService.getConvertedProjectMembersToUser(projectMembers);
+        boolean isMember = projectUsers.contains(currentUser);
+        // Проверяем, является ли пользователь администратором или модератором
+        boolean isAdminOrModerator = false;
+        if (isMember) {
+            ProjectRole role = project.getMemberRole(currentUser);
+            isAdminOrModerator = role == ProjectRole.ADMIN || role == ProjectRole.MODERATOR;
+        }
+
+        // Проверяем, является ли пользователь администратором или модератором
+        if (!isAdminOrModerator) {
+            return "redirect:/projects/" + projectId; // Если нет, перенаправляем на страницу проекта
+        }
 
         model.addAttribute("project", project);
-        model.addAttribute("projectMembers", members);
+        model.addAttribute("projectMembers", projectMembers);
         model.addAttribute("roles", ProjectRole.values());
         return "project_members";
     }
